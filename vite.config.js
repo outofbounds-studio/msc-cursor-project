@@ -5,22 +5,20 @@ import path from 'path';
 export default defineConfig({
   root: 'src',
   build: {
-    outDir: '../dist',
+    outDir: '../docs',
     emptyOutDir: true,
     rollupOptions: {
-      input: {
-        main: path.resolve(__dirname, 'src/js/main.js')
-      },
+      input: 'src/js/main.js',
       output: {
-        entryFileNames: 'app.min.js',
         format: 'iife',
-        name: 'app'
+        entryFileNames: 'app.min.js',
+        dir: 'docs'
       }
     },
     minify: 'terser',
     terserOptions: {
       compress: {
-        drop_console: true
+        drop_console: false
       }
     }
   }

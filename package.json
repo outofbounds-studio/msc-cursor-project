@@ -4,11 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/build.js",
-    "build:staging": "vite build --mode staging",
-    "build:production": "vite build --mode production",
-    "preview": "vite preview",
-    "clean": "rm -rf dist"
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "keywords": [],
   "author": "",

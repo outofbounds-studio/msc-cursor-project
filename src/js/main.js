@@ -5,7 +5,7 @@ import { CustomEase } from 'gsap/CustomEase';
 import barba from '@barba/core';
 import Lenis from '@studio-freight/lenis';
 
-// Register GSAP plugins
+// Register GSAP plugins first
 gsap.registerPlugin(ScrollTrigger, CustomEase);
 
 // Create custom ease
@@ -16,6 +16,14 @@ gsap.defaults({
     ease: "msc-ease",
     duration: 0.8
 });
+
+// Initialize all functionality
+function init() {
+    initSmoothScroll();
+    initCustomCursor();
+    initTextAnimations();
+    initThemeHandling();
+}
 
 // Initialize Lenis for smooth scrolling
 let lenis;
@@ -193,61 +201,28 @@ function changeThemeTimeline(theme) {
     return tl;
 }
 
-// Barba.js initialization
-function initBarba() {
-    barba.init({
-        transitions: [{
-            name: 'opacity-transition',
-            leave(data) {
-                return gsap.to(data.current.container, {
-                    opacity: 0,
-                    duration: 0.5
-                });
-            },
-            enter(data) {
-                return gsap.from(data.next.container, {
-                    opacity: 0,
-                    duration: 0.5
-                });
-            }
-        }],
-        views: [
-            {
-                namespace: 'home',
-                beforeEnter() {
-                    initTextAnimations();
-                    initThemeHandling();
-                    initSliders();
-                }
-            },
-            {
-                namespace: 'about',
-                beforeEnter() {
-                    initThemeHandling();
-                }
-            },
-            {
-                namespace: 'work',
-                beforeEnter() {
-                    initThemeHandling();
-                    initSliders();
-                }
-            },
-            {
-                namespace: 'styles',
-                beforeEnter() {
-                    initTextAnimations();
-                    initThemeHandling();
-                }
-            }
-        ]
-    });
-}
-
-// Initialize everything when the DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-    initSmoothScroll();
-    initCustomCursor();
-    initTextAnimations();
-    initBarba();
+// Initialize Barba with proper wrapper
+barba.init({
+    transitions: [{
+        name: 'opacity-transition',
+        leave(data) {
+            return gsap.to(data.current.container, {
+                opacity: 0
+            });
+        },
+        enter(data) {
+            return gsap.from(data.next.container, {
+                opacity: 0
+            });
+        }
+    }],
+    views: [{
+        namespace: 'home',
+        beforeEnter() {
+            init();
+        }
+    }]
 });
+
+// Initial page load
+init();
