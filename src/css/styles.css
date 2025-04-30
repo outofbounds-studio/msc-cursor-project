@@ -1,0 +1,170 @@
+/* Base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #0f0f0f;
+    color: #ffffff;
+    cursor: none; /* Hide default cursor */
+    overflow-x: hidden;
+}
+
+/* Custom cursor */
+.cursor {
+    width: 20px;
+    height: 20px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    mix-blend-mode: difference;
+    z-index: 9999;
+    transition: width 0.3s, height 0.3s;
+}
+
+/* Navigation styles */
+.nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+}
+
+.nav a {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 1.2rem;
+    transition: color 0.3s ease;
+}
+
+/* Main content sections */
+.section {
+    min-height: 100vh;
+    padding: 6rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    position: relative;
+}
+
+.hero-section {
+    height: 100vh;
+}
+
+.subtitle {
+    font-size: 1.5rem;
+    margin-top: 2rem;
+    opacity: 0.8;
+}
+
+/* Text styles */
+.split-text-scroll-trigger {
+    font-size: 4rem;
+    font-weight: 700;
+    line-height: 1.2;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.char {
+    display: inline-block;
+    transform-origin: bottom;
+}
+
+/* Hover effects */
+.hover-effect {
+    transition: transform 0.3s ease;
+}
+
+.hover-effect:hover {
+    transform: scale(1.05);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .split-text-scroll-trigger {
+        font-size: 2.5rem;
+    }
+    
+    .section {
+        padding: 4rem 1rem;
+    }
+}
+
+html, body {
+  width: 100%;
+  height: auto !important;
+  min-height: 100%;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+html.lenis {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+} 
+
+.mask p,
+.single-line {
+  transform: translate3d(0px, 120%, 0px);
+}
+
+body {
+  transition: background-color 0.4s ease;
+}
+
+/* Theme styles */
+[data-theme-section="light"] {
+    background-color: #ffffff;
+    color: #0f0f0f;
+}
+
+[data-theme-section="dark"] {
+    background-color: #0f0f0f;
+    color: #ffffff;
+}
+
+/* Navigation styles */
+.nav_bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    z-index: 100;
+    mix-blend-mode: difference;
+}
+
+.nav_bar a {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+} 
