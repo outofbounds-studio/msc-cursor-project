@@ -5,15 +5,21 @@ import path from 'path';
 export default defineConfig({
   root: 'src',
   build: {
-    outDir: '../docs',
+    outDir: 'docs',
     emptyOutDir: true,
     rollupOptions: {
       input: 'src/js/main.js',
       output: {
         format: 'iife',
+        name: 'app',
         entryFileNames: 'app.min.js',
-        dir: 'docs'
-      }
+        globals: {
+          'gsap': 'gsap',
+          '@barba/core': 'barba',
+          '@studio-freight/lenis': 'Lenis'
+        }
+      },
+      external: ['gsap', '@barba/core', '@studio-freight/lenis']
     },
     minify: 'terser',
     terserOptions: {
