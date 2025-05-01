@@ -3,10 +3,15 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   build: {
+    lib: {
+      entry: 'src/js/main.js',
+      name: 'webflowCursorProject',
+      formats: ['iife'],
+      fileName: (format) => `main.${format}.js`
+    },
     rollupOptions: {
       output: {
         format: 'iife',
-        entryFileNames: 'app.js',
         globals: {
           gsap: 'gsap',
           ScrollTrigger: 'ScrollTrigger',
