@@ -1,4 +1,3 @@
-
 // Ensure DOM is loaded before running scripts
 document.addEventListener("DOMContentLoaded", function() {
   
@@ -819,5 +818,45 @@ views: [
     }
 ]
 });
+
+// Initialize everything when the script loads
+document.addEventListener("DOMContentLoaded", function() {
+    console.log("Initializing all functions...");
+    
+    // Initialize based on current page
+    const currentPage = document.body.getAttribute('data-barba-namespace');
+    console.log("Current page:", currentPage);
+
+    // Common initializations
+    initCustomCursor();
+    initCheckTheme();
+    
+    // Page-specific initializations
+    switch(currentPage) {
+        case 'home':
+            stylesScrub();
+            initVimeoBGVideo();
+            initSliders();
+            initTestimonial();
+            initTabSystem();
+            initScrollTriggers();
+            initSplitTextAnimation();
+            break;
+        case 'about':
+            initScrollTriggers();
+            break;
+        case 'work':
+            setupThumbnailHoverEffect('.work-item-wrap', '.work-thumb_img', '.work-hover_img');
+            if(window.Jetboost) Jetboost.ReInit();
+            initTestimonial();
+            initSliders();
+            break;
+        case 'styles':
+            stylesScrub();
+            initScrollTriggers();
+            break;
+    }
+    
+    console.log("All functions initialized");
 });
 
