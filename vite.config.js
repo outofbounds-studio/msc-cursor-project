@@ -10,21 +10,12 @@ export default defineConfig({
       formats: ['iife']
     },
     rollupOptions: {
-      external: ['gsap', 'jquery', '@barba/core', 'swiper', '@studio-freight/lenis'],
       output: {
         extend: true,
         globals: {
           gsap: 'gsap',
-          jquery: '$',
-          '@barba/core': 'barba',
-          swiper: 'Swiper',
-          '@studio-freight/lenis': 'Lenis',
-          ScrollTrigger: 'ScrollTrigger',
-          CustomEase: 'CustomEase',
-          SplitText: 'SplitText',
-          Vimeo: 'Vimeo'
-        },
-        format: 'iife'
+          $: 'jQuery'
+        }
       }
     }
   }
