@@ -438,3 +438,9 @@ function initBarba() {
     });
 }
 
+// No modules, no exports, just wrap everything in DOMContentLoaded
+document.addEventListener("DOMContentLoaded", function() {
+    // Copy and paste the exact code from your working version here
+    // [Your entire working code goes here]
+});
+

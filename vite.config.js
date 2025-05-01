@@ -3,24 +3,19 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   build: {
-    lib: {
-      entry: 'src/js/main.js',
-      name: 'webflowCursorProject',
-      fileName: 'main',
-      formats: ['iife']
-    },
     rollupOptions: {
       output: {
-        extend: true,
+        format: 'iife',
+        entryFileNames: 'app.js',
         globals: {
           gsap: 'gsap',
           ScrollTrigger: 'ScrollTrigger',
           CustomEase: 'CustomEase',
           jQuery: '$',
+          Vimeo: 'Vimeo',
           barba: 'barba',
           Lenis: 'Lenis',
-          Swiper: 'Swiper',
-          Vimeo: 'Vimeo'
+          Swiper: 'Swiper'
         }
       }
     }
