@@ -12,6 +12,8 @@ export default defineConfig({
     rollupOptions: {
       output: {
         format: 'iife',
+        name: 'webflowCursorProject',
+        extend: true,
         globals: {
           gsap: 'gsap',
           ScrollTrigger: 'ScrollTrigger',
