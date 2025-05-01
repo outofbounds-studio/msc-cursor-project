@@ -1,32 +1,24 @@
 // vite.config.js
 import { defineConfig } from 'vite';
-import path from 'path';
 
 export default defineConfig({
-  root: 'src',
   build: {
-    outDir: 'docs',
-    emptyOutDir: true,
+    lib: {
+      entry: 'src/js/main.js',
+      name: 'webflowCursorProject',
+      fileName: 'main',
+      formats: ['iife']
+    },
     rollupOptions: {
-      input: 'src/js/main.js',
+      external: ['gsap', 'jquery', '@barba/core', 'swiper', '@studio-freight/lenis'],
       output: {
-        format: 'iife',
-        name: 'app',
-        entryFileNames: 'app.min.js',
         globals: {
           gsap: 'gsap',
-          Swiper: 'Swiper',
-          barba: 'barba',
-          Lenis: 'Lenis',
-          $: 'jQuery'
+          jquery: '$',
+          '@barba/core': 'barba',
+          swiper: 'Swiper',
+          '@studio-freight/lenis': 'Lenis'
         }
-      },
-      external: ['gsap', 'Swiper', 'barba', 'Lenis', 'jQuery']
-    },
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: false
       }
     }
   }

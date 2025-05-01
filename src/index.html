@@ -37,7 +37,14 @@
         }
     </style>
 
-    <!-- Remove GSAP CDN links since we're using npm -->
+    <!-- Add required CDN scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/CustomEase.min.js"></script>
+    <script src="https://unpkg.com/@barba/core"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.27/dist/lenis.min.js"></script>
+    <script src="https://player.vimeo.com/api/player.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
 <body>
     <!-- Add Barba wrapper -->
@@ -59,6 +66,6 @@
     </div>
 
     <!-- Your main script -->
-    <script type="module" src="/js/main.js"></script>
+    <script type="module" src="./js/main.js"></script>
 </body>
 </html>

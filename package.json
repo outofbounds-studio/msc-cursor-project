@@ -1,16 +1,26 @@
 {
-  "name": "msc-cursor-project",
-  "version": "1.0.0",
+  "name": "@outofboundsstudio/webflow-cursor-project",
+  "version": "1.0.2",
   "type": "module",
+  "main": "dist/main.js",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prepublishOnly": "npm run build"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "webflow",
+    "cursor",
+    "animation",
+    "gsap"
+  ],
+  "author": "Out of Bounds Studio",
   "license": "ISC",
-  "description": "Custom JavaScript for Webflow site",
+  "description": "Custom cursor and animations for Webflow sites",
   "dependencies": {
     "@barba/core": "^2.9.7",
     "@studio-freight/lenis": "^1.0.27",
@@ -26,5 +36,8 @@
     "last 2 versions",
     "> 1%",
     "not dead"
-  ]
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }
