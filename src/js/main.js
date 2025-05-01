@@ -6,6 +6,9 @@ const Lenis = window.Lenis;
 const Swiper = window.Swiper;
 const Player = window.Vimeo.Player;
 
+// Global state
+let themeCheckActive = false;
+
 // Export the initialization function
 export function init() {
     // Ensure DOM is loaded before running scripts
@@ -17,28 +20,26 @@ export function init() {
 }
 
 function initializeAll() {
-    let themeCheckActive = false;
-    
     // Define animation defaults
-CustomEase.create("msc-ease", "0.625, 0.05, 0, 1");
-
-gsap.defaults({
-    ease: "msc-ease",
-    duration: 0.8
-});
-
+    CustomEase.create("msc-ease", "0.625, 0.05, 0, 1");
+    
+    gsap.defaults({
+        ease: "msc-ease",
+        duration: 0.8
+    });
+    
     // Initialize Lenis
-const lenis = new Lenis({
-    lerp: 0.1,
-    smooth: true
-});
-
-function raf(time) {
-    lenis.raf(time);
+    const lenis = new Lenis({
+        lerp: 0.1,
+        smooth: true
+    });
+    
+    function raf(time) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+    }
     requestAnimationFrame(raf);
-}
-requestAnimationFrame(raf);
-
+    
     // Initialize all components
     initScrollTriggers();
     initCheckTheme();
