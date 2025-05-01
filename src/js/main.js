@@ -9,6 +9,21 @@ const Player = window.Vimeo.Player;
 // Global state
 let themeCheckActive = false;
 
+// Global function for theme checking
+function checkThemeSection() {
+    const themeSections = document.querySelectorAll("[data-theme-section]");
+    const navBar = document.querySelector('.nav_bar');
+    const themeObserverOffset = navBar ? navBar.offsetHeight / 2 : 0;
+
+    themeSections.forEach(function(themeSection) {
+        const { top, bottom } = themeSection.getBoundingClientRect();
+        if (top <= themeObserverOffset && bottom >= themeObserverOffset) {
+            const themeSectionActive = themeSection.getAttribute('data-theme-section');
+            changeThemeTimeline(themeSectionActive);
+        }
+    });
+}
+
 // Export the initialization function
 export function init() {
     // Ensure DOM is loaded before running scripts
@@ -40,16 +55,30 @@ function initializeAll() {
     }
     requestAnimationFrame(raf);
     
-    // Initialize all components
+    // Initialize all components immediately
     initScrollTriggers();
     initCheckTheme();
-    stylesScrub();
-    initVimeoBGVideo();
-    initSliders();
-    initTestimonial();
-    initTabSystem();
-    initCustomCursor();
-    setupThumbnailHoverEffect();
+    initCustomCursor(); // Always initialize cursor
+    
+    // Initialize page-specific components
+    const currentPage = document.body.getAttribute('data-barba-namespace');
+    
+    if (currentPage === 'home') {
+        stylesScrub();
+        initVimeoBGVideo();
+    }
+    
+    if (currentPage === 'work') {
+        initSliders();
+        setupThumbnailHoverEffect();
+    }
+    
+    if (currentPage === 'about') {
+        initTestimonial();
+        initTabSystem();
+    }
+    
+    // Initialize Barba last
     initBarba();
 }
 
@@ -153,20 +182,6 @@ function initScrollTriggers() {
 
 // Theme checking initialization
 function initCheckTheme() {
-    function checkThemeSection() {
-        const themeSections = document.querySelectorAll("[data-theme-section]");
-        const navBar = document.querySelector('.nav_bar');
-        const themeObserverOffset = navBar ? navBar.offsetHeight / 2 : 0;
-
-        themeSections.forEach(function(themeSection) {
-            const { top, bottom } = themeSection.getBoundingClientRect();
-            if (top <= themeObserverOffset && bottom >= themeObserverOffset) {
-                const themeSectionActive = themeSection.getAttribute('data-theme-section');
-                changeThemeTimeline(themeSectionActive);
-            }
-        });
-    }
-
     checkThemeSection();
 
     barba.hooks.beforeLeave(() => {
