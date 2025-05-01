@@ -19,7 +19,8 @@ export default defineConfig({
           jQuery: '$',
           barba: 'barba',
           Lenis: 'Lenis',
-          Swiper: 'Swiper'
+          Swiper: 'Swiper',
+          Vimeo: 'Vimeo'
         }
       }
     }
