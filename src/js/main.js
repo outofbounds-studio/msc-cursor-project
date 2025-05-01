@@ -1,3 +1,10 @@
+// Add imports at the top
+const { gsap, ScrollTrigger, CustomEase } = window;
+const $ = window.jQuery;
+const barba = window.barba;
+const Lenis = window.Lenis;
+const Swiper = window.Swiper;
+
 // Ensure DOM is loaded before running scripts
 document.addEventListener("DOMContentLoaded", function() {
   
