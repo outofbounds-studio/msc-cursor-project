@@ -14,7 +14,12 @@ export default defineConfig({
         extend: true,
         globals: {
           gsap: 'gsap',
-          $: 'jQuery'
+          ScrollTrigger: 'ScrollTrigger',
+          CustomEase: 'CustomEase',
+          jQuery: '$',
+          barba: 'barba',
+          Lenis: 'Lenis',
+          Swiper: 'Swiper'
         }
       }
     }
