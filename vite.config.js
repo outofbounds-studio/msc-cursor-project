@@ -14,12 +14,14 @@ export default defineConfig({
         name: 'app',
         entryFileNames: 'app.min.js',
         globals: {
-          'gsap': 'gsap',
-          '@barba/core': 'barba',
-          '@studio-freight/lenis': 'Lenis'
+          gsap: 'gsap',
+          Swiper: 'Swiper',
+          barba: 'barba',
+          Lenis: 'Lenis',
+          $: 'jQuery'
         }
       },
-      external: ['gsap', '@barba/core', '@studio-freight/lenis']
+      external: ['gsap', 'Swiper', 'barba', 'Lenis', 'jQuery']
     },
     minify: 'terser',
     terserOptions: {
