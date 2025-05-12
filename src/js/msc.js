@@ -40,40 +40,31 @@
     function loadSlaterScripts() {
         const isWebflow = window.location.host.includes("webflow.io");
         const baseUrl = isWebflow ? "https://slater.app/13164" : "https://assets.slater.app/slater/13164";
-        
-        // Load SplitText Plugin
-        loadScript(`${baseUrl}/35586.js${isWebflow ? '' : '?v=1.0'}`)
-            .then(() => console.log('Slater SplitText Plugin loaded'))
-            .catch(error => console.error('Error loading SplitText Plugin:', error));
-
-        // Load Metal Staircase Co script
-        loadScript(`${baseUrl}.js${isWebflow ? '' : '?v=1.0'}`)
-            .then(() => console.log('Metal Staircase Co script loaded'))
-            .catch(error => console.error('Error loading Metal Staircase Co script:', error));
+        return Promise.all([
+            loadScript(`${baseUrl}/35586.js${isWebflow ? '' : '?v=1.0'}`), // SplitText
+            loadScript(`${baseUrl}.js${isWebflow ? '' : '?v=1.0'}`)        // Metal Staircase Co
+        ]);
     }
 
-    // Initialize the application
+    // Main initialization function
     async function init() {
-        // Wait for dependencies to load
+        // 1. Wait for all dependencies
         const dependenciesLoaded = await loadDependencies();
         if (!dependenciesLoaded) {
             console.error('Failed to load dependencies');
             return;
         }
 
-        // Load Slater scripts
-        loadSlaterScripts();
+        // 2. Wait for Slater scripts (SplitText, etc)
+        await loadSlaterScripts();
 
-        // Initialize core utilities
+        // 3. Now all libraries are loaded, safe to use barba, SplitText, etc
+        // ---- Your app initialization code below ----
         utils.initGSAPDefaults();
         utils.lenis.init();
-        
-        // Initialize Barba.js
         barba.init(barbaConfig);
-        
-        // Initialize components that should run on every page
         components.initCustomCursor();
-        
+        // ...rest of your initialization...
         console.log('Initialization complete');
     }
 
@@ -83,7 +74,6 @@
     } else {
         init();
     }
-
 
 
     // Core Utilities
@@ -908,26 +898,6 @@
             utils.theme.change('dark');
         } else if (data.next.namespace === 'styles') {
             utils.theme.change('dark');
-        }
-    });
-    
-    // Initialize everything
-    document.addEventListener("DOMContentLoaded", () => {
-        try {
-            // Initialize core utilities
-            utils.initGSAPDefaults();
-            utils.lenis.init();
-            
-            // Initialize Barba.js
-            barba.init(barbaConfig);
-            
-            // Initialize components that should run on every page
-            components.initCustomCursor();
-            
-            // Log initialization
-            console.log("Initialization complete");
-        } catch (error) {
-            utils.handleError('initialization', error);
         }
     });
     
