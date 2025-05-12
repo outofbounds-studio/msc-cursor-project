@@ -850,7 +850,7 @@
                 console.log("Entering work page...");
                 utils.theme.startCheck();
                 components.initCustomCursor();
-                components.setupThumbnailHoverEffect('.work-item-wrap', '.work-thumb_img', '.work-hover_img');
+                //components.setupThumbnailHoverEffect('.work-item-wrap', '.work-thumb_img', '.work-hover_img');
                 if (typeof Jetboost !== 'undefined') Jetboost.ReInit();
                 components.initTestimonial();
                 components.initSliders();
