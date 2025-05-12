@@ -134,7 +134,7 @@
     position: fixed;
     pointer-events: none;
     z-index: 9999;
-    mix-blend-mode: difference;
+    mix-blend-mode: normal;
     -webkit-font-feature-settings: "ss14" 1;
     -moz-font-feature-settings: "ss14" 1;
     -ms-font-feature-settings: "ss14" 1;
