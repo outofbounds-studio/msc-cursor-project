@@ -59,10 +59,29 @@
         await loadSlaterScripts();
 
         // 3. Now all libraries are loaded, safe to use barba, SplitText, etc
-        // ---- Your app initialization code below ----
         utils.initGSAPDefaults();
         utils.lenis.init();
         barba.init(barbaConfig);
+
+        // ---- Barba.js Hooks (must be after barba.init) ----
+        barba.hooks.leave((data) => {
+            utils.lenis.destroy();
+        });
+
+        barba.hooks.enter((data) => {
+            window.scrollTo(0, 0);
+            // Apply appropriate theme for the current page
+            if (data.next.namespace === 'home') {
+                utils.theme.change('dark');
+            } else if (data.next.namespace === 'about') {
+                utils.theme.change('dark');
+            } else if (data.next.namespace === 'work') {
+                utils.theme.change('dark');
+            } else if (data.next.namespace === 'styles') {
+                utils.theme.change('dark');
+            }
+        });
+
         components.initCustomCursor();
         // ...rest of your initialization...
         console.log('Initialization complete');
@@ -880,26 +899,4 @@
             ...handlers
         }))
     };
-    
-    // Barba.js Hooks
-    barba.hooks.leave((data) => {
-        utils.lenis.destroy();
-    });
-    
-    barba.hooks.enter((data) => {
-        window.scrollTo(0, 0);
-        
-        // Apply appropriate theme for the current page
-        if (data.next.namespace === 'home') {
-            utils.theme.change('dark');
-        } else if (data.next.namespace === 'about') {
-            utils.theme.change('dark');
-        } else if (data.next.namespace === 'work') {
-            utils.theme.change('dark');
-        } else if (data.next.namespace === 'styles') {
-            utils.theme.change('dark');
-        }
-    });
-    
-
 })(); 
