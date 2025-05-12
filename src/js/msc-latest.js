@@ -621,6 +621,7 @@
                 accordion._accordionClickHandler = function(event) {
                     const toggle = event.target.closest('[data-accordion-toggle]');
                     if (!toggle) return;
+                    console.log('Accordion toggle clicked!', toggle);
     
                     const singleAccordion = toggle.closest('[data-accordion-status]');
                     if (!singleAccordion) return;
