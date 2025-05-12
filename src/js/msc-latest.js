@@ -611,40 +611,36 @@
         },
     
         initAccordionCSS() {
-            try {
-                console.log('initAccordionCSS function called');
-                const accordions = document.querySelectorAll('[data-accordion-css-init]');
-                console.log('Found accordions:', accordions.length);
+            console.log('initAccordionCSS called');
+            const accordions = document.querySelectorAll('[data-accordion-css-init]');
+            console.log('Found accordions:', accordions.length);
     
-                accordions.forEach((accordion) => {
-                    accordion.removeEventListener('click', accordion._accordionClickHandler);
+            accordions.forEach((accordion) => {
+                accordion.removeEventListener('click', accordion._accordionClickHandler);
     
-                    accordion._accordionClickHandler = function(event) {
-                        const toggle = event.target.closest('[data-accordion-toggle]');
-                        if (!toggle) return;
+                accordion._accordionClickHandler = function(event) {
+                    const toggle = event.target.closest('[data-accordion-toggle]');
+                    if (!toggle) return;
     
-                        const singleAccordion = toggle.closest('[data-accordion-status]');
-                        if (!singleAccordion) return;
+                    const singleAccordion = toggle.closest('[data-accordion-status]');
+                    if (!singleAccordion) return;
     
-                        const isActive = singleAccordion.getAttribute('data-accordion-status') === 'active';
-                        singleAccordion.setAttribute('data-accordion-status', isActive ? 'not-active' : 'active');
+                    const isActive = singleAccordion.getAttribute('data-accordion-status') === 'active';
+                    singleAccordion.setAttribute('data-accordion-status', isActive ? 'not-active' : 'active');
     
-                        const closeSiblings = accordion.getAttribute('data-accordion-close-siblings') === 'true';
-                        if (closeSiblings && !isActive) {
-                            const activeSiblings = accordion.querySelectorAll('[data-accordion-status="active"]');
-                            activeSiblings.forEach((sibling) => {
-                                if (sibling !== singleAccordion) {
-                                    sibling.setAttribute('data-accordion-status', 'not-active');
-                                }
-                            });
-                        }
-                    };
+                    const closeSiblings = accordion.getAttribute('data-accordion-close-siblings') === 'true';
+                    if (closeSiblings && !isActive) {
+                        const activeSiblings = accordion.querySelectorAll('[data-accordion-status="active"]');
+                        activeSiblings.forEach((sibling) => {
+                            if (sibling !== singleAccordion) {
+                                sibling.setAttribute('data-accordion-status', 'not-active');
+                            }
+                        });
+                    }
+                };
     
-                    accordion.addEventListener('click', accordion._accordionClickHandler);
-                });
-            } catch (error) {
-                utils.handleError('initAccordionCSS', error);
-            }
+                accordion.addEventListener('click', accordion._accordionClickHandler);
+            });
         },
     
         initModalBasic() {
