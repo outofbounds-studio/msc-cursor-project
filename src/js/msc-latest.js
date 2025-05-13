@@ -28,14 +28,15 @@
     // Load all required dependencies
     async function loadDependencies() {
         const dependencies = [
-            'https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js',
+            'https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js',
             'https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js',
             'https://player.vimeo.com/api/player.js',
-            'https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js',
+            'https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js',
             'https://cdn.jsdelivr.net/gh/flowtricks/scripts@v1.0.4/variables-color-scroll.js',
             'https://cdn.jsdelivr.net/npm/gsap@3.11.5/dist/CustomEase.min.js',
             'https://cdn.jsdelivr.net/npm/@barba/core@2.9.7/dist/barba.umd.min.js',
-            'https://unpkg.com/lenis@1.1.18/dist/lenis.min.js'
+            'https://unpkg.com/lenis@1.1.18/dist/lenis.min.js',
+            'https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js'
         ];
 
         try {
@@ -106,6 +107,11 @@
         components.initCustomCursor();
         // ...rest of your initialization...
         console.log('Initialization complete');
+
+        // Global Barba hook to run on every page transition
+        barba.hooks.afterEnter(() => {
+            initMaskTextScrollReveal();
+        });
     }
 
     // Start initialization when DOM is ready
@@ -834,7 +840,7 @@
                 components.initCustomCursor();
                 animations.initScrollTriggers();
                 components.initTabSystem();
-                components.setupThumbnailHoverEffect('.work-item-wrap', '.work-thumb_img', '.work-hover_img');
+            
             },
             afterEnter() {
                 components.initAccordionCSS();
@@ -917,4 +923,50 @@
             ...handlers
         }))
     };
+
+    // SplitText/ScrollTrigger heading animation
+    function initMaskTextScrollReveal() {
+        document.querySelectorAll('[data-split="heading"]').forEach(heading => {
+            // Reset CSS visibility to prevent FOUC
+            gsap.set(heading, { autoAlpha: 1 });
+            // Find the split type, the default is 'lines'
+            const type = heading.dataset.splitReveal || 'lines';
+            const typesToSplit =
+                type === 'lines' ? ['lines'] :
+                type === 'words' ? ['lines','words'] :
+                ['lines','words','chars'];
+            // Split the text
+            SplitText.create(heading, {
+                type: typesToSplit.join(', '),
+                mask: 'lines',
+                autoSplit: true,
+                linesClass: 'line',
+                wordsClass: 'word',
+                charsClass: 'letter',
+                onSplit: function(instance) {
+                    animate(instance, heading, type);
+                }
+            });
+        });
+        function animate(instance, heading, type) {
+            const splitConfig = {
+                lines: { duration: 0.8, stagger: 0.08 },
+                words: { duration: 0.6, stagger: 0.06 },
+                chars: { duration: 0.4, stagger: 0.01 }
+            };
+            const targets = instance[type];
+            const config = splitConfig[type];
+            gsap.from(targets, {
+                yPercent: 110,
+                duration: config.duration,
+                stagger: config.stagger,
+                ease: 'expo.out',
+                scrollTrigger: {
+                    trigger: heading,
+                    start: 'top 80%',
+                    once: true
+                }
+            });
+        }
+    }
 })(); 
