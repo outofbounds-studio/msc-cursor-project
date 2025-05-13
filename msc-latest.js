@@ -1,5 +1,5 @@
 // msc.js - Metal Staircase Co. Website Scripts
-// Version: 1.0.0 updated 12/05/2025 14.03
+// Version: 1.0.0 updated 13/05/2025 23.34
 
 (function() {
     // Load required scripts dynamically
