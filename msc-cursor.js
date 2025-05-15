@@ -981,7 +981,13 @@
             for (let i = 0; i < digits; i++) {
                 const digitSpan = document.createElement('span');
                 digitSpan.className = 'digit';
-                digitSpan.innerHTML = '<span class="digit-inner">0</span>';
+                // Start with two stacked spans, both showing 0
+                digitSpan.innerHTML = `
+                    <span class="digit-inner">
+                        <span class="digit-old">0</span>
+                        <span class="digit-new">0</span>
+                    </span>
+                `;
                 el.appendChild(digitSpan);
             }
             let obj = { value: 0 };
@@ -993,27 +999,23 @@
                     let current = Math.floor(obj.value).toString().padStart(digits, '0');
                     el.querySelectorAll('.digit').forEach((digitEl, i) => {
                         const inner = digitEl.querySelector('.digit-inner');
-                        const oldDigit = inner.textContent;
+                        const oldDigitSpan = inner.querySelector('.digit-old');
+                        const newDigitSpan = inner.querySelector('.digit-new');
+                        const oldDigit = oldDigitSpan.textContent;
                         const newDigit = current[i];
-                        if (oldDigit !== newDigit) {
-                            // Create a wrapper for the animation
-                            const wrapper = document.createElement('span');
-                            wrapper.style.display = 'block';
-                            wrapper.style.position = 'relative';
-                            wrapper.style.height = '1em';
-                            wrapper.innerHTML = `
-                                <span class="digit-old" style="display:block; position:absolute; top:0; left:0; width:100%;">${oldDigit}</span>
-                                <span class="digit-new" style="display:block; position:absolute; top:1em; left:0; width:100%;">${newDigit}</span>
-                            `;
-                            inner.innerHTML = '';
-                            inner.appendChild(wrapper);
-
-                            gsap.to(wrapper, {
+                        if (newDigit !== oldDigit) {
+                            // Set up the new digit below the old one
+                            newDigitSpan.textContent = newDigit;
+                            gsap.set(inner, { y: 0 });
+                            // Animate the inner container up by 1em
+                            gsap.to(inner, {
                                 y: '-1em',
                                 duration: 0.3,
                                 ease: "power4.out",
                                 onComplete: () => {
-                                    inner.textContent = newDigit;
+                                    // After animation, reset position and update old digit
+                                    oldDigitSpan.textContent = newDigit;
+                                    gsap.set(inner, { y: 0 });
                                 }
                             });
                         }
