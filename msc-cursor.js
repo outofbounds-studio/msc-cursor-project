@@ -56,7 +56,6 @@
 
         return Promise.all([
             // Load JavaScript files
-            loadScript(`${baseUrl}/35586.js${isWebflow ? '' : '?v=1.0'}`), // SplitText
             loadScript(`${baseUrl}.js${isWebflow ? '' : '?v=1.0'}`)       // Metal Staircase Co
         ]);
     }
