@@ -1062,11 +1062,16 @@
 
     function initNumberTickerAnimation() {
         document.querySelectorAll('[data-animate-number]').forEach(el => {
+            // Hide by default
+            el.style.opacity = 0;
             ScrollTrigger.create({
                 trigger: el,
                 start: 'top 80%',
                 once: true,
-                onEnter: () => animateNumberTicker(el)
+                onEnter: () => {
+                    el.style.opacity = 1;
+                    animateNumberTicker(el);
+                }
             });
         });
     }
