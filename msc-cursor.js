@@ -923,7 +923,10 @@
     function initMaskTextScrollReveal() {
         console.log('initMaskTextScrollReveal running');
         document.querySelectorAll('[data-split="heading"]').forEach(heading => {
-            console.log('Found heading:', heading);
+            // Revert previous split if exists
+            if (heading._splitText) {
+                heading._splitText.revert();
+            }
             // Reset CSS visibility to prevent FOUC
             gsap.set(heading, { autoAlpha: 1 });
             // Find the split type, the default is 'lines'
@@ -932,8 +935,8 @@
                 type === 'lines' ? ['lines'] :
                 type === 'words' ? ['lines','words'] :
                 ['lines','words','chars'];
-            // Split the text
-            SplitText.create(heading, {
+            // Split the text and store the instance for later revert
+            heading._splitText = SplitText.create(heading, {
                 type: typesToSplit.join(', '),
                 mask: 'lines',
                 autoSplit: true,
@@ -941,7 +944,6 @@
                 wordsClass: 'word',
                 charsClass: 'letter',
                 onSplit: function(instance) {
-                    console.log('onSplit called:', instance);
                     animate(instance, heading, type);
                 }
             });
