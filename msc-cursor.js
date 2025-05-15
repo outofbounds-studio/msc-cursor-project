@@ -835,11 +835,11 @@
                 components.initCustomCursor();
                 animations.initScrollTriggers();
                 components.initTabSystem();
-            
             },
             afterEnter() {
                 components.initAccordionCSS();
                 components.initModalBasic();
+                initNumberTickerAnimation();
             },
             afterLeave() {
                 console.log("Leaving about page...");
@@ -969,5 +969,52 @@
                 }
             });
         }
+    }
+
+    // === GSAP Number Ticker Animation ===
+    function initNumberTickerAnimation() {
+        document.querySelectorAll('[data-animate-number]').forEach(el => {
+            const finalValue = parseInt(el.getAttribute('data-animate-number'), 10);
+            const duration = parseFloat(el.getAttribute('data-animate-duration')) || 2;
+            const digits = finalValue.toString().length;
+            el.innerHTML = '';
+            for (let i = 0; i < digits; i++) {
+                const digitSpan = document.createElement('span');
+                digitSpan.className = 'digit';
+                digitSpan.innerHTML = '<span class="digit-inner">0</span>';
+                el.appendChild(digitSpan);
+            }
+            let obj = { value: 0 };
+            gsap.to(obj, {
+                value: finalValue,
+                duration: duration,
+                ease: "power1.out",
+                onUpdate: () => {
+                    let current = Math.floor(obj.value).toString().padStart(digits, '0');
+                    el.querySelectorAll('.digit').forEach((digitEl, i) => {
+                        const inner = digitEl.querySelector('.digit-inner');
+                        const oldDigit = inner.textContent;
+                        const newDigit = current[i];
+                        if (oldDigit !== newDigit) {
+                            gsap.to(inner, {
+                                y: -40,
+                                opacity: 0,
+                                duration: 0.2,
+                                onComplete: () => {
+                                    inner.textContent = newDigit;
+                                    inner.style.transform = 'translateY(40px)';
+                                    inner.style.opacity = 0;
+                                    gsap.to(inner, {
+                                        y: 0,
+                                        opacity: 1,
+                                        duration: 0.2
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        });
     }
 })(); 
