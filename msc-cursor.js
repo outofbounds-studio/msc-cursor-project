@@ -1011,7 +1011,7 @@
                             gsap.to(inner, {
                                 y: '-1em',
                                 duration: 0.3,
-                                ease: "power4.out",
+                                ease: "power3.out",
                                 onComplete: () => {
                                     // After animation, reset position and update old digit
                                     oldDigitSpan.textContent = newDigit;
