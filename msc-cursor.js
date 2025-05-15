@@ -105,6 +105,9 @@
         barba.hooks.afterEnter(() => {
             initMaskTextScrollReveal();
         });
+
+        console.log('GSAP:', typeof gsap !== 'undefined' ? 'Loaded' : 'Not loaded');
+        console.log('SplitText:', typeof SplitText !== 'undefined' ? 'Loaded' : 'Not loaded');
     }
 
     // Start initialization when DOM is ready
@@ -950,15 +953,11 @@
             const targets = instance[type];
             const config = splitConfig[type];
             gsap.from(targets, {
-                yPercent: 110,
+                y: 100,
+                opacity: 0,
                 duration: config.duration,
                 stagger: config.stagger,
-                ease: 'expo.out',
-                scrollTrigger: {
-                    trigger: heading,
-                    start: 'top 80%',
-                    once: true
-                }
+                ease: 'expo.out'
             });
         }
     }
