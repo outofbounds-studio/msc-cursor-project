@@ -53,17 +53,11 @@
     function loadSlaterScripts() {
         const isWebflow = window.location.host.includes("webflow.io");
         const baseUrl = isWebflow ? "https://slater.app/13164" : "https://assets.slater.app/slater/13164";
-        const mscStylesUrl = isWebflow ? 
-            "https://outofbounds-studio.github.io/msc-cursor-project/src/css/msc-styles.css" :
-            "/src/css/msc-styles.css";
 
         return Promise.all([
             // Load JavaScript files
             loadScript(`${baseUrl}/35586.js${isWebflow ? '' : '?v=1.0'}`), // SplitText
-            loadScript(`${baseUrl}.js${isWebflow ? '' : '?v=1.0'}`),       // Metal Staircase Co
-            // Load CSS files (keep only those needed, remove Slater styles.css)
-            loadCSS(mscStylesUrl),                                         // Our custom styles
-            loadCSS(`${baseUrl}/35586.css${isWebflow ? '' : '?v=1.0'}`)    // SplitText styles
+            loadScript(`${baseUrl}.js${isWebflow ? '' : '?v=1.0'}`)       // Metal Staircase Co
         ]);
     }
 
