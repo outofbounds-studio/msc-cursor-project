@@ -61,9 +61,8 @@
             // Load JavaScript files
             loadScript(`${baseUrl}/35586.js${isWebflow ? '' : '?v=1.0'}`), // SplitText
             loadScript(`${baseUrl}.js${isWebflow ? '' : '?v=1.0'}`),       // Metal Staircase Co
-            // Load CSS files
+            // Load CSS files (keep only those needed, remove Slater styles.css)
             loadCSS(mscStylesUrl),                                         // Our custom styles
-            loadCSS(`${baseUrl}/styles.css${isWebflow ? '' : '?v=1.0'}`),  // Main styles
             loadCSS(`${baseUrl}/35586.css${isWebflow ? '' : '?v=1.0'}`)    // SplitText styles
         ]);
     }
