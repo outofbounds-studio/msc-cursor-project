@@ -996,20 +996,24 @@
                         const oldDigit = inner.textContent;
                         const newDigit = current[i];
                         if (oldDigit !== newDigit) {
-                            gsap.to(inner, {
-                                y: -40,
-                                opacity: 0,
-                                duration: 0.2,
+                            // Create a wrapper for the animation
+                            const wrapper = document.createElement('span');
+                            wrapper.style.display = 'block';
+                            wrapper.style.position = 'relative';
+                            wrapper.style.height = '1em';
+                            wrapper.innerHTML = `
+                                <span class="digit-old" style="display:block; position:absolute; top:0; left:0; width:100%;">${oldDigit}</span>
+                                <span class="digit-new" style="display:block; position:absolute; top:1em; left:0; width:100%;">${newDigit}</span>
+                            `;
+                            inner.innerHTML = '';
+                            inner.appendChild(wrapper);
+
+                            gsap.to(wrapper, {
+                                y: '-1em',
+                                duration: 0.3,
+                                ease: "power4.out",
                                 onComplete: () => {
                                     inner.textContent = newDigit;
-                                    inner.style.transform = 'translateY(40px)';
-                                    inner.style.opacity = 0;
-                                    gsap.to(inner, {
-                                        y: 0,
-                                        opacity: 1,
-                                        duration: 0.2,
-                                        ease: "power4.out"
-                                    });
                                 }
                             });
                         }
