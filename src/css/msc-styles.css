@@ -1,384 +1,495 @@
-/* msc-styles.css - Metal Staircase Co. Website Styles
- * Version: 1.0.0
- */
-
-/* Theme Variables */
-:root {
-    /* Colors */
-    --color--background: #161413;
-    --color--text: #bab9b9;
-    --color--accent: #ffffff;
-    --color-neutral-700: rgba(75, 75, 75, 0.9);
-    --color--button-background: #F7F5F2;
+  /* ------------------------- Osmo [https://osmo.supply/] ------------------------- */
+	/* ------------------------- Variables -------------------------------------------------- */
+  
+    :root {
+        --cubic-default: cubic-bezier(0.65, 0.05, 0, 1);
+        --duration-default: 0.735s;
+        --animation-default: var(--duration-default) var(--cubic-default);
+        --one-col-width: calc(8.33% - var(--gap-size));
+        --three-col-width: calc(25% - 2 * var(--gap-size));
+        --transition--default: 0.3s cubic-bezier(0.625, 0.05, 0, 1);
+        
+          /* Colors (not changing with Dark/Light Theme) */
+        --color-ignore-neutral-100: #ffffff;
+        --color-ignore-neutral-200: #efeeec;
+        --color-ignore-neutral-300: #e3e1de;
+        --color-ignore-neutral-400: #d0cfcd;
+        --color-ignore-neutral-500: #818180;
+        --color-ignore-neutral-600: #2c2c2c;
+        --color-ignore-neutral-700: #1f1f1f;
+        --color-ignore-neutral-800: #131313;
+        --color-ignore-neutral-900: #000000;
+        --color-ignore-white: var(--color-ignore-neutral-100);
+        --color-ignore-light: var(--color-ignore-neutral-200);
+        --color-ignore-dark: var(--color-ignore-neutral-800);
+        --color-ignore-black: var(--color-ignore-neutral-900);
     
-    /* Transitions */
-    --transition--default: 0.5s cubic-bezier(0.625, 0.05, 0, 1);
-    --cubic-default: cubic-bezier(.25, .46, .45, .94);
-}
-
-/* Theme Classes */
-[element-theme="dark"] {
-    --color--background: #161413;
-    --color--text: #bab9b9;
-    --color--accent: #ffffff;
-}
-
-[element-theme="light"] {
-    --color--background: #ffffff;
-    --color--text: #161413;
-    --color--accent: #161413;
-}
-
-/* Tab System Styles */
-[data-tabs="wrapper"] {
-    position: relative;
-    width: 100%;
-}
-
-[data-tabs="content-item"] {
-    position: relative;
-    cursor: pointer;
-    opacity: 0.5;
-    transition: opacity var(--transition--default);
-}
-
-[data-tabs="content-item"].active {
-    opacity: 1;
-}
-
-[data-tabs="item-progress"] {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 1px;
-    background-color: var(--color--accent);
-    transform-origin: left center;
-    transform: scaleX(0);
-}
-
-[data-tabs="visual-item"] {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity var(--transition--default),
-                visibility var(--transition--default);
-}
-
-[data-tabs="visual-item"].active {
-    opacity: 1;
-    visibility: visible;
-}
-
-/* Accordion Styles */
-[data-accordion-status] {
-    transition: all var(--transition--default);
-}
-
-[data-accordion-status="not-active"] [data-accordion-content] {
-    height: 0;
-    opacity: 0;
-    visibility: hidden;
-    overflow: hidden;
-}
-
-[data-accordion-status="active"] [data-accordion-content] {
-    height: auto;
-    opacity: 1;
-    visibility: visible;
-}
-
-/* Modal Styles */
-[data-modal-group-status] {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(22, 20, 19, 0.95);
-    z-index: 1000;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity var(--transition--default),
-                visibility var(--transition--default);
-}
-
-[data-modal-group-status="active"] {
-    opacity: 1;
-    visibility: visible;
-}
-
-[data-modal-name] {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1001;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity var(--transition--default),
-                visibility var(--transition--default);
-}
-
-[data-modal-name][data-modal-status="active"] {
-    opacity: 1;
-    visibility: visible;
-}
-
-/* Custom Cursor */
-.cursor {
-    position: fixed;
-    pointer-events: none;
-    z-index: 9999;
-    mix-blend-mode: normal;
-    -webkit-font-feature-settings: "ss14" 1;
-    -moz-font-feature-settings: "ss14" 1;
-    -ms-font-feature-settings: "ss14" 1;
-    font-feature-settings: "ss14" 1;
-}
-
-.cursor p {
-    color: var(--color--accent);
-    font-size: 14px;
-    white-space: nowrap;
-}
-
-/* Work Item Hover Effects */
-.work-item-wrap {
-    position: relative;
-    overflow: hidden;
-}
-
-.work-thumb_img,
-.work-hover_img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: opacity var(--transition--default);
-}
-
-.work-hover_img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    opacity: 0;
-}
-
-/* Responsive Styles */
-@media screen and (max-width: 991px) {
-    [data-tabs="visual-item"] {
-        position: relative;
-        height: auto;
+        --color-ignore-rgb-dark: 19, 19, 19;
+        --color-ignore-rgb-light: 239, 238, 236;
+        --color-ignore-rgb-black: 0, 0, 0;
+        --color-ignore-rgb-white: 255, 255, 255;
+      }
+        
+      /* ------------------------- Scaling System by Osmo [https://osmo.supply/] -------------------------------------------------- */
+    
+      /* Desktop */
+      :root {
+         --size-unit: 16; /* body font-size in design - no px */
+         --size-container-ideal: 1440; /* screen-size in design - no px */
+         --size-container-min: 992px;
+         --size-container-max: 1920px;
+         --size-container: clamp(var(--size-container-min), 100vw, var(--size-container-max));
+         --size-font: calc(var(--size-container) / (var(--size-container-ideal) / var(--size-unit)));
+      }
+    
+      /* Tablet */
+      @media screen and (max-width: 991px) {
+        :root {
+          --size-container-ideal: 1080; /* screen-size in design - no px */
+          --size-container-min: 768px;
+          --size-container-max: 991px;
+        }
+      }
+    
+      /* Mobile Landscape */
+      @media screen and (max-width: 767px) {
+        :root {
+          --size-container-ideal: 550; /* screen-size in design - no px */
+          --size-container-min: 480px;
+          --size-container-max: 767px;
+          --container-padding: 1.25em;
+        }
+      }
+    
+      /* Mobile Portrait */
+      @media screen and (max-width: 479px) {
+        :root {
+          --size-container-ideal: 402; /* screen-size in design - no px */
+          --size-container-min: 320px;
+          --size-container-max: 479px;
+        }
+      }
+      
+      /* Apply to body */
+      body {font-size: var(--size-font);}
+      
+      /* ------------------------- Hide Scrollbar -------------------------------------------------- */
+    
+      body ::-webkit-scrollbar{display: none;} /* Chrome, Safari, Opera */
+      body {-ms-overflow-style: none;} /* IE & Edge */
+      html {scrollbar-width: none;} /* Firefox */
+      
+      /* ------------------------- body -------------------------------------------------- */
+    
+      *, *:after, *:before { -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;}
+      html {scroll-behavior: initial;}
+      html, body {-webkit-font-smoothing: antialiased;}
+      svg {max-width: none; height: auto; box-sizing: border-box; vertical-align: middle;}
+    
+      /* Selection */
+      ::selection {
+         background-color: var(--color-primary);
+         color: var(--color-neutral-800);
+         text-shadow: none;
+      }
+    
+      ::-moz-selection {
+         background-color: var(--color-primary);
+         color: var(--color-neutral-800);
+         text-shadow: none;
+      }
+      
+      a {
+          color: inherit;
+          text-decoration: none;
+      }
+      
+    .button-bg {
+        transition: transform var(--animation-default), background-color 0.2s ease-in-out;
+    } 
+    
+    /* Button & Link letter hovers */
+    .button:hover .single-letter,
+    .link:not(.w--current):hover .single-letter { 
+        transform: translate(0px, -1.25em); 
     }
-}
-
-@media screen and (max-width: 767px) {
+    
+    .button:hover .button-bg { 
+        transform: scale(0.95); 
+    }
+    
+    /* Ensure the default state of the arrow has a transition defined */
+    .main-btn-arrow {
+        transition: transform var(--animation-default); /* Ensure smooth transition for all states */
+    }
+    
+    .button:hover .main-btn-arrow,
+    .button-main:hover .main-btn-arrow {
+        transform: translateX(0.25rem); 
+    }
+    
+     /* ------------------------- Osmo [https://osmo.supply/] ------------------------- */
+        /* ------------------------- Variables -------------------------------------------------- */
+    
+    
+    
+    
+    
+    html, body {
+      width: 100%;
+      height: auto !important;
+      min-height: 100%;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    
+    html.lenis {
+      height: auto;
+    }
+    
+    .lenis.lenis-smooth {
+      scroll-behavior: auto;
+    }
+    
+    .lenis.lenis-smooth [data-lenis-prevent] {
+      overscroll-behavior: contain;
+    }
+    
+    .lenis.lenis-stopped {
+      overflow: hidden;
+    }
+    
+    .lenis.lenis-scrolling iframe {
+      pointer-events: none;
+    } 
+    
+    .mask p,
+    .single-line{
+        transform:translate3d(0px, 120%, 0px);
+    }
+    
+      body {
+      transition: background-color 0.4s ease;
+      /* Smooth transition for background-color */
+    }
+    
+    .menu_link_text {
+      position: relative;
+    }
+    
+    .menu_link_text::before,
+    .menu_link_text::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      opacity: 0;
+      transition: opacity 0.5s cubic-bezier(.25, .46, .45, .94);
+    }
+    
+    .menu_link_text::before {
+      left: -10px;
+      content: "[";
+    }
+    
+    .menu_link_text::after {
+      right: -10px;
+      content: "]";
+    }
+    
+    .menu_link_wrap:hover .menu_link_text::before,
+    .menu_link_wrap:hover .menu_link_text::after,
+    .menu_link_wrap.current .menu_link_text::before,
+    .menu_link_wrap.current .menu_link_text::after {
+      opacity: 1;
+    }
+    
+    .button:hover .button-bg {
+      background-color: rgba(75, 75, 75, 0.9);
+    }
+    
+    /* Placeholder */
+    .vimeo-bg[data-vimeo-activated="true"][data-vimeo-loaded="true"] .vimeo-bg__placeholder {
+      opacity: 0;
+      transition-delay: 0.2s;
+    }
+    
+    /* Fade the links that are not active */
+    .tab-content__bottom:has(.tab-content__item.active) .tab-content__item:not(.active) {
+      opacity: 0.5;
+    }
+    
+    @media (hover:hover) and (pointer:fine) {
+    
+      .tab-content__item:not(.active):hover .tab-content__item-bottom {
+        background-color: rgba(0, 0, 0, 0.75)
+      }
+    
+      .tab-content__item:not(.active):hover .content-item__nr {
+        transform: translate(25%, 0px)
+      }
+    
+    }
+    
+    /* Slider styles */
+    .slider-main_button.is-disabled {
+      opacity: 0.3;
+      pointer-events: none;
+    }
+    
+    .slider-main_arrow.is-disabled {
+      background-color: #1a1a1a;
+      color: #464646;
+    }
+    
+    .swiper-slide.is-slider-testimonial.is-active {
+      opacity: 100%;
+    }
+    
+    .swiper-slide.is-slider-testimonial.is-active {
+      transform: scale(1.05);
+      transition: transform 0.5s cubic-bezier(.25, .46, .45, .94);
+    }
+    
+    /* Cursor styles */
+    body:has([data-cursor]:hover) .cursor {
+      opacity: 1;
+    }
+    
     .cursor {
-        display: none;
+      position: fixed;
+      /* Ensure the cursor is positioned relative to the viewport */
+      pointer-events: none;
+      /* Prevent interference with mouse events */
+      -webkit-font-feature-settings: "ss14" 1;
+      /* Enable Stylistic Set 14 for WebKit browsers */
+      -moz-font-feature-settings: "ss14" 1;
+      /* Enable Stylistic Set 14 for Firefox */
+      -ms-font-feature-settings: "ss14" 1;
+      /* Enable Stylistic Set 14 for IE */
+      font-feature-settings: "ss14" 1;
+      /* Enable Stylistic Set 14 */
     }
-}
-
-/* Menu Link Styles */
-.menu_link_text {
-    position: relative;
-}
-
-.menu_link_text::before,
-.menu_link_text::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    opacity: 0;
-    transition: opacity 0.5s var(--cubic-default);
-}
-
-.menu_link_text::before {
-    left: -10px;
-    content: "[";
-}
-
-.menu_link_text::after {
-    right: -10px;
-    content: "]";
-}
-
-.menu_link_wrap:hover .menu_link_text::before,
-.menu_link_wrap:hover .menu_link_text::after,
-.menu_link_wrap.current .menu_link_text::before,
-.menu_link_wrap.current .menu_link_text::after {
-    opacity: 1;
-}
-
-/* Button Styles */
-.button:hover .button-bg {
-    background-color: var(--color-neutral-700);
-    transform: scale(0.95);
-}
-
-.button-bg {
-    transition: transform 0.5s var(--cubic-default);
-}
-
-.button.secondary .button-bg {
-    background-color: var(--color-neutral-700);
-}
-
-/* Vimeo Background Styles */
-.vimeo-bg[data-vimeo-activated="true"][data-vimeo-loaded="true"] .vimeo-bg__placeholder {
-    opacity: 0;
-    transition-delay: 0.2s;
-}
-
-/* Tab Content Styles */
-.tab-content__bottom:has(.tab-content__item.active) .tab-content__item:not(.active) {
-    opacity: 0.5;
-}
-
-@media (hover:hover) and (pointer:fine) {
-    .tab-content__item:not(.active):hover .tab-content__item-bottom {
-        background-color: rgba(0, 0, 0, 0.75);
+    
+    .button.secondary .button-bg {
+      background-color: var(--color-neutral-700);
     }
-
-    .tab-content__item:not(.active):hover .content-item__nr {
-        transform: translate(25%, 0px);
+    
+    .button-bg {
+      transition: transform 0.5s var(--cubic-default);
     }
-}
-
-/* Slider Styles */
-.slider-main_button.is-disabled {
-    opacity: 0.3;
-    pointer-events: none;
-}
-
-.slider-main_arrow.is-disabled {
-    background-color: #1a1a1a;
-    color: #464646;
-}
-
-.swiper-slide.is-slider-testimonial.is-active {
-    opacity: 100%;
-    transform: scale(1.05);
-    transition: transform 0.5s var(--cubic-default);
-}
-
-/* Enhanced Cursor Styles */
-body:has([data-cursor]:hover) .cursor {
-    opacity: 1;
-}
-
-/* Testimonial Slide Styles */
-.slider-testimonial_component .swiper-slide.is-active {
-    position: relative;
-}
-
-.slider-testimonial_component .swiper-slide.is-active::before,
-.slider-testimonial_component .swiper-slide.is-active::after {
-    display: block;
-    content: "";
-    width: 16px;
-    height: 100%;
-    position: absolute;
-    top: 6px;
-    border-top: 1px solid var(--color--button-background);
-}
-
-.slider-testimonial_component .swiper-slide.is-active::before {
-    left: 0px;
-    border-left: 1px solid var(--color--button-background);
-}
-
-.slider-testimonial_component .swiper-slide.is-active::after {
-    right: 0px;
-    border-right: 1px solid var(--color--button-background);
-}
-
-.slider-testimonial_component .swiper-slide.is-active::before {
-    bottom: 0px;
-    border-bottom: 1px solid var(--color--button-background);
-}
-
-/* Heading Styles */
-.offset-heading-container {
-    grid-column: 1 / span 9;
-}
-
-.h-display {
-    display: block;
-}
-
-.first-line {
-    margin-left: calc((2 * (100% / 12)) + 0.8em);
-    display: inline-block;
-    white-space: nowrap;
-}
-
-.no-break {
-    white-space: nowrap;
-}
-
-.split-scroll {
-    white-space: normal;
-}
-
-/* Footer Form Field Styles */
-.footer-form-field {
-    position: relative;
-}
-
-.footer-form-field::before,
-.footer-form-field::after {
-    display: block;
-    content: "";
-    width: 10px;
-    height: 100%;
-    position: absolute;
-    border: 1px solid var(--color--button-background);
-}
-
-.footer-form-field::before {
-    top: 6px;
-    left: 0px;
-    border-right: none;
-    border-bottom: none;
-}
-
-.footer-form-field::after {
-    top: 6px;
-    right: 0px;
-    border-left: none;
-    border-bottom: none;
-}
-
-/* Marquee Animation */
-@keyframes translateX {
-    to {
+    
+    .button:hover .button-bg {
+      transform: scale(0.95);
+    }
+    
+    /* Style for the testimonial slide */
+    .slider-testimonial_component .swiper-slide.is-active {
+      position: relative;
+      /* Setting relative positioning for absolute child elements */
+    
+      &:before {
+        display: block;
+        content: "";
+        width: 16px;
+        height: 100%;
+        position: absolute;
+        top: 6px;
+        /* Top left corner */
+        left: 0px;
+        border-top: 1px solid var(--color--button-background);
+        border-left: 1px solid var(--color--button-background);
+      }
+    
+      &:after {
+        display: block;
+        content: "";
+        width: 16px;
+        height: 100%;
+        position: absolute;
+        top: 6px;
+        /* Top right corner */
+        right: 0px;
+        border-top: 1px solid var(--color--button-background);
+        border-right: 1px solid var(--color--button-background);
+      }
+    
+      &:before {
+        display: block;
+        content: "";
+        width: 16px;
+        height: 100%;
+        position: absolute;
+        bottom: 0px;
+        /* Bottom left corner */
+        left: 0px;
+        border-bottom: 1px solid var(--color--button-background);
+        border-left: 1px solid var(--color--button-background);
+      }
+    
+      &:after {
+        display: block;
+        content: "";
+        width: 16px;
+        height: 100%;
+        position: absolute;
+        bottom: 0px;
+        /* Bottom right corner */
+        right: 0px;
+        border-bottom: 1px solid var(--color--button-background);
+        border-right: 1px solid var(--color--button-background);
+      }
+    }
+    
+    .offset-heading-container {
+      grid-column: 1 / span 9;
+      /* Ensure proper grid positioning */
+    }
+    
+    .h-display {
+      display: block;
+      /* Ensure it's treated as a block */
+    }
+    
+    .first-line {
+      margin-left: calc((2 * (100% / 12)) + 0.8em);
+      /* Inset first line by 2 columns */
+      display: inline-block;
+      /* Allows margin to take effect */
+      white-space: nowrap;
+      /* Keep the first line together */
+    }
+    
+    .no-break {
+      white-space: nowrap;
+      /* Keep words together */
+    }
+    
+    /* Optionally, you can style the rest of the text */
+    .split-scroll {
+      white-space: normal;
+      /* Allow subsequent lines to wrap */
+    }
+    
+    /* Style for the testimonial slide */
+    .footer-form-field {
+      position: relative;
+      /* Setting relative for absolute child elements */
+    
+      &:before {
+        display: block;
+        content: "";
+        width: 10px;
+        height: 100%;
+        position: absolute;
+        top: 6px;
+        /* Top left corner */
+        left: 0px;
+        border-top: 1px solid #F7F5F2;
+        border-left: 1px solid #F7F5F2;
+      }
+    
+      &:after {
+        display: block;
+        content: "";
+        width: 10px;
+        height: 100%;
+        position: absolute;
+        top: 6px;
+        /* Top right corner */
+        right: 0px;
+        border-top: 1px solid #F7F5F2;
+        border-right: 1px solid #F7F5F2;
+      }
+    
+      &:before {
+        display: block;
+        content: "";
+        width: 10px;
+        height: 100%;
+        position: absolute;
+        bottom: 0px;
+        /* Bottom left corner */
+        left: 0px;
+        border-bottom: 1px solid #F7F5F2;
+        border-left: 1px solid #F7F5F2;
+      }
+    
+      &:after {
+        display: block;
+        content: "";
+        width: 10px;
+        height: 100%;
+        position: absolute;
+        bottom: 0px;
+        /* Bottom right corner */
+        right: 0px;
+        border-bottom: 1px solid #F7F5F2;
+        border-right: 1px solid #F7F5F2;
+      }
+    }
+    
+    /* CSS Keyframe Animation */
+    @keyframes translateX {
+      to {
         transform: translateX(-100%);
+      }
     }
-}
-
-[data-css-marquee-list] {
-    animation: translateX 30s linear infinite;
-    animation-play-state: paused;
-} 
-
-/* Animate Accordion Bottom Grid */
-.accordion-css__item-bottom {
-    transition: grid-template-rows 0.6s cubic-bezier(0.625, 0.05, 0, 1);
-  }
-  
-  [data-accordion-status="active"] .accordion-css__item-bottom {
-    grid-template-rows: 1fr;
-  }
-  
-  /* Animate Icon */
-  .accordion-css__item-icon {
-    transition: transform 0.6s cubic-bezier(0.625, 0.05, 0, 1);
-  }
-  
-  [data-accordion-status="active"] .accordion-css__item-icon {
-    transform: rotate(0.001deg);
-  }
+    
+    [data-css-marquee-list] {
+      animation: translateX 30s linear;
+      animation-iteration-count: infinite;
+      animation-play-state: paused;
+    }
+    
+    /* Animate Accordion Bottom Grid */
+    .accordion-css__item-bottom {
+        transition: grid-template-rows 0.6s cubic-bezier(0.625, 0.05, 0, 1);
+      }
+      
+      [data-accordion-status="active"] .accordion-css__item-bottom {
+        grid-template-rows: 1fr;
+      }
+      
+      /* Animate Icon */
+      .accordion-css__item-icon {
+        transition: transform 0.6s cubic-bezier(0.625, 0.05, 0, 1);
+      }
+      
+      [data-accordion-status="active"] .accordion-css__item-icon {
+        transform: rotate(0.001deg);
+      } 
+      
+    /* Modal */
+    [data-modal-group-status] {
+      transition: all 0.2s linear;
+    }
+    
+    [data-modal-group-status="active"] {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    [data-modal-name][data-modal-status="active"] {
+      display: flex;
+    }  
+      
+    /* Work Item Hover Effects */
+    .work-item-wrap {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .work-thumb_img,
+    .work-hover_img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: opacity 0.3s cubic-bezier(0.25,0.1,0.25,1);
+    }
+    
+    .work-hover_img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: 0;
+    }  
