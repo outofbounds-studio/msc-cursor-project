@@ -839,6 +839,7 @@
             afterEnter() {
                 components.initAccordionCSS();
                 components.initModalBasic();
+                initMaskTextScrollReveal();
                 initNumberTickerAnimation();
             },
             afterLeave() {
@@ -971,65 +972,72 @@
         }
     }
 
-    // === GSAP Number Ticker Animation ===
+    // === GSAP Number Ticker Animation with ScrollTrigger ===
+    function animateNumberTicker(el) {
+        const finalValue = parseInt(el.getAttribute('data-animate-number'), 10);
+        const duration = parseFloat(el.getAttribute('data-animate-duration')) || 1.2;
+        const digits = finalValue.toString().length;
+        el.innerHTML = '';
+        const lastDigits = Array(digits).fill('0');
+        for (let i = 0; i < digits; i++) {
+            const digitSpan = document.createElement('span');
+            digitSpan.className = 'digit';
+            digitSpan.innerHTML = `
+                <span class="digit-inner">
+                    <span class="digit-old">0</span>
+                    <span class="digit-new">0</span>
+                </span>
+            `;
+            el.appendChild(digitSpan);
+        }
+        let obj = { value: 0 };
+        gsap.to(obj, {
+            value: finalValue,
+            duration: duration,
+            ease: "power2.out",
+            onUpdate: () => {
+                let current = Math.floor(obj.value).toString().padStart(digits, '0');
+                let next = Math.ceil(obj.value).toString().padStart(digits, '0');
+                el.querySelectorAll('.digit').forEach((digitEl, i) => {
+                    const inner = digitEl.querySelector('.digit-inner');
+                    const oldDigitSpan = inner.querySelector('.digit-old');
+                    const newDigitSpan = inner.querySelector('.digit-new');
+                    const oldDigit = lastDigits[i];
+                    const currentDigit = current[i];
+                    const nextDigit = next[i];
+
+                    if (currentDigit !== oldDigit) {
+                        oldDigitSpan.textContent = oldDigit;
+                        newDigitSpan.textContent = currentDigit;
+                        gsap.fromTo(inner, 
+                            { y: '0em' }, 
+                            { 
+                                y: '-1em', 
+                                duration: 0.3, 
+                                ease: "power2.out", 
+                                delay: i * 0.12,
+                                onComplete: () => {
+                                    oldDigitSpan.textContent = currentDigit;
+                                    newDigitSpan.textContent = currentDigit;
+                                    gsap.set(inner, { y: '0em' });
+                                }
+                            }
+                        );
+                        lastDigits[i] = currentDigit;
+                    }
+                });
+            }
+        });
+    }
+
     function initNumberTickerAnimation() {
         document.querySelectorAll('[data-animate-number]').forEach(el => {
-            const finalValue = parseInt(el.getAttribute('data-animate-number'), 10);
-            const duration = parseFloat(el.getAttribute('data-animate-duration')) || 1.2;
-            const digits = finalValue.toString().length;
-            el.innerHTML = '';
-            // Store last digit values for smoothness
-            const lastDigits = Array(digits).fill('0');
-            for (let i = 0; i < digits; i++) {
-                const digitSpan = document.createElement('span');
-                digitSpan.className = 'digit';
-                digitSpan.innerHTML = `
-                    <span class="digit-inner">
-                        <span class="digit-old">0</span>
-                        <span class="digit-new">0</span>
-                    </span>
-                `;
-                el.appendChild(digitSpan);
-            }
-            let obj = { value: 0 };
-            gsap.to(obj, {
-                value: finalValue,
-                duration: duration,
-                ease: "power2.out",
-                onUpdate: () => {
-                    let current = Math.floor(obj.value).toString().padStart(digits, '0');
-                    let next = Math.ceil(obj.value).toString().padStart(digits, '0');
-                    el.querySelectorAll('.digit').forEach((digitEl, i) => {
-                        const inner = digitEl.querySelector('.digit-inner');
-                        const oldDigitSpan = inner.querySelector('.digit-old');
-                        const newDigitSpan = inner.querySelector('.digit-new');
-                        const oldDigit = lastDigits[i];
-                        const currentDigit = current[i];
-                        const nextDigit = next[i];
-
-                        // Only animate if the digit has changed
-                        if (currentDigit !== oldDigit) {
-                            oldDigitSpan.textContent = oldDigit;
-                            newDigitSpan.textContent = currentDigit;
-                            gsap.fromTo(inner, 
-                                { y: '0em' }, 
-                                { 
-                                    y: '-1em', 
-                                    duration: 0.3, 
-                                    ease: "power2.out", 
-                                    delay: i * 0.12,
-                                    onComplete: () => {
-                                        oldDigitSpan.textContent = currentDigit;
-                                        newDigitSpan.textContent = currentDigit;
-                                        gsap.set(inner, { y: '0em' });
-                                    }
-                                }
-                            );
-                            lastDigits[i] = currentDigit;
-                        }
-                    });
-                }
+            ScrollTrigger.create({
+                trigger: el,
+                start: 'top 80%',
+                once: true,
+                onEnter: () => animateNumberTicker(el)
             });
         });
     }
-})(); 
+})();
