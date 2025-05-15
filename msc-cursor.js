@@ -972,7 +972,23 @@
         }
     }
 
-    // === GSAP Number Ticker Animation with ScrollTrigger ===
+    // === GSAP Number Ticker Animation with ScrollTrigger and Dynamic Digit Width ===
+    function setDigitWidth(digitEl, digit) {
+        // Create a temporary span to measure the digit width
+        const temp = document.createElement('span');
+        temp.style.visibility = 'hidden';
+        temp.style.position = 'absolute';
+        temp.style.font = 'inherit';
+        temp.style.fontSize = 'inherit';
+        temp.style.fontWeight = 'inherit';
+        temp.style.letterSpacing = 'inherit';
+        temp.textContent = digit;
+        document.body.appendChild(temp);
+        const width = temp.offsetWidth;
+        document.body.removeChild(temp);
+        digitEl.style.width = width + 'px';
+    }
+
     function animateNumberTicker(el) {
         const finalValue = parseInt(el.getAttribute('data-animate-number'), 10);
         const duration = parseFloat(el.getAttribute('data-animate-duration')) || 1.2;
@@ -989,6 +1005,7 @@
                 </span>
             `;
             el.appendChild(digitSpan);
+            setDigitWidth(digitSpan, '0'); // Set initial width
         }
         let obj = { value: 0 };
         gsap.to(obj, {
@@ -1009,6 +1026,7 @@
                     if (currentDigit !== oldDigit) {
                         oldDigitSpan.textContent = oldDigit;
                         newDigitSpan.textContent = currentDigit;
+                        setDigitWidth(digitEl, currentDigit); // Dynamically set width
                         gsap.fromTo(inner, 
                             { y: '0em' }, 
                             { 
@@ -1024,6 +1042,9 @@
                             }
                         );
                         lastDigits[i] = currentDigit;
+                    } else {
+                        // Always ensure width is correct for rolling effect
+                        setDigitWidth(digitEl, currentDigit);
                     }
                 });
             }
