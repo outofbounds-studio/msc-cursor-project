@@ -975,13 +975,12 @@
     function initNumberTickerAnimation() {
         document.querySelectorAll('[data-animate-number]').forEach(el => {
             const finalValue = parseInt(el.getAttribute('data-animate-number'), 10);
-            const duration = parseFloat(el.getAttribute('data-animate-duration')) || 2;
+            const duration = parseFloat(el.getAttribute('data-animate-duration')) || 1.2;
             const digits = finalValue.toString().length;
             el.innerHTML = '';
             for (let i = 0; i < digits; i++) {
                 const digitSpan = document.createElement('span');
                 digitSpan.className = 'digit';
-                // Start with two stacked spans, both showing 0
                 digitSpan.innerHTML = `
                     <span class="digit-inner">
                         <span class="digit-old">0</span>
@@ -994,31 +993,25 @@
             gsap.to(obj, {
                 value: finalValue,
                 duration: duration,
-                ease: "power3.out",
+                ease: "power2.out",
                 onUpdate: () => {
-                    let current = Math.floor(obj.value).toString().padStart(digits, '0');
+                    let current = obj.value;
+                    let currentStr = Math.floor(current).toString().padStart(digits, '0');
+                    let nextStr = Math.ceil(current).toString().padStart(digits, '0');
+                    let frac = current - Math.floor(current);
+
                     el.querySelectorAll('.digit').forEach((digitEl, i) => {
                         const inner = digitEl.querySelector('.digit-inner');
                         const oldDigitSpan = inner.querySelector('.digit-old');
                         const newDigitSpan = inner.querySelector('.digit-new');
-                        const oldDigit = oldDigitSpan.textContent;
-                        const newDigit = current[i];
-                        if (newDigit !== oldDigit) {
-                            // Set up the new digit below the old one
-                            newDigitSpan.textContent = newDigit;
-                            gsap.set(inner, { y: 0 });
-                            // Animate the inner container up by 1em
-                            gsap.to(inner, {
-                                y: '-1em',
-                                duration: 0.3,
-                                ease: "power3.out",
-                                onComplete: () => {
-                                    // After animation, reset position and update old digit
-                                    oldDigitSpan.textContent = newDigit;
-                                    gsap.set(inner, { y: 0 });
-                                }
-                            });
-                        }
+                        const oldDigit = currentStr[i];
+                        const newDigit = nextStr[i];
+
+                        oldDigitSpan.textContent = oldDigit;
+                        newDigitSpan.textContent = newDigit;
+
+                        // Animate the inner container smoothly based on the fractional part
+                        gsap.set(inner, { y: (-frac * 1) + 'em' });
                     });
                 }
             });
