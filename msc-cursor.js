@@ -1010,8 +1010,14 @@
                         oldDigitSpan.textContent = oldDigit;
                         newDigitSpan.textContent = newDigit;
 
-                        // Animate the inner container smoothly based on the fractional part
-                        gsap.set(inner, { y: (-frac * 1) + 'em' });
+                        // Stagger: each digit animates with a delay based on its index
+                        const staggerDelay = i * 0.12; // 0.12s between each digit
+                        gsap.to(inner, {
+                            y: (-frac * 1) + 'em',
+                            duration: 0.2,
+                            ease: "power2.out",
+                            delay: staggerDelay
+                        });
                     });
                 }
             });
