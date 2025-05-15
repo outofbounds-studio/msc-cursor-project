@@ -978,11 +978,20 @@
         const temp = document.createElement('span');
         temp.style.visibility = 'hidden';
         temp.style.position = 'absolute';
-        temp.style.font = 'inherit';
-        temp.style.fontSize = 'inherit';
-        temp.style.fontWeight = 'inherit';
-        temp.style.letterSpacing = 'inherit';
+        temp.style.whiteSpace = 'pre';
         temp.textContent = digit;
+
+        // Copy computed styles from the digitEl
+        const computed = window.getComputedStyle(digitEl);
+        temp.style.font = computed.font;
+        temp.style.fontSize = computed.fontSize;
+        temp.style.fontWeight = computed.fontWeight;
+        temp.style.fontFamily = computed.fontFamily;
+        temp.style.letterSpacing = computed.letterSpacing;
+        temp.style.fontStyle = computed.fontStyle;
+        temp.style.textTransform = computed.textTransform;
+        temp.style.lineHeight = computed.lineHeight;
+
         document.body.appendChild(temp);
         const width = temp.offsetWidth;
         document.body.removeChild(temp);
