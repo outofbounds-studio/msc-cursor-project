@@ -988,7 +988,7 @@
             gsap.to(obj, {
                 value: finalValue,
                 duration: duration,
-                ease: "power1.out",
+                ease: "power4.out",
                 onUpdate: () => {
                     let current = Math.floor(obj.value).toString().padStart(digits, '0');
                     el.querySelectorAll('.digit').forEach((digitEl, i) => {
@@ -1007,7 +1007,8 @@
                                     gsap.to(inner, {
                                         y: 0,
                                         opacity: 1,
-                                        duration: 0.2
+                                        duration: 0.2,
+                                        ease: "power4.out"
                                     });
                                 }
                             });
