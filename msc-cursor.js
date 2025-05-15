@@ -978,6 +978,8 @@
             const duration = parseFloat(el.getAttribute('data-animate-duration')) || 1.2;
             const digits = finalValue.toString().length;
             el.innerHTML = '';
+            // Store last digit values for smoothness
+            const lastDigits = Array(digits).fill('0');
             for (let i = 0; i < digits; i++) {
                 const digitSpan = document.createElement('span');
                 digitSpan.className = 'digit';
@@ -995,29 +997,36 @@
                 duration: duration,
                 ease: "power2.out",
                 onUpdate: () => {
-                    let current = obj.value;
-                    let currentStr = Math.floor(current).toString().padStart(digits, '0');
-                    let nextStr = Math.ceil(current).toString().padStart(digits, '0');
-                    let frac = current - Math.floor(current);
-
+                    let current = Math.floor(obj.value).toString().padStart(digits, '0');
+                    let next = Math.ceil(obj.value).toString().padStart(digits, '0');
                     el.querySelectorAll('.digit').forEach((digitEl, i) => {
                         const inner = digitEl.querySelector('.digit-inner');
                         const oldDigitSpan = inner.querySelector('.digit-old');
                         const newDigitSpan = inner.querySelector('.digit-new');
-                        const oldDigit = currentStr[i];
-                        const newDigit = nextStr[i];
+                        const oldDigit = lastDigits[i];
+                        const currentDigit = current[i];
+                        const nextDigit = next[i];
 
-                        oldDigitSpan.textContent = oldDigit;
-                        newDigitSpan.textContent = newDigit;
-
-                        // Stagger: each digit animates with a delay based on its index
-                        const staggerDelay = i * 0.12; // 0.12s between each digit
-                        gsap.to(inner, {
-                            y: (-frac * 1) + 'em',
-                            duration: 0.2,
-                            ease: "power2.out",
-                            delay: staggerDelay
-                        });
+                        // Only animate if the digit has changed
+                        if (currentDigit !== oldDigit) {
+                            oldDigitSpan.textContent = oldDigit;
+                            newDigitSpan.textContent = currentDigit;
+                            gsap.fromTo(inner, 
+                                { y: '0em' }, 
+                                { 
+                                    y: '-1em', 
+                                    duration: 0.3, 
+                                    ease: "power2.out", 
+                                    delay: i * 0.12,
+                                    onComplete: () => {
+                                        oldDigitSpan.textContent = currentDigit;
+                                        newDigitSpan.textContent = currentDigit;
+                                        gsap.set(inner, { y: '0em' });
+                                    }
+                                }
+                            );
+                            lastDigits[i] = currentDigit;
+                        }
                     });
                 }
             });
