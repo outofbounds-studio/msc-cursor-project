@@ -922,7 +922,9 @@
 
     // SplitText/ScrollTrigger heading animation
     function initMaskTextScrollReveal() {
+        console.log('initMaskTextScrollReveal running');
         document.querySelectorAll('[data-split="heading"]').forEach(heading => {
+            console.log('Found heading:', heading);
             // Reset CSS visibility to prevent FOUC
             gsap.set(heading, { autoAlpha: 1 });
             // Find the split type, the default is 'lines'
@@ -940,6 +942,7 @@
                 wordsClass: 'word',
                 charsClass: 'letter',
                 onSplit: function(instance) {
+                    console.log('onSplit called:', instance);
                     animate(instance, heading, type);
                 }
             });
