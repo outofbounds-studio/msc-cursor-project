@@ -956,22 +956,18 @@
             };
             const targets = instance[type];
             const config = splitConfig[type];
-            // Step 1: Log targets and type
-            console.log('Animating targets:', targets);
-            console.log('Type:', type);
-            console.log('Instance:', instance);
-            // Step 2: Try animating the heading directly
-            gsap.from(heading, { y: 100, opacity: 0, duration: 1 });
-            // Step 2: Try animating the split elements directly
-            gsap.from(heading.querySelectorAll('.line'), { y: 100, opacity: 0, duration: 1, stagger: 0.1 });
-            // Original animation (keep for reference)
-            // gsap.from(targets, {
-            //     y: 100,
-            //     opacity: 0,
-            //     duration: config.duration,
-            //     stagger: config.stagger,
-            //     ease: 'expo.out'
-            // });
+            gsap.from(targets, {
+                y: 100,
+                opacity: 0,
+                duration: config.duration,
+                stagger: config.stagger,
+                ease: 'expo.out',
+                scrollTrigger: {
+                    trigger: heading,
+                    start: 'top 80%',
+                    once: true
+                }
+            });
         }
     }
 })(); 
