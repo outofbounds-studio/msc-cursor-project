@@ -922,7 +922,6 @@
                 animations.stylesScrub();
                 components.initSliders();
                 components.initTabSystem();
-                components.initModalBasic();
                 components.initAccordionCSS();
                 
                 // Initialize animations
@@ -1033,13 +1032,29 @@
             })),
             // Collection list views (work, styles, news)
             {
-                namespace: /^(work|styles|news)$/,
-                ...pages.work // Using work as base template for collection lists
+                namespace: 'work',
+                ...pages.work
+            },
+            {
+                namespace: 'styles',
+                ...pages.styles
+            },
+            {
+                namespace: 'news',
+                ...pages.news
             },
             // Individual item views
             {
-                namespace: /^(work|style|news)-item$/,
-                ...pages['work-item'] // Using work-item as base template
+                namespace: 'work-item',
+                ...pages['work-item']
+            },
+            {
+                namespace: 'style-item',
+                ...pages['style-item']
+            },
+            {
+                namespace: 'news-item',
+                ...pages['news-item']
             }
         ]
     };
