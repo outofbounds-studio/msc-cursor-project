@@ -847,16 +847,19 @@
                 ScrollTrigger.getAll().forEach(trigger => trigger.kill());
             }
         },
+        
+        // Collection List Pages (formerly static pages)
         work: {
             beforeEnter() {
-                console.log("Entering work page...");
+                console.log("Entering Work collection list page...");
                 utils.theme.startCheck();
                 components.initCustomCursor();
-                //components.setupThumbnailHoverEffect('.work-item-wrap', '.work-thumb_img', '.work-hover_img');
-                if (typeof Jetboost !== 'undefined') Jetboost.ReInit();
-                components.initTestimonial();
+                animations.initScrollTriggers();
                 components.initSliders();
+                components.initTestimonial();
                 
+                // Initialize collection-specific components
+                if (typeof Jetboost !== 'undefined') Jetboost.ReInit();
                 if (typeof Webflow !== 'undefined') {
                     Webflow.destroy();
                     Webflow.ready();
@@ -864,19 +867,123 @@
                 }
             },
             afterLeave() {
-                console.log("Leaving work page...");
+                console.log("Leaving Work collection list page...");
                 ScrollTrigger.getAll().forEach(trigger => trigger.kill());
             }
         },
+        
         styles: {
             beforeEnter() {
-                console.log("Entering styles page...");
-                animations.stylesScrub();
+                console.log("Entering Styles collection list page...");
+                utils.theme.startCheck();
                 components.initCustomCursor();
                 animations.initScrollTriggers();
+                animations.stylesScrub();
+                components.initSliders();
+                
+                if (typeof Webflow !== 'undefined') {
+                    Webflow.destroy();
+                    Webflow.ready();
+                }
             },
             afterLeave() {
-                console.log("Leaving styles page...");
+                console.log("Leaving Styles collection list page...");
+                ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+            }
+        },
+        
+        news: {
+            beforeEnter() {
+                console.log("Entering News collection list page...");
+                utils.theme.startCheck();
+                components.initCustomCursor();
+                animations.initScrollTriggers();
+                components.initSliders();
+                
+                if (typeof Webflow !== 'undefined') {
+                    Webflow.destroy();
+                    Webflow.ready();
+                }
+            },
+            afterLeave() {
+                console.log("Leaving News collection list page...");
+                ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+            }
+        },
+        
+        // Individual Item Pages
+        'work-item': {
+            beforeEnter() {
+                console.log("Entering Work Item page...");
+                utils.theme.startCheck();
+                components.initCustomCursor();
+                animations.initScrollTriggers();
+                components.initVimeoBGVideo();
+                components.initSliders();
+                components.initModalBasic();
+                components.initAccordionCSS();
+                
+                // Initialize animations
+                initMaskTextScrollReveal();
+                initNumberTickerAnimation();
+                
+                if (typeof Webflow !== 'undefined') {
+                    Webflow.destroy();
+                    Webflow.ready();
+                }
+            },
+            afterLeave() {
+                console.log("Leaving Work Item page...");
+                ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+            }
+        },
+        
+        'style-item': {
+            beforeEnter() {
+                console.log("Entering Style Item page...");
+                utils.theme.startCheck();
+                components.initCustomCursor();
+                animations.initScrollTriggers();
+                components.initVimeoBGVideo();
+                components.initSliders();
+                components.initModalBasic();
+                components.initAccordionCSS();
+                
+                // Initialize animations
+                initMaskTextScrollReveal();
+                initNumberTickerAnimation();
+                
+                if (typeof Webflow !== 'undefined') {
+                    Webflow.destroy();
+                    Webflow.ready();
+                }
+            },
+            afterLeave() {
+                console.log("Leaving Style Item page...");
+                ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+            }
+        },
+        
+        'news-item': {
+            beforeEnter() {
+                console.log("Entering News Item page...");
+                utils.theme.startCheck();
+                components.initCustomCursor();
+                animations.initScrollTriggers();
+                components.initVimeoBGVideo();
+                components.initModalBasic();
+                components.initAccordionCSS();
+                
+                // Initialize animations
+                initMaskTextScrollReveal();
+                
+                if (typeof Webflow !== 'undefined') {
+                    Webflow.destroy();
+                    Webflow.ready();
+                }
+            },
+            afterLeave() {
+                console.log("Leaving News Item page...");
                 ScrollTrigger.getAll().forEach(trigger => trigger.kill());
             }
         }
@@ -914,10 +1021,25 @@
                 return tl;
             }
         }],
-        views: Object.entries(pages).map(([namespace, handlers]) => ({
-            namespace,
-            ...handlers
-        }))
+        views: [
+            // Static page views (home and about)
+            ...Object.entries(pages).filter(([key]) => 
+                ['home', 'about'].includes(key)
+            ).map(([namespace, handlers]) => ({
+                namespace,
+                ...handlers
+            })),
+            // Collection list views (work, styles, news)
+            {
+                namespace: /^(work|styles|news)$/,
+                ...pages.work // Using work as base template for collection lists
+            },
+            // Individual item views
+            {
+                namespace: /^(work|style|news)-item$/,
+                ...pages['work-item'] // Using work-item as base template
+            }
+        ]
     };
 
     // SplitText/ScrollTrigger heading animation
