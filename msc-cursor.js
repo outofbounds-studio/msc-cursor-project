@@ -1262,7 +1262,7 @@
                     stagger: 0.015,
                     scrambleText: {
                         text: "{original}",
-                        chars: isAlternative ? '▯|' : 'upperCase',
+                        chars: isAlternative ? '<▯>|' : 'upperCase',
                         speed: 0.95,
                     },
                     scrollTrigger: {
