@@ -103,6 +103,7 @@
         // Global Barba hook to run on every page transition
         barba.hooks.afterEnter(() => {
             initMaskTextScrollReveal();
+            initScrambleText();
         });
 
         console.log('GSAP:', typeof gsap !== 'undefined' ? 'Loaded' : 'Not loaded');
@@ -822,6 +823,7 @@
                 components.initCustomCursor();
                 animations.initScrollTriggers();
                 animations.initSplitTextAnimation();
+                initScrambleText();
             },
             afterLeave() {
                 console.log("Leaving home page...");
@@ -835,6 +837,7 @@
                 components.initCustomCursor();
                 animations.initScrollTriggers();
                 components.initTabSystem();
+                initScrambleText();
             },
             afterEnter() {
                 components.initAccordionCSS();
@@ -865,6 +868,7 @@
                     Webflow.ready();
                     Webflow.require('tabs').redraw();
                 }
+                initScrambleText();
             },
             afterLeave() {
                 console.log("Leaving Work collection list page...");
@@ -885,6 +889,7 @@
                     Webflow.destroy();
                     Webflow.ready();
                 }
+                initScrambleText();
             },
             afterLeave() {
                 console.log("Leaving Styles collection list page...");
@@ -904,6 +909,7 @@
                     Webflow.destroy();
                     Webflow.ready();
                 }
+                initScrambleText();
             },
             afterLeave() {
                 console.log("Leaving News collection list page...");
@@ -932,6 +938,7 @@
                     Webflow.destroy();
                     Webflow.ready();
                 }
+                initScrambleText();
             },
             afterLeave() {
                 console.log("Leaving Work Item page...");
@@ -958,6 +965,7 @@
                     Webflow.destroy();
                     Webflow.ready();
                 }
+                initScrambleText();
             },
             afterLeave() {
                 console.log("Leaving Style Item page...");
@@ -982,6 +990,7 @@
                     Webflow.destroy();
                     Webflow.ready();
                 }
+                initScrambleText();
             },
             afterLeave() {
                 console.log("Leaving News Item page...");
@@ -1213,5 +1222,95 @@
                 }
             });
         });
+    }
+
+    // === Scramble Text Utilities ===
+    const scramble = {
+        onLoad() {
+            let targets = document.querySelectorAll('[data-scramble="load"]');
+            targets.forEach((target) => {
+                // split into separate words + letters
+                let split = new SplitText(target, {
+                    type: "words, chars",
+                    wordsClass: "word",
+                    charsClass: "char"
+                });
+                gsap.to(split.words, {
+                    duration: 1.2,
+                    stagger: 0.01,
+                    scrambleText: {
+                        text: "{original}",
+                        chars: 'upperCase',
+                        speed: 0.85,
+                    },
+                    onComplete: () => split.revert()
+                });
+            });
+        },
+        onScroll() {
+            let targets = document.querySelectorAll('[data-scramble="scroll"]');
+            targets.forEach((target) => {
+                let isAlternative = target.hasAttribute("data-scramble-alt");
+                let split = new SplitText(target, {
+                    type: "words, chars",
+                    wordsClass: "word",
+                    charsClass: "char"
+                });
+                gsap.to(split.words, {
+                    duration: 1.4,
+                    stagger: 0.015,
+                    scrambleText: {
+                        text: "{original}",
+                        chars: isAlternative ? '▯|' : 'upperCase',
+                        speed: 0.95,
+                    },
+                    scrollTrigger: {
+                        trigger: target,
+                        start: "top bottom",
+                        once: true
+                    },
+                    onComplete: () => split.revert()
+                });
+            });
+        },
+        onHover() {
+            let targets = document.querySelectorAll('[data-scramble-hover="link"]');
+            targets.forEach((target) => {
+                let textEl = target.querySelector('[data-scramble-hover="target"]');
+                if (!textEl) return;
+                let originalText = textEl.textContent;
+                let customHoverText = textEl.getAttribute("data-scramble-text");
+                let split = new SplitText(textEl, {
+                    type: "words, chars",
+                    wordsClass: "word",
+                    charsClass: "char"
+                });
+                target.addEventListener("mouseenter", () => {
+                    gsap.to(textEl, {
+                        duration: 1,
+                        scrambleText: {
+                            text: customHoverText ? customHoverText : originalText,
+                            chars: "◊▯∆|"
+                        }
+                    });
+                });
+                target.addEventListener("mouseleave", () => {
+                    gsap.to(textEl, {
+                        duration: 0.6,
+                        scrambleText: {
+                            text: originalText,
+                            speed: 2,
+                            chars: "◊▯∆"
+                        }
+                    });
+                });
+            });
+        }
+    };
+
+    function initScrambleText() {
+        scramble.onLoad();
+        scramble.onScroll();
+        scramble.onHover();
     }
 })();
