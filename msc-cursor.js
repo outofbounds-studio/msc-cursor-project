@@ -919,7 +919,9 @@
                 components.initCustomCursor();
                 animations.initScrollTriggers();
                 components.initVimeoBGVideo();
+                animations.stylesScrub();
                 components.initSliders();
+                components.initTabSystem();
                 components.initModalBasic();
                 components.initAccordionCSS();
                 
