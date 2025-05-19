@@ -36,7 +36,8 @@
             'https://cdn.jsdelivr.net/npm/gsap@3.11.5/dist/CustomEase.min.js',
             'https://cdn.jsdelivr.net/npm/@barba/core@2.9.7/dist/barba.umd.min.js',
             'https://unpkg.com/lenis@1.1.18/dist/lenis.min.js',
-            'https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js'
+            'https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js',
+            'https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrambleTextPlugin.min.js'
         ];
 
         try {
