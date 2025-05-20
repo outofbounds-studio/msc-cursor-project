@@ -1322,7 +1322,7 @@
         const heading = document.querySelector('.home-hero .h-display');
         if (!heading) return;
         gsap.to(heading, {
-            y: () => window.innerWidth < 768 ? 0 : -150, // less movement on mobile
+            y: () => window.innerWidth < 768 ? 0 : -100, // less movement on mobile
             ease: "none",
             scrollTrigger: {
                 trigger: ".home-hero",
