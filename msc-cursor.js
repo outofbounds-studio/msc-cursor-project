@@ -946,7 +946,12 @@
                 initStickyLinks();
                 // Lightbox gallery init
                 document.querySelectorAll('[data-gallery]').forEach(wrapper => {
-                    createLightbox(wrapper);
+                    createLightbox(wrapper, {
+                        onStart: () => window.lenis?.stop(),
+                        onOpen: () => {},
+                        onClose: () => window.lenis?.start(),
+                        onCloseComplete: () => {}
+                    });
                 });
             },
             afterLeave() {
