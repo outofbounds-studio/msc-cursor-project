@@ -37,7 +37,9 @@
             'https://cdn.jsdelivr.net/npm/@barba/core@2.9.7/dist/barba.umd.min.js',
             'https://unpkg.com/lenis@1.1.18/dist/lenis.min.js',
             'https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js',
-            'https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrambleTextPlugin.min.js'
+            'https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrambleTextPlugin.min.js',
+            'https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js',
+            'https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/Flip.min.js'
         ];
 
         try {
@@ -942,6 +944,10 @@
                 }
                 initScrambleText();
                 initStickyLinks();
+                // Lightbox gallery init
+                document.querySelectorAll('[data-gallery]').forEach(wrapper => {
+                    createLightbox(wrapper);
+                });
             },
             afterLeave() {
                 console.log("Leaving Work Item page...");
@@ -1354,5 +1360,220 @@
                 });
             }
         });
+    }
+
+    // Register GSAP Flip plugin globally
+    if (typeof gsap !== 'undefined' && typeof Flip !== 'undefined') {
+        gsap.registerPlugin(Flip);
+    }
+    gsap.defaults({
+        ease: "power4.inOut",
+        duration: 0.8,
+    });
+
+    // Lightbox function
+    function createLightbox(container, {
+      onStart,
+      onOpen,
+      onClose,
+      onCloseComplete
+    } = {}) {
+      const elements = {
+        wrapper: container.querySelector('[data-lightbox="wrapper"]'),
+        triggers: container.querySelectorAll('[data-lightbox="trigger"]'),
+        triggerParents: container.querySelectorAll('[data-lightbox="trigger-parent"]'),
+        items: container.querySelectorAll('[data-lightbox="item"]'),
+        nav: container.querySelectorAll('[data-lightbox="nav"]'),
+        counter: {
+          current: container.querySelector('[data-lightbox="counter-current"]'),
+          total: container.querySelector('[data-lightbox="counter-total"]')
+        },
+        buttons: {
+          prev: container.querySelector('[data-lightbox="prev"]'),
+          next: container.querySelector('[data-lightbox="next"]'),
+          close: container.querySelector('[data-lightbox="close"]')
+        }
+      };
+      const mainTimeline = gsap.timeline();
+      if (elements.counter.total) {
+        elements.counter.total.textContent = elements.triggers.length;
+      }
+      function closeLightbox() {
+        onClose?.();
+        mainTimeline.clear();
+        gsap.killTweensOf([
+          elements.wrapper, 
+          elements.nav, 
+          elements.triggerParents, 
+          elements.items,
+          container.querySelector('[data-lightbox="original"]')
+        ]);
+        const tl = gsap.timeline({
+          defaults: { ease: "power2.inOut" },
+          onComplete: () => {
+            elements.wrapper.classList.remove('is-active');
+            elements.items.forEach(item => {
+              item.classList.remove('is-active');
+              const lightboxImage = item.querySelector('img');
+              if (lightboxImage) {
+                lightboxImage.style.display = '';
+              }
+            });
+            const originalImg = container.querySelector('[data-lightbox="original"]');
+            if (originalImg) { gsap.set(originalImg, { clearProps: "all" });}
+            const originalParent = container.querySelector('[data-lightbox="original-parent"]');
+            if (originalParent) { originalParent.parentElement.style.removeProperty('height'); }
+            onCloseComplete?.();
+          }
+        });
+        const originalItem = container.querySelector('[data-lightbox="original"]');
+        const originalParent = container.querySelector('[data-lightbox="original-parent"]');
+        if (originalItem && originalParent) {
+          gsap.set(originalItem, { clearProps: "all" });
+          originalParent.appendChild(originalItem);
+          originalParent.removeAttribute('data-lightbox');
+          originalItem.removeAttribute('data-lightbox');
+        }
+        let activeLightboxSlide = container.querySelector('[data-lightbox="item"].is-active')
+        tl.to(elements.triggerParents, {
+          autoAlpha: 1,
+          duration: 0.5,
+          stagger: 0.03,
+          overwrite: true
+        })
+        .to(elements.nav, {
+          autoAlpha: 0,
+          y: "1rem",
+          duration: 0.4,
+          stagger: 0
+        },"<")
+        .to(elements.wrapper, {
+          backgroundColor: "rgba(0,0,0,0)",
+          duration: 0.4
+        }, "<")
+        .to(activeLightboxSlide,{
+          autoAlpha:0,
+          duration: 0.4,
+        },"<")
+        .set([elements.items, activeLightboxSlide, elements.triggerParents],  { clearProps: "all" })
+        mainTimeline.add(tl);
+      }
+      function handleOutsideClick(event) {
+        if (event.detail === 0) {
+          return;
+        }
+        const clickedElement = event.target;
+        const isOutside = !clickedElement.closest('[data-lightbox="item"].is-active img, [data-lightbox="nav"], [data-lightbox="close"], [data-lightbox="trigger"]');
+        if (isOutside) {
+          closeLightbox();
+        }
+      }
+      function updateActiveItem(index) {
+        elements.items.forEach(item => item.classList.remove('is-active'));
+        elements.items[index].classList.add('is-active');
+        if (elements.counter.current) {
+          elements.counter.current.textContent = index + 1;
+        }
+      }
+      elements.triggers.forEach((trigger, index) => {
+        trigger.addEventListener('click', () => {
+          onStart?.();
+          mainTimeline.clear();
+          gsap.killTweensOf([
+            elements.wrapper, 
+            elements.nav, 
+            elements.triggerParents
+          ]);
+          const img = trigger.querySelector("img")
+          const state = Flip.getState(img);
+          const triggerRect = trigger.getBoundingClientRect();
+          trigger.parentElement.style.height = `${triggerRect.height}px`;
+          trigger.setAttribute('data-lightbox', 'original-parent');
+          img.setAttribute('data-lightbox', 'original');
+          updateActiveItem(index);
+          container.addEventListener('click', handleOutsideClick);
+          const tl = gsap.timeline({
+            onComplete: () => {
+              onOpen?.();
+            }
+          });
+          elements.wrapper.classList.add('is-active');
+          const targetItem = elements.items[index];
+          const lightboxImage = targetItem.querySelector('img');
+          if (lightboxImage) {
+            lightboxImage.style.display = 'none';
+          }
+          elements.triggerParents.forEach(otherTrigger => {
+            if (otherTrigger !== trigger) {
+              gsap.to(otherTrigger, {
+                autoAlpha: 0,
+                duration: 0.4,
+                stagger:0.02,
+                overwrite: true
+              });
+            }
+          });
+          if (!targetItem.contains(img)) {
+            targetItem.appendChild(img);
+            tl.add(
+              Flip.from(state, {
+                targets: img,
+                absolute: true,
+                duration: 0.6,
+                ease: "power2.inOut"
+              }), 0
+            );
+          }
+          tl.to(elements.wrapper, {
+            backgroundColor: "rgba(0,0,0,0.75)",
+            duration: 0.6
+          }, 0)
+          .fromTo(elements.nav, {
+            autoAlpha: 0,
+            y: "1rem"
+          }, {
+            autoAlpha: 1,
+            y: "0rem",
+            duration: 0.6,
+            stagger: { each: 0.05, from: "center" }
+          }, 0.2);
+          mainTimeline.add(tl);
+        });
+      });
+      if (elements.buttons.next) {
+        elements.buttons.next.addEventListener('click', () => {
+          const currentIndex = Array.from(elements.items).findIndex(item => 
+            item.classList.contains('is-active')
+          );
+          const nextIndex = (currentIndex + 1) % elements.items.length;
+          updateActiveItem(nextIndex);
+        });
+      }
+      if (elements.buttons.prev) {
+        elements.buttons.prev.addEventListener('click', () => {
+          const currentIndex = Array.from(elements.items).findIndex(item => 
+            item.classList.contains('is-active')
+        );
+        const prevIndex = (currentIndex - 1 + elements.items.length) % elements.items.length;
+          updateActiveItem(prevIndex);
+        });
+      }
+      if (elements.buttons.close) {
+        elements.buttons.close.addEventListener('click', closeLightbox);
+      }
+      document.addEventListener('keydown', (event) => {
+        if (!elements.wrapper.classList.contains('is-active')) return;
+        switch (event.key) {
+          case 'Escape':
+            closeLightbox();
+            break;
+          case 'ArrowRight':
+            elements.buttons.next?.click();
+            break;
+          case 'ArrowLeft':
+            elements.buttons.prev?.click();
+            break;
+        }
+      });
     }
 })();
