@@ -825,6 +825,7 @@
                 animations.initScrollTriggers();
                 animations.initSplitTextAnimation();
                 initScrambleText();
+                initHeroParallax();
             },
             afterLeave() {
                 console.log("Leaving home page...");
@@ -1313,5 +1314,22 @@
         scramble.onLoad();
         scramble.onScroll();
         scramble.onHover();
+    }
+
+    // Parallax effect for hero heading (adjusted for Webflow classes)
+    function initHeroParallax() {
+        if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+        const heading = document.querySelector('.home-hero .h-display');
+        if (!heading) return;
+        gsap.to(heading, {
+            y: () => window.innerWidth < 768 ? 0 : -150, // less movement on mobile
+            ease: "none",
+            scrollTrigger: {
+                trigger: ".home-hero",
+                start: "top top",
+                end: "bottom top",
+                scrub: true
+            }
+        });
     }
 })();
