@@ -941,6 +941,7 @@
                     Webflow.ready();
                 }
                 initScrambleText();
+                initStickyLinks();
             },
             afterLeave() {
                 console.log("Leaving Work Item page...");
@@ -968,6 +969,7 @@
                     Webflow.ready();
                 }
                 initScrambleText();
+                initStickyLinks();
             },
             afterLeave() {
                 console.log("Leaving Style Item page...");
@@ -993,6 +995,7 @@
                     Webflow.ready();
                 }
                 initScrambleText();
+                initStickyLinks();
             },
             afterLeave() {
                 console.log("Leaving News Item page...");
@@ -1329,6 +1332,26 @@
                 start: "top top",
                 end: "bottom top",
                 scrub: true
+            }
+        });
+    }
+
+    // Initialize sticky links
+    function initStickyLinks() {
+        const stickyLinks = document.querySelectorAll('.sticky-link');
+        stickyLinks.forEach(link => {
+            // Ensure the parent container has a proper setup for sticky positioning
+            const parentSection = link.closest('section');
+            if (parentSection) {
+                parentSection.style.position = 'relative';
+                parentSection.style.overflow = 'hidden';
+                
+                // Set up sticky link properties
+                gsap.set(link, {
+                    position: 'sticky',
+                    top: '30px',
+                    zIndex: 10
+                });
             }
         });
     }

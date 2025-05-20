@@ -493,3 +493,26 @@
         left: 0;
         opacity: 0;
     }  
+    
+    /* Sticky Link Styles */
+    .sticky-link {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 30px;
+        z-index: 10;
+        width: 100%;
+        background-color: transparent;
+    }
+    
+    .sticky-link.centre {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+    
+    section:has(.sticky-link) {
+        position: relative;
+        overflow: visible;
+        min-height: 100vh;
+    }  
