@@ -1530,7 +1530,7 @@
             );
           }
           tl.to(elements.wrapper, {
-            backgroundColor: "rgba(0,0,0,0.75)",
+            backgroundColor: "rgba(0,0,0,0.8)",
             duration: 0.6
           }, 0)
           .fromTo(elements.nav, {
