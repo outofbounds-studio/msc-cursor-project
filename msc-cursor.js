@@ -131,20 +131,21 @@
         lenis: {
             instance: null,
             init() {
-                this.instance = new Lenis({
-                    lerp: 0.1,
-                    smooth: true
-                });
-                window.lenis = this.instance;
-                this.raf();
+                // Commented out for sticky test:
+                // this.instance = new Lenis({
+                //     lerp: 0.1,
+                //     smooth: true
+                // });
+                // window.lenis = this.instance;
+                // this.raf();
             },
             raf(time) {
-                this.instance?.raf(time);
-                requestAnimationFrame(this.raf.bind(this));
+                // this.instance?.raf(time);
+                // requestAnimationFrame(this.raf.bind(this));
             },
             destroy() {
-                this.instance?.destroy();
-                this.instance = null;
+                // this.instance?.destroy();
+                // this.instance = null;
             }
         },
     
