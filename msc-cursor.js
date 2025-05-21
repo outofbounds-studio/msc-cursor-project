@@ -947,7 +947,7 @@
                     Webflow.ready();
                 }
                 initScrambleText();
-                initStickyLinks();
+                //initStickyLinks();
                 // Lightbox gallery init
                 document.querySelectorAll('[data-gallery]').forEach(wrapper => {
                     createLightbox(wrapper, {
