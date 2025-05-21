@@ -947,7 +947,7 @@
                     Webflow.ready();
                 }
                 initScrambleText();
-                //initStickyLinks();
+                initStickyLinks();
                 // Lightbox gallery init
                 document.querySelectorAll('[data-gallery]').forEach(wrapper => {
                     createLightbox(wrapper, {
@@ -1353,10 +1353,14 @@
 
     // Initialize sticky links
     function initStickyLinks() {
+        console.log('initStickyLinks running');
         const stickyLinks = document.querySelectorAll('.sticky-link');
+        console.log('Found sticky links:', stickyLinks.length);
         stickyLinks.forEach(link => {
+            console.log('Sticky link:', link);
             // Ensure the parent container has a proper setup for sticky positioning
             const parentSection = link.closest('section');
+            console.log('Parent section found:', parentSection);
             if (parentSection) {
                 parentSection.style.position = 'relative';
                 gsap.set(link, {
@@ -1364,6 +1368,9 @@
                     top: '30px',
                     zIndex: 10
                 });
+                console.log('Applied sticky styles to link:', link);
+            } else {
+                console.warn('No parent <section> found for sticky link:', link);
             }
         });
     }
