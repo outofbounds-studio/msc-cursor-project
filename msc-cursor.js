@@ -33,17 +33,20 @@
             'https://player.vimeo.com/api/player.js',
             'https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js',
             'https://cdn.jsdelivr.net/gh/flowtricks/scripts@v1.0.4/variables-color-scroll.js',
-            'https://cdn.jsdelivr.net/npm/gsap@3.11.5/dist/CustomEase.min.js',
+            'https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/CustomEase.min.js',
             'https://cdn.jsdelivr.net/npm/@barba/core@2.9.7/dist/barba.umd.min.js',
             'https://unpkg.com/lenis@1.1.18/dist/lenis.min.js',
             'https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js',
             'https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrambleTextPlugin.min.js',
-            'https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js',
-            'https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/Flip.min.js'
+            'https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/Flip.min.js'
         ];
 
         try {
             await Promise.all(dependencies.map(src => loadScript(src)));
+            // Register all GSAP plugins after loading
+            if (typeof gsap !== 'undefined') {
+                gsap.registerPlugin(ScrollTrigger, SplitText, ScrambleTextPlugin, Flip);
+            }
             console.log('All dependencies loaded successfully');
             return true;
         } catch (error) {
