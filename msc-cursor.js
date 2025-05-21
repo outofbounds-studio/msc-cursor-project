@@ -1359,9 +1359,6 @@
             const parentSection = link.closest('section');
             if (parentSection) {
                 parentSection.style.position = 'relative';
-                parentSection.style.overflow = 'hidden';
-                
-                // Set up sticky link properties
                 gsap.set(link, {
                     position: 'sticky',
                     top: '30px',
