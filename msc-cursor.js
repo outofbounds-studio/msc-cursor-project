@@ -110,6 +110,7 @@
         barba.hooks.afterEnter(() => {
             initMaskTextScrollReveal();
             initScrambleText();
+            initSpecLineReveal();
         });
 
         console.log('GSAP:', typeof gsap !== 'undefined' ? 'Loaded' : 'Not loaded');
@@ -1583,5 +1584,25 @@
             break;
         }
       });
+    }
+
+    // Animate .spec-line divs from 0% to 100% width, staggered, on scroll
+    function initSpecLineReveal() {
+        document.querySelectorAll('.spec-container').forEach(container => {
+            const lines = container.querySelectorAll('.spec-line');
+            if (!lines.length) return;
+            gsap.set(lines, { width: '0%' });
+            gsap.to(lines, {
+                width: '100%',
+                duration: 0.7,
+                stagger: 0.08,
+                ease: 'expo.out',
+                scrollTrigger: {
+                    trigger: container,
+                    start: 'top 80%',
+                    once: true
+                }
+            });
+        });
     }
 })();
