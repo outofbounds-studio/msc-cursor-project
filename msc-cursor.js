@@ -283,20 +283,26 @@
             try {
                 const navBar = document.querySelector('.nav_bar');
                 const navBarMidpoint = navBar ? navBar.offsetHeight / 2 : 0;
-    
-                ScrollTrigger.create({
-                    trigger: '[data-theme-section]',
-                    start: `top ${navBarMidpoint}px`,
-                    toggleActions: "play none none reverse",
-                    onEnter: (self) => {
-                        const theme = self.trigger.getAttribute('data-theme-section');
-                        utils.theme.change(theme);
-                    },
-                    onLeaveBack: (self) => {
-                        const theme = self.trigger.getAttribute('data-theme-section');
-                        const oppositeTheme = theme === 'dark' ? 'light' : 'dark';
-                        utils.theme.change(oppositeTheme);
-                    }
+                const themeSections = document.querySelectorAll('[data-theme-section]');
+                if (!themeSections.length) {
+                    // No theme sections, nothing to do
+                    return;
+                }
+                themeSections.forEach(section => {
+                    ScrollTrigger.create({
+                        trigger: section,
+                        start: `top ${navBarMidpoint}px`,
+                        toggleActions: "play none none reverse",
+                        onEnter: (self) => {
+                            const theme = self.trigger.getAttribute('data-theme-section');
+                            utils.theme.change(theme);
+                        },
+                        onLeaveBack: (self) => {
+                            const theme = self.trigger.getAttribute('data-theme-section');
+                            const oppositeTheme = theme === 'dark' ? 'light' : 'dark';
+                            utils.theme.change(oppositeTheme);
+                        }
+                    });
                 });
             } catch (error) {
                 utils.handleError('initScrollTriggers', error);
