@@ -1354,15 +1354,6 @@
         });
     }
 
-    // Register GSAP Flip plugin globally
-    if (typeof gsap !== 'undefined' && typeof Flip !== 'undefined') {
-        gsap.registerPlugin(Flip);
-    }
-    gsap.defaults({
-        ease: "power4.inOut",
-        duration: 0.8,
-    });
-
     // Lightbox function
     function createLightbox(container, {
       onStart,
