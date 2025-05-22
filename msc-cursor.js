@@ -111,6 +111,7 @@
             initMaskTextScrollReveal();
             initScrambleText();
             initSpecLineReveal();
+            wrapFirstWordInSpan();
         });
 
         console.log('GSAP:', typeof gsap !== 'undefined' ? 'Loaded' : 'Not loaded');
@@ -1624,6 +1625,20 @@
                     once: true
                 }
             });
+        });
+    }
+
+    // Utility: Indent first word of paragraphs with .indent-first-word
+    function wrapFirstWordInSpan() {
+        document.querySelectorAll('.indent-first-word').forEach(p => {
+            // Only run if not already wrapped
+            if (!p.querySelector('.first-word')) {
+                const words = p.innerHTML.trim().split(' ');
+                if (words.length > 0) {
+                    words[0] = `<span class="first-word">${words[0]}</span>`;
+                    p.innerHTML = words.join(' ');
+                }
+            }
         });
     }
 })();
