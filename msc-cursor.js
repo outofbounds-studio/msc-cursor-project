@@ -112,6 +112,7 @@
             initScrambleText();
             initSpecLineReveal();
             wrapFirstWordInSpan();
+            initDividerLineReveal();
         });
 
         console.log('GSAP:', typeof gsap !== 'undefined' ? 'Loaded' : 'Not loaded');
@@ -1612,6 +1613,26 @@
         // Animate in .line-container
         document.querySelectorAll('.line-container').forEach(container => {
             const lines = container.querySelectorAll('.spec-line');
+            if (!lines.length) return;
+            gsap.set(lines, { width: '0%' });
+            gsap.to(lines, {
+                width: '100%',
+                duration: 0.7,
+                stagger: 0.08,
+                ease: 'expo.out',
+                scrollTrigger: {
+                    trigger: container,
+                    start: 'top 80%',
+                    once: true
+                }
+            });
+        });
+    }
+
+    // Animate .divider-line divs from 0% to 100% width, staggered, on scroll
+    function initDividerLineReveal() {
+        document.querySelectorAll('.container').forEach(container => {
+            const lines = container.querySelectorAll('.divider-line');
             if (!lines.length) return;
             gsap.set(lines, { width: '0%' });
             gsap.to(lines, {
