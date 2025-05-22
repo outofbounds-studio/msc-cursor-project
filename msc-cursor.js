@@ -1474,12 +1474,26 @@
             // If no image, open the first lightbox item (index 0)
             updateActiveItem(0);
             container.addEventListener('click', handleOutsideClick);
+            elements.wrapper.classList.add('is-active');
+            // Animate background and nav just like the image trigger
             const tl = gsap.timeline({
               onComplete: () => {
                 onOpen?.();
               }
             });
-            elements.wrapper.classList.add('is-active');
+            tl.to(elements.wrapper, {
+              backgroundColor: "rgba(0,0,0,0.8)",
+              duration: 0.6
+            }, 0)
+            .fromTo(elements.nav, {
+              autoAlpha: 0,
+              y: "1rem"
+            }, {
+              autoAlpha: 1,
+              y: "0rem",
+              duration: 0.6,
+              stagger: { each: 0.05, from: "center" }
+            }, 0.2);
             mainTimeline.add(tl);
             return;
           }
