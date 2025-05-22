@@ -131,21 +131,20 @@
         lenis: {
             instance: null,
             init() {
-                // Commented out for sticky test:
-                // this.instance = new Lenis({
-                //     lerp: 0.1,
-                //     smooth: true
-                // });
-                // window.lenis = this.instance;
-                // this.raf();
+                this.instance = new Lenis({
+                    lerp: 0.1,
+                    smooth: true
+                });
+                window.lenis = this.instance;
+                this.raf();
             },
             raf(time) {
-                // this.instance?.raf(time);
-                // requestAnimationFrame(this.raf.bind(this));
+                this.instance?.raf(time);
+                requestAnimationFrame(this.raf.bind(this));
             },
             destroy() {
-                // this.instance?.destroy();
-                // this.instance = null;
+                this.instance?.destroy();
+                this.instance = null;
             }
         },
     
@@ -1460,7 +1459,8 @@
         }
       }
       elements.triggers.forEach((trigger, index) => {
-        trigger.addEventListener('click', () => {
+        trigger.addEventListener('click', (event) => {
+          event.preventDefault();
           onStart?.();
           mainTimeline.clear();
           gsap.killTweensOf([
@@ -1468,7 +1468,21 @@
             elements.nav, 
             elements.triggerParents
           ]);
-          const img = trigger.querySelector("img")
+          // Special handling for text link triggers (no image inside)
+          const img = trigger.querySelector("img");
+          if (!img) {
+            // If no image, open the first lightbox item (index 0)
+            updateActiveItem(0);
+            container.addEventListener('click', handleOutsideClick);
+            const tl = gsap.timeline({
+              onComplete: () => {
+                onOpen?.();
+              }
+            });
+            elements.wrapper.classList.add('is-active');
+            mainTimeline.add(tl);
+            return;
+          }
           const state = Flip.getState(img);
           const triggerRect = trigger.getBoundingClientRect();
           trigger.parentElement.style.height = `${triggerRect.height}px`;
@@ -1483,7 +1497,7 @@
           });
           elements.wrapper.classList.add('is-active');
           const targetItem = elements.items[index];
-          const lightboxImage = targetItem.querySelector('img');
+          const lightboxImage = targetItem ? targetItem.querySelector('img') : null;
           if (lightboxImage) {
             lightboxImage.style.display = 'none';
           }
@@ -1497,7 +1511,7 @@
               });
             }
           });
-          if (!targetItem.contains(img)) {
+          if (targetItem && !targetItem.contains(img)) {
             targetItem.appendChild(img);
             tl.add(
               Flip.from(state, {
