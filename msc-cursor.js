@@ -170,6 +170,7 @@
         stylesScrub() {
             try {
                 let cmsItems = $(".work_item");
+                console.log('stylesScrub called, found .work_item:', cmsItems.length);
                 let sizeSmall = (1 / 3) * 100 + "%";
                 let sizeLarge = (2 / 3) * 100 + "%";
     
@@ -258,7 +259,9 @@
     const components = {
         initSliders() {
             try {
-                $(".slider-main_component").each(function (index) {
+                const sliders = $(".slider-main_component");
+                console.log('initSliders called, found .slider-main_component:', sliders.length);
+                sliders.each(function (index) {
                     let loopMode = $(this).attr("loop-mode") === "true";
                     let sliderDuration = $(this).attr("slider-duration") !== undefined ? 
                         +$(this).attr("slider-duration") : 450;
@@ -324,7 +327,9 @@
     
         initTestimonial() {
             try {
-                $(".slider-testimonial_component").each(function (index) {
+                const testimonials = $(".slider-testimonial_component");
+                console.log('initTestimonial called, found .slider-testimonial_component:', testimonials.length);
+                testimonials.each(function (index) {
                     let loopMode = $(this).attr("loop-mode") === "true";
                     let sliderDuration = $(this).attr("slider-duration") !== undefined ? 
                         +$(this).attr("slider-duration") : 450;
@@ -399,6 +404,7 @@
         initTabSystem() {
             try {
                 const wrappers = document.querySelectorAll('[data-tabs="wrapper"]');
+                console.log('initTabSystem called, found [data-tabs="wrapper"]:', wrappers.length);
                 
                 wrappers.forEach((wrapper) => {
                     const contentItems = wrapper.querySelectorAll('[data-tabs="content-item"]');
@@ -642,6 +648,7 @@
         initVimeoBGVideo() {
             try {
                 const vimeoPlayers = document.querySelectorAll('[data-vimeo-bg-init]');
+                console.log('initVimeoBGVideo called, found [data-vimeo-bg-init]:', vimeoPlayers.length);
     
                 vimeoPlayers.forEach(function(vimeoElement, index) {
                     const vimeoVideoID = vimeoElement.getAttribute('data-vimeo-video-id');
@@ -1070,31 +1077,23 @@
 
     // SplitText/ScrollTrigger heading animation
     function initMaskTextScrollReveal() {
-        console.log('initMaskTextScrollReveal starting...');
         if (typeof SplitText === 'undefined') {
-            console.error('SplitText plugin not loaded!');
             return;
         }
         if (typeof ScrollTrigger === 'undefined') {
-            console.error('ScrollTrigger plugin not loaded!');
             return;
         }
         const headings = document.querySelectorAll('[data-split="heading"]');
-        console.log('Found headings:', headings.length, headings);
         headings.forEach(heading => {
-            // Revert previous split if exists
             if (heading._splitText) {
                 heading._splitText.revert();
             }
-            // Reset CSS visibility to prevent FOUC
             gsap.set(heading, { autoAlpha: 1 });
-            // Find the split type, the default is 'lines'
             const type = heading.dataset.splitReveal || 'lines';
             const typesToSplit =
                 type === 'lines' ? ['lines'] :
                 type === 'words' ? ['lines','words'] :
                 ['lines','words','chars'];
-            // Split the text and store the instance for later revert
             heading._splitText = SplitText.create(heading, {
                 type: typesToSplit.join(', '),
                 mask: 'lines',
@@ -1103,7 +1102,6 @@
                 wordsClass: 'word',
                 charsClass: 'letter',
                 onSplit: function(instance) {
-                    console.log('Animating heading:', heading, 'Type:', type);
                     animate(instance, heading, type);
                 }
             });
