@@ -87,6 +87,8 @@
         utils.initGSAPDefaults();
         console.log('Initializing Lenis...');
         utils.lenis.init();
+        console.log('Initializing theme system...');
+        utils.theme.init();
         console.log('Initializing Barba...');
         barba.init(barbaConfig);
 
@@ -1765,8 +1767,3 @@
         });
     }
 })();
-
-// Initialize theme system when the script loads
-document.addEventListener('DOMContentLoaded', () => {
-    utils.theme.init();
-});
