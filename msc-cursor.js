@@ -935,10 +935,15 @@
 
                 // Debug logs and delayed re-init for Jetboost and Webflow Tabs
                 setTimeout(() => {
-                    console.log('Jetboost:', typeof Jetboost);
-                    if (typeof Jetboost !== 'undefined') {
+                    console.log('Jetboost:', Jetboost);
+                    if (Jetboost && typeof Jetboost === 'object') {
+                        console.log('Jetboost keys:', Object.keys(Jetboost));
+                    }
+                    if (typeof Jetboost !== 'undefined' && typeof Jetboost.ReInit === 'function') {
                         Jetboost.ReInit();
                         console.log('Jetboost.ReInit() called');
+                    } else {
+                        console.warn('Jetboost.ReInit is not a function. Jetboost:', Jetboost);
                     }
 
                     console.log('Webflow:', typeof Webflow);
