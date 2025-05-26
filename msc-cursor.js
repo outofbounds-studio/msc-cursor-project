@@ -743,6 +743,9 @@
                     initThemeScrollTriggers();
                 }, 0);
                 console.log("Entering home page...");
+            },
+            afterEnter() {
+                console.log('[Barba] home.afterEnter');
                 animations.stylesScrub();
                 components.initVimeoBGVideo();
                 components.initSliders();
@@ -773,11 +776,11 @@
                     initThemeScrollTriggers();
                 }, 0);
                 console.log("Entering about page...");
-                components.initCustomCursor();
-                animations.initSplitTextAnimation();
             },
             afterEnter() {
                 console.log('[Barba] about.afterEnter');
+                components.initCustomCursor();
+                animations.initSplitTextAnimation();
                 components.initAccordionCSS();
                 components.initModalBasic();
                 initNumberTickerAnimation();
@@ -801,14 +804,17 @@
                 console.log('[Barba] work.beforeEnter');
                 applyTheme('dark');
                 console.log("Entering Work collection list page...");
-                components.initCustomCursor();
-                animations.initSplitTextAnimation();
                 if (typeof Jetboost !== 'undefined') Jetboost.ReInit();
                 if (typeof Webflow !== 'undefined') {
                     Webflow.destroy();
                     Webflow.ready();
                     Webflow.require('tabs').redraw();
                 }
+            },
+            afterEnter() {
+                console.log('[Barba] work.afterEnter');
+                components.initCustomCursor();
+                animations.initSplitTextAnimation();
                 initScrambleText();
             },
             afterLeave() {
@@ -829,12 +835,15 @@
                 console.log('[Barba] styles.beforeEnter');
                 applyTheme('dark');
                 console.log("Entering Styles collection list page...");
-                components.initCustomCursor();
-                animations.initSplitTextAnimation();
                 if (typeof Webflow !== 'undefined') {
                     Webflow.destroy();
                     Webflow.ready();
                 }
+            },
+            afterEnter() {
+                console.log('[Barba] styles.afterEnter');
+                components.initCustomCursor();
+                animations.initSplitTextAnimation();
                 initScrambleText();
             },
             afterLeave() {
@@ -855,12 +864,15 @@
                 console.log('[Barba] news.beforeEnter');
                 applyTheme('dark');
                 console.log("Entering News collection list page...");
-                components.initCustomCursor();
-                animations.initSplitTextAnimation();
                 if (typeof Webflow !== 'undefined') {
                     Webflow.destroy();
                     Webflow.ready();
                 }
+            },
+            afterEnter() {
+                console.log('[Barba] news.afterEnter');
+                components.initCustomCursor();
+                animations.initSplitTextAnimation();
                 initScrambleText();
             },
             afterLeave() {
@@ -882,6 +894,13 @@
                 console.log('[Barba] work-item.beforeEnter');
                 applyTheme('dark');
                 console.log("Entering Work Item page...");
+                if (typeof Webflow !== 'undefined') {
+                    Webflow.destroy();
+                    Webflow.ready();
+                }
+            },
+            afterEnter() {
+                console.log('[Barba] work-item.afterEnter');
                 components.initCustomCursor();
                 animations.initSplitTextAnimation();
                 components.initVimeoBGVideo();
@@ -890,10 +909,6 @@
                 components.initTabSystem();
                 components.initAccordionCSS();
                 initNumberTickerAnimation();
-                if (typeof Webflow !== 'undefined') {
-                    Webflow.destroy();
-                    Webflow.ready();
-                }
                 initScrambleText();
                 document.querySelectorAll('[data-gallery]').forEach(wrapper => {
                     createLightbox(wrapper, {
@@ -922,6 +937,13 @@
                 console.log('[Barba] style-item.beforeEnter');
                 applyTheme('dark');
                 console.log("Entering Style Item page...");
+                if (typeof Webflow !== 'undefined') {
+                    Webflow.destroy();
+                    Webflow.ready();
+                }
+            },
+            afterEnter() {
+                console.log('[Barba] style-item.afterEnter');
                 components.initCustomCursor();
                 animations.initSplitTextAnimation();
                 components.initVimeoBGVideo();
@@ -929,10 +951,6 @@
                 components.initModalBasic();
                 components.initAccordionCSS();
                 initNumberTickerAnimation();
-                if (typeof Webflow !== 'undefined') {
-                    Webflow.destroy();
-                    Webflow.ready();
-                }
                 initScrambleText();
             },
             afterLeave() {
@@ -953,15 +971,18 @@
                 console.log('[Barba] news-item.beforeEnter');
                 applyTheme('dark');
                 console.log("Entering News Item page...");
+                if (typeof Webflow !== 'undefined') {
+                    Webflow.destroy();
+                    Webflow.ready();
+                }
+            },
+            afterEnter() {
+                console.log('[Barba] news-item.afterEnter');
                 components.initCustomCursor();
                 animations.initSplitTextAnimation();
                 components.initVimeoBGVideo();
                 components.initModalBasic();
                 components.initAccordionCSS();
-                if (typeof Webflow !== 'undefined') {
-                    Webflow.destroy();
-                    Webflow.ready();
-                }
                 initScrambleText();
             },
             afterLeave() {
