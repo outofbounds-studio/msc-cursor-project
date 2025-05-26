@@ -88,20 +88,6 @@
             utils.lenis.destroy();
         });
 
-        barba.hooks.enter((data) => {
-            window.scrollTo(0, 0);
-            // Apply appropriate theme for the current page
-            if (data.next.namespace === 'home') {
-                utils.theme.change('dark');
-            } else if (data.next.namespace === 'about') {
-                utils.theme.change('dark');
-            } else if (data.next.namespace === 'work') {
-                utils.theme.change('dark');
-            } else if (data.next.namespace === 'styles') {
-                utils.theme.change('dark');
-            }
-        });
-
         components.initCustomCursor();
         // ...rest of your initialization...
         console.log('Initialization complete');
@@ -147,58 +133,6 @@
             destroy() {
                 this.instance?.destroy();
                 this.instance = null;
-            }
-        },
-    
-        // Theme Manager
-        theme: {
-            current: 'dark',
-            isChecking: false,
-            
-            startCheck() {
-                if (!this.isChecking) {
-                    document.addEventListener("scroll", this.checkThemeSection);
-                    this.isChecking = true;
-                    console.log("Theme check started");
-                }
-            },
-            
-            stopCheck() {
-                document.removeEventListener("scroll", this.checkThemeSection);
-                this.isChecking = false;
-                console.log("Theme check stopped");
-            },
-            
-            change(theme) {
-                if (this.current === theme) return;
-                this.current = theme;
-                this.applyTheme(theme);
-            },
-            
-            applyTheme(theme) {
-                const tl = gsap.timeline();
-                tl.set("body", { attr: { "element-theme": theme } })
-                  .to("body", { 
-                      backgroundColor: "var(--color--background)",
-                      duration: 0.5,
-                      ease: "power2.out"
-                  });
-            },
-    
-            checkThemeSection() {
-                var themeSections = document.querySelectorAll("[data-theme-section]");
-                var navBar = document.querySelector('.nav_bar');
-                var themeObserverOffset = navBar ? navBar.offsetHeight / 2 : 0;
-    
-                themeSections.forEach(function (themeSection) {
-                    var themeSectionTop = themeSection.getBoundingClientRect().top;
-                    var themeSectionBottom = themeSection.getBoundingClientRect().bottom;
-    
-                    if (themeSectionTop <= themeObserverOffset && themeSectionBottom >= themeObserverOffset) {
-                        var themeSectionActive = $(themeSection).attr('data-theme-section');
-                        utils.theme.applyTheme(themeSectionActive);
-                    }
-                });
             }
         },
     
@@ -269,45 +203,6 @@
                 });
             } catch (error) {
                 utils.handleError('stylesScrub', error);
-            }
-        },
-    
-        changeThemeTimeline(theme) {
-            try {
-                console.log('Changing theme to:', theme);
-                return utils.theme.applyTheme(theme);
-            } catch (error) {
-                utils.handleError('changeThemeTimeline', error);
-            }
-        },
-    
-        initScrollTriggers() {
-            try {
-                const navBar = document.querySelector('.nav_bar');
-                const navBarMidpoint = navBar ? navBar.offsetHeight / 2 : 0;
-                const themeSections = document.querySelectorAll('[data-theme-section]');
-                if (!themeSections.length) {
-                    // No theme sections, nothing to do
-                    return;
-                }
-                themeSections.forEach(section => {
-                    ScrollTrigger.create({
-                        trigger: section,
-                        start: `top ${navBarMidpoint}px`,
-                        toggleActions: "play none none reverse",
-                        onEnter: (self) => {
-                            const theme = self.trigger.getAttribute('data-theme-section');
-                            utils.theme.change(theme);
-                        },
-                        onLeaveBack: (self) => {
-                            const theme = self.trigger.getAttribute('data-theme-section');
-                            const oppositeTheme = theme === 'dark' ? 'light' : 'dark';
-                            utils.theme.change(oppositeTheme);
-                        }
-                    });
-                });
-            } catch (error) {
-                utils.handleError('initScrollTriggers', error);
             }
         },
     
@@ -830,13 +725,11 @@
             beforeEnter() {
                 console.log("Entering home page...");
                 animations.stylesScrub();
-                utils.theme.startCheck();
                 components.initVimeoBGVideo();
                 components.initSliders();
                 components.initTestimonial();
                 components.initTabSystem();
                 components.initCustomCursor();
-                animations.initScrollTriggers();
                 animations.initSplitTextAnimation();
                 initScrambleText();
                 initHeroParallax();
@@ -855,11 +748,8 @@
         about: {
             beforeEnter() {
                 console.log("Entering about page...");
-                utils.theme.startCheck();
                 components.initCustomCursor();
-                animations.initScrollTriggers();
-                components.initTabSystem();
-                initScrambleText();
+                animations.initSplitTextAnimation();
             },
             afterEnter() {
                 components.initAccordionCSS();
@@ -883,11 +773,8 @@
         work: {
             beforeEnter() {
                 console.log("Entering Work collection list page...");
-                utils.theme.startCheck();
                 components.initCustomCursor();
-                animations.initScrollTriggers();
-                components.initSliders();
-                components.initTestimonial();
+                animations.initSplitTextAnimation();
                 
                 // Initialize collection-specific components
                 if (typeof Jetboost !== 'undefined') Jetboost.ReInit();
@@ -913,11 +800,8 @@
         styles: {
             beforeEnter() {
                 console.log("Entering Styles collection list page...");
-                utils.theme.startCheck();
                 components.initCustomCursor();
-                animations.initScrollTriggers();
-                animations.stylesScrub();
-                components.initSliders();
+                animations.initSplitTextAnimation();
                 
                 if (typeof Webflow !== 'undefined') {
                     Webflow.destroy();
@@ -940,10 +824,8 @@
         news: {
             beforeEnter() {
                 console.log("Entering News collection list page...");
-                utils.theme.startCheck();
                 components.initCustomCursor();
-                animations.initScrollTriggers();
-                components.initSliders();
+                animations.initSplitTextAnimation();
                 
                 if (typeof Webflow !== 'undefined') {
                     Webflow.destroy();
@@ -967,9 +849,8 @@
         'work-item': {
             beforeEnter() {
                 console.log("Entering Work Item page...");
-                utils.theme.startCheck();
                 components.initCustomCursor();
-                animations.initScrollTriggers();
+                animations.initSplitTextAnimation();
                 components.initVimeoBGVideo();
                 animations.stylesScrub();
                 components.initSliders();
@@ -1010,9 +891,8 @@
         'style-item': {
             beforeEnter() {
                 console.log("Entering Style Item page...");
-                utils.theme.startCheck();
                 components.initCustomCursor();
-                animations.initScrollTriggers();
+                animations.initSplitTextAnimation();
                 components.initVimeoBGVideo();
                 components.initSliders();
                 components.initModalBasic();
@@ -1043,9 +923,8 @@
         'news-item': {
             beforeEnter() {
                 console.log("Entering News Item page...");
-                utils.theme.startCheck();
                 components.initCustomCursor();
-                animations.initScrollTriggers();
+                animations.initSplitTextAnimation();
                 components.initVimeoBGVideo();
                 components.initModalBasic();
                 components.initAccordionCSS();
