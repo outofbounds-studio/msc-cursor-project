@@ -844,6 +844,12 @@
             afterLeave() {
                 console.log("Leaving home page...");
                 ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+                document.querySelectorAll('[data-split="heading"]').forEach(heading => {
+                    if (heading._splitText) {
+                        heading._splitText.revert();
+                        heading._splitText = null;
+                    }
+                });
             }
         },
         about: {
@@ -864,6 +870,12 @@
             afterLeave() {
                 console.log("Leaving about page...");
                 ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+                document.querySelectorAll('[data-split="heading"]').forEach(heading => {
+                    if (heading._splitText) {
+                        heading._splitText.revert();
+                        heading._splitText = null;
+                    }
+                });
             }
         },
         
@@ -889,6 +901,12 @@
             afterLeave() {
                 console.log("Leaving Work collection list page...");
                 ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+                document.querySelectorAll('[data-split="heading"]').forEach(heading => {
+                    if (heading._splitText) {
+                        heading._splitText.revert();
+                        heading._splitText = null;
+                    }
+                });
             }
         },
         
@@ -910,6 +928,12 @@
             afterLeave() {
                 console.log("Leaving Styles collection list page...");
                 ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+                document.querySelectorAll('[data-split="heading"]').forEach(heading => {
+                    if (heading._splitText) {
+                        heading._splitText.revert();
+                        heading._splitText = null;
+                    }
+                });
             }
         },
         
@@ -930,6 +954,12 @@
             afterLeave() {
                 console.log("Leaving News collection list page...");
                 ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+                document.querySelectorAll('[data-split="heading"]').forEach(heading => {
+                    if (heading._splitText) {
+                        heading._splitText.revert();
+                        heading._splitText = null;
+                    }
+                });
             }
         },
         
@@ -968,6 +998,12 @@
             afterLeave() {
                 console.log("Leaving Work Item page...");
                 ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+                document.querySelectorAll('[data-split="heading"]').forEach(heading => {
+                    if (heading._splitText) {
+                        heading._splitText.revert();
+                        heading._splitText = null;
+                    }
+                });
             }
         },
         
@@ -995,6 +1031,12 @@
             afterLeave() {
                 console.log("Leaving Style Item page...");
                 ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+                document.querySelectorAll('[data-split="heading"]').forEach(heading => {
+                    if (heading._splitText) {
+                        heading._splitText.revert();
+                        heading._splitText = null;
+                    }
+                });
             }
         },
         
@@ -1020,6 +1062,12 @@
             afterLeave() {
                 console.log("Leaving News Item page...");
                 ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+                document.querySelectorAll('[data-split="heading"]').forEach(heading => {
+                    if (heading._splitText) {
+                        heading._splitText.revert();
+                        heading._splitText = null;
+                    }
+                });
             }
         }
     };
