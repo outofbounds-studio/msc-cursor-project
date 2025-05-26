@@ -1595,4 +1595,29 @@
             }
         });
     }
+
+    function initThemeScrollTriggers() {
+        const navBar = document.querySelector('.nav_bar');
+        const navBarMidpoint = navBar ? navBar.offsetHeight / 2 : 0;
+        const sections = document.querySelectorAll('[data-theme-section]');
+        console.log('initThemeScrollTriggers: navBarMidpoint =', navBarMidpoint);
+        console.log('initThemeScrollTriggers: sections found =', sections.length, sections);
+        sections.forEach(section => {
+            console.log('Creating ScrollTrigger for section:', section, 'theme:', section.getAttribute('data-theme-section'));
+            ScrollTrigger.create({
+                trigger: section,
+                start: `top ${navBarMidpoint}px`,
+                onEnter: () => {
+                    const theme = section.getAttribute('data-theme-section');
+                    console.log('Theme trigger fired (onEnter):', theme, section);
+                    applyTheme(theme);
+                },
+                onEnterBack: () => {
+                    const theme = section.getAttribute('data-theme-section');
+                    console.log('Theme trigger fired (onEnterBack):', theme, section);
+                    applyTheme(theme);
+                }
+            });
+        });
+    }
 })();
