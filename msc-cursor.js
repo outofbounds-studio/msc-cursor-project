@@ -1643,7 +1643,7 @@
                 ease: 'expo.out',
                 scrollTrigger: {
                     trigger: line,
-                    start: 'top 70%',
+                    start: 'top 80%',
                     markers: true, // Enable markers for debugging
                     once: true,
                     onEnter: () => console.log(`Divider line ${index} entered viewport`),
