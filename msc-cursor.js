@@ -780,7 +780,6 @@
                 console.log('[Barba] about.afterEnter');
                 components.initAccordionCSS();
                 components.initModalBasic();
-                initMaskTextScrollReveal();
                 initNumberTickerAnimation();
             },
             afterLeave() {
@@ -890,7 +889,6 @@
                 components.initSliders();
                 components.initTabSystem();
                 components.initAccordionCSS();
-                initMaskTextScrollReveal();
                 initNumberTickerAnimation();
                 if (typeof Webflow !== 'undefined') {
                     Webflow.destroy();
@@ -930,7 +928,6 @@
                 components.initSliders();
                 components.initModalBasic();
                 components.initAccordionCSS();
-                initMaskTextScrollReveal();
                 initNumberTickerAnimation();
                 if (typeof Webflow !== 'undefined') {
                     Webflow.destroy();
@@ -961,7 +958,6 @@
                 components.initVimeoBGVideo();
                 components.initModalBasic();
                 components.initAccordionCSS();
-                initMaskTextScrollReveal();
                 if (typeof Webflow !== 'undefined') {
                     Webflow.destroy();
                     Webflow.ready();
