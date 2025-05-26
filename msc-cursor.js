@@ -1096,7 +1096,9 @@
     // SplitText/ScrollTrigger heading animation
     function initMaskTextScrollReveal() {
         console.log('initMaskTextScrollReveal running');
-        document.querySelectorAll('[data-split="heading"]').forEach(heading => {
+        const headings = document.querySelectorAll('[data-split="heading"]');
+        console.log('Found headings:', headings.length, headings);
+        headings.forEach(heading => {
             // Revert previous split if exists
             if (heading._splitText) {
                 heading._splitText.revert();
@@ -1118,6 +1120,7 @@
                 wordsClass: 'word',
                 charsClass: 'letter',
                 onSplit: function(instance) {
+                    console.log('Animating heading:', heading, 'Type:', type);
                     animate(instance, heading, type);
                 }
             });
@@ -1130,6 +1133,8 @@
             };
             const targets = instance[type];
             const config = splitConfig[type];
+            const isHero = heading.hasAttribute('data-split-hero');
+            const triggerStart = isHero ? 'top 98%' : 'top 80%';
             gsap.from(targets, {
                 y: 100,
                 opacity: 0,
@@ -1138,7 +1143,7 @@
                 ease: 'expo.out',
                 scrollTrigger: {
                     trigger: heading,
-                    start: 'top 80%',
+                    start: triggerStart,
                     once: true
                 }
             });
@@ -1644,12 +1649,7 @@
                 scrollTrigger: {
                     trigger: line,
                     start: 'top 80%',
-                    markers: true, // Enable markers for debugging
-                    once: true,
-                    onEnter: () => console.log(`Divider line ${index} entered viewport`),
-                    onLeave: () => console.log(`Divider line ${index} left viewport`),
-                    onEnterBack: () => console.log(`Divider line ${index} entered viewport from bottom`),
-                    onLeaveBack: () => console.log(`Divider line ${index} left viewport to top`)
+                    once: true
                 }
             });
         });
