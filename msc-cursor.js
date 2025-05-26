@@ -1637,7 +1637,7 @@
             gsap.set(lines, { width: '0%' });
             gsap.to(lines, {
                 width: '100%',
-                duration: 0.7,
+                duration: 1,
                 stagger: 0.08,
                 ease: 'expo.out',
                 scrollTrigger: {
