@@ -188,12 +188,20 @@
                 // Add Barba hooks for theme management
                 barba.hooks.beforeLeave(() => {
                     this.isTransitioning = true;
+                    // Kill all theme-related ScrollTriggers
+                    ScrollTrigger.getAll().forEach(trigger => {
+                        if (trigger.vars.trigger?.hasAttribute('data-theme-section')) {
+                            trigger.kill();
+                        }
+                    });
                 });
                 
                 barba.hooks.afterEnter((data) => {
                     const newTheme = this.defaultThemes[data.next.namespace] || 'dark';
                     this.set(newTheme, true);
                     this.isTransitioning = false;
+                    // Reinitialize scroll triggers after transition
+                    this.initScrollTriggers();
                 });
             },
 
@@ -230,24 +238,47 @@
             },
 
             initScrollTriggers() {
+                // Kill any existing theme ScrollTriggers
+                ScrollTrigger.getAll().forEach(trigger => {
+                    if (trigger.vars.trigger?.hasAttribute('data-theme-section')) {
+                        trigger.kill();
+                    }
+                });
+
                 const navBar = document.querySelector('.nav_bar');
                 const navBarMidpoint = navBar ? navBar.offsetHeight / 2 : 0;
+                const sections = document.querySelectorAll('[data-theme-section]');
+                
+                console.log('[Theme] Initializing scroll triggers:', {
+                    navBarMidpoint,
+                    sectionsFound: sections.length
+                });
 
-                ScrollTrigger.create({
-                    trigger: '[data-theme-section]',
-                    start: `top ${navBarMidpoint}px`,
-                    toggleActions: 'play none none reverse',
-                    onEnter: (self) => {
-                        if (this.isTransitioning) return;
-                        const theme = self.trigger.getAttribute('data-theme-section');
-                        this.set(theme);
-                    },
-                    onLeaveBack: (self) => {
-                        if (this.isTransitioning) return;
-                        const theme = self.trigger.getAttribute('data-theme-section');
-                        const oppositeTheme = theme === 'dark' ? 'light' : 'dark';
-                        this.set(oppositeTheme);
-                    }
+                sections.forEach(section => {
+                    const theme = section.getAttribute('data-theme-section');
+                    console.log('[Theme] Creating trigger for section:', {
+                        section,
+                        theme
+                    });
+
+                    ScrollTrigger.create({
+                        trigger: section,
+                        start: `top ${navBarMidpoint}px`,
+                        toggleActions: 'play none none reverse',
+                        onEnter: (self) => {
+                            if (this.isTransitioning) return;
+                            const theme = self.trigger.getAttribute('data-theme-section');
+                            console.log('[Theme] Scroll trigger onEnter:', theme);
+                            this.set(theme);
+                        },
+                        onLeaveBack: (self) => {
+                            if (this.isTransitioning) return;
+                            const theme = self.trigger.getAttribute('data-theme-section');
+                            const oppositeTheme = theme === 'dark' ? 'light' : 'dark';
+                            console.log('[Theme] Scroll trigger onLeaveBack:', oppositeTheme);
+                            this.set(oppositeTheme);
+                        }
+                    });
                 });
             }
         },
@@ -834,9 +865,6 @@
             beforeEnter() {
                 console.log('[Barba] home.beforeEnter');
                 utils.theme.set('dark', false);
-                setTimeout(() => {
-                    initThemeScrollTriggers();
-                }, 0);
                 console.log("Entering home page...");
             },
             afterEnter() {
@@ -867,9 +895,6 @@
             beforeEnter() {
                 console.log('[Barba] about.beforeEnter');
                 utils.theme.set('light', false);
-                setTimeout(() => {
-                    initThemeScrollTriggers();
-                }, 0);
                 console.log("Entering about page...");
             },
             afterEnter() {
@@ -940,6 +965,8 @@
                 components.initCustomCursor();
                 animations.initSplitTextAnimation();
                 initScrambleText();
+                animations.stylesScrub();
+
             },
             afterLeave() {
                 console.log('[Barba] styles.afterLeave');
@@ -1735,31 +1762,6 @@
                     p.innerHTML = words.join(' ');
                 }
             }
-        });
-    }
-
-    function initThemeScrollTriggers() {
-        const navBar = document.querySelector('.nav_bar');
-        const navBarMidpoint = navBar ? navBar.offsetHeight / 2 : 0;
-        const sections = document.querySelectorAll('[data-theme-section]');
-        console.log('initThemeScrollTriggers: navBarMidpoint =', navBarMidpoint);
-        console.log('initThemeScrollTriggers: sections found =', sections.length, sections);
-        sections.forEach(section => {
-            console.log('Creating ScrollTrigger for section:', section, 'theme:', section.getAttribute('data-theme-section'));
-            ScrollTrigger.create({
-                trigger: section,
-                start: `top ${navBarMidpoint}px`,
-                onEnter: () => {
-                    const theme = section.getAttribute('data-theme-section');
-                    console.log('Theme trigger fired (onEnter):', theme, section);
-                    applyTheme(theme);
-                },
-                onEnterBack: () => {
-                    const theme = section.getAttribute('data-theme-section');
-                    console.log('Theme trigger fired (onEnterBack):', theme, section);
-                    applyTheme(theme);
-                }
-            });
         });
     }
 })();
