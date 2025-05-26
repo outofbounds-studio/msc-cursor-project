@@ -926,18 +926,18 @@
                 console.log('[Barba] work.beforeEnter');
                 utils.theme.set('dark', false);
                 console.log("Entering Work collection list page...");
-                if (typeof Jetboost !== 'undefined') Jetboost.ReInit();
-                if (typeof Webflow !== 'undefined') {
-                    Webflow.destroy();
-                    Webflow.ready();
-                    Webflow.require('tabs').redraw();
-                }
             },
             afterEnter() {
                 console.log('[Barba] work.afterEnter');
                 components.initCustomCursor();
                 animations.initSplitTextAnimation();
                 initScrambleText();
+                if (typeof Jetboost !== 'undefined') Jetboost.ReInit();
+                if (typeof Webflow !== 'undefined') {
+                    Webflow.destroy();
+                    Webflow.ready();
+                    Webflow.require('tabs').redraw();
+                }
             },
             afterLeave() {
                 console.log('[Barba] work.afterLeave');
