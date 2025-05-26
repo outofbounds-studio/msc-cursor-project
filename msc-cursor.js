@@ -736,6 +736,7 @@
     const pages = {
         home: {
             beforeEnter() {
+                console.log('[Barba] home.beforeEnter');
                 applyTheme('dark');
                 setTimeout(() => {
                     initThemeScrollTriggers();
@@ -752,6 +753,7 @@
                 initHeroParallax();
             },
             afterLeave() {
+                console.log('[Barba] home.afterLeave');
                 console.log("Leaving home page...");
                 ScrollTrigger.getAll().forEach(trigger => trigger.kill());
                 document.querySelectorAll('[data-split="heading"]').forEach(heading => {
@@ -764,6 +766,7 @@
         },
         about: {
             beforeEnter() {
+                console.log('[Barba] about.beforeEnter');
                 applyTheme('dark');
                 setTimeout(() => {
                     initThemeScrollTriggers();
@@ -773,12 +776,14 @@
                 animations.initSplitTextAnimation();
             },
             afterEnter() {
+                console.log('[Barba] about.afterEnter');
                 components.initAccordionCSS();
                 components.initModalBasic();
                 initMaskTextScrollReveal();
                 initNumberTickerAnimation();
             },
             afterLeave() {
+                console.log('[Barba] about.afterLeave');
                 console.log("Leaving about page...");
                 ScrollTrigger.getAll().forEach(trigger => trigger.kill());
                 document.querySelectorAll('[data-split="heading"]').forEach(heading => {
@@ -793,12 +798,11 @@
         // Collection List Pages (formerly static pages)
         work: {
             beforeEnter() {
+                console.log('[Barba] work.beforeEnter');
                 applyTheme('dark');
                 console.log("Entering Work collection list page...");
                 components.initCustomCursor();
                 animations.initSplitTextAnimation();
-                
-                // Initialize collection-specific components
                 if (typeof Jetboost !== 'undefined') Jetboost.ReInit();
                 if (typeof Webflow !== 'undefined') {
                     Webflow.destroy();
@@ -808,6 +812,7 @@
                 initScrambleText();
             },
             afterLeave() {
+                console.log('[Barba] work.afterLeave');
                 console.log("Leaving Work collection list page...");
                 ScrollTrigger.getAll().forEach(trigger => trigger.kill());
                 document.querySelectorAll('[data-split="heading"]').forEach(heading => {
@@ -821,11 +826,11 @@
         
         styles: {
             beforeEnter() {
+                console.log('[Barba] styles.beforeEnter');
                 applyTheme('dark');
                 console.log("Entering Styles collection list page...");
                 components.initCustomCursor();
                 animations.initSplitTextAnimation();
-                
                 if (typeof Webflow !== 'undefined') {
                     Webflow.destroy();
                     Webflow.ready();
@@ -833,6 +838,7 @@
                 initScrambleText();
             },
             afterLeave() {
+                console.log('[Barba] styles.afterLeave');
                 console.log("Leaving Styles collection list page...");
                 ScrollTrigger.getAll().forEach(trigger => trigger.kill());
                 document.querySelectorAll('[data-split="heading"]').forEach(heading => {
@@ -846,11 +852,11 @@
         
         news: {
             beforeEnter() {
+                console.log('[Barba] news.beforeEnter');
                 applyTheme('dark');
                 console.log("Entering News collection list page...");
                 components.initCustomCursor();
                 animations.initSplitTextAnimation();
-                
                 if (typeof Webflow !== 'undefined') {
                     Webflow.destroy();
                     Webflow.ready();
@@ -858,6 +864,7 @@
                 initScrambleText();
             },
             afterLeave() {
+                console.log('[Barba] news.afterLeave');
                 console.log("Leaving News collection list page...");
                 ScrollTrigger.getAll().forEach(trigger => trigger.kill());
                 document.querySelectorAll('[data-split="heading"]').forEach(heading => {
@@ -872,6 +879,7 @@
         // Individual Item Pages
         'work-item': {
             beforeEnter() {
+                console.log('[Barba] work-item.beforeEnter');
                 applyTheme('dark');
                 console.log("Entering Work Item page...");
                 components.initCustomCursor();
@@ -881,17 +889,13 @@
                 components.initSliders();
                 components.initTabSystem();
                 components.initAccordionCSS();
-                
-                // Initialize animations
                 initMaskTextScrollReveal();
                 initNumberTickerAnimation();
-                
                 if (typeof Webflow !== 'undefined') {
                     Webflow.destroy();
                     Webflow.ready();
                 }
                 initScrambleText();
-                // Lightbox gallery init
                 document.querySelectorAll('[data-gallery]').forEach(wrapper => {
                     createLightbox(wrapper, {
                         onStart: () => window.lenis?.stop(),
@@ -902,6 +906,7 @@
                 });
             },
             afterLeave() {
+                console.log('[Barba] work-item.afterLeave');
                 console.log("Leaving Work Item page...");
                 ScrollTrigger.getAll().forEach(trigger => trigger.kill());
                 document.querySelectorAll('[data-split="heading"]').forEach(heading => {
@@ -915,6 +920,7 @@
         
         'style-item': {
             beforeEnter() {
+                console.log('[Barba] style-item.beforeEnter');
                 applyTheme('dark');
                 console.log("Entering Style Item page...");
                 components.initCustomCursor();
@@ -923,11 +929,8 @@
                 components.initSliders();
                 components.initModalBasic();
                 components.initAccordionCSS();
-                
-                // Initialize animations
                 initMaskTextScrollReveal();
                 initNumberTickerAnimation();
-                
                 if (typeof Webflow !== 'undefined') {
                     Webflow.destroy();
                     Webflow.ready();
@@ -935,6 +938,7 @@
                 initScrambleText();
             },
             afterLeave() {
+                console.log('[Barba] style-item.afterLeave');
                 console.log("Leaving Style Item page...");
                 ScrollTrigger.getAll().forEach(trigger => trigger.kill());
                 document.querySelectorAll('[data-split="heading"]').forEach(heading => {
@@ -948,6 +952,7 @@
         
         'news-item': {
             beforeEnter() {
+                console.log('[Barba] news-item.beforeEnter');
                 applyTheme('dark');
                 console.log("Entering News Item page...");
                 components.initCustomCursor();
@@ -955,10 +960,7 @@
                 components.initVimeoBGVideo();
                 components.initModalBasic();
                 components.initAccordionCSS();
-                
-                // Initialize animations
                 initMaskTextScrollReveal();
-                
                 if (typeof Webflow !== 'undefined') {
                     Webflow.destroy();
                     Webflow.ready();
@@ -966,6 +968,7 @@
                 initScrambleText();
             },
             afterLeave() {
+                console.log('[Barba] news-item.afterLeave');
                 console.log("Leaving News Item page...");
                 ScrollTrigger.getAll().forEach(trigger => trigger.kill());
                 document.querySelectorAll('[data-split="heading"]').forEach(heading => {
