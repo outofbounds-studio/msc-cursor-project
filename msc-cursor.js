@@ -1642,7 +1642,7 @@
                 ease: 'expo.out',
                 scrollTrigger: {
                     trigger: container,
-                    start: 'top 80%',
+                    start: 'top 60%',
                     once: true
                 }
             });
