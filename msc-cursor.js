@@ -723,6 +723,8 @@
     const pages = {
         home: {
             beforeEnter() {
+                applyTheme('dark');
+                initThemeScrollTriggers();
                 console.log("Entering home page...");
                 animations.stylesScrub();
                 components.initVimeoBGVideo();
@@ -747,6 +749,8 @@
         },
         about: {
             beforeEnter() {
+                applyTheme('dark');
+                initThemeScrollTriggers();
                 console.log("Entering about page...");
                 components.initCustomCursor();
                 animations.initSplitTextAnimation();
@@ -772,6 +776,7 @@
         // Collection List Pages (formerly static pages)
         work: {
             beforeEnter() {
+                applyTheme('dark');
                 console.log("Entering Work collection list page...");
                 components.initCustomCursor();
                 animations.initSplitTextAnimation();
@@ -799,6 +804,7 @@
         
         styles: {
             beforeEnter() {
+                applyTheme('dark');
                 console.log("Entering Styles collection list page...");
                 components.initCustomCursor();
                 animations.initSplitTextAnimation();
@@ -823,6 +829,7 @@
         
         news: {
             beforeEnter() {
+                applyTheme('dark');
                 console.log("Entering News collection list page...");
                 components.initCustomCursor();
                 animations.initSplitTextAnimation();
@@ -848,6 +855,7 @@
         // Individual Item Pages
         'work-item': {
             beforeEnter() {
+                applyTheme('dark');
                 console.log("Entering Work Item page...");
                 components.initCustomCursor();
                 animations.initSplitTextAnimation();
@@ -890,6 +898,7 @@
         
         'style-item': {
             beforeEnter() {
+                applyTheme('dark');
                 console.log("Entering Style Item page...");
                 components.initCustomCursor();
                 animations.initSplitTextAnimation();
@@ -922,6 +931,7 @@
         
         'news-item': {
             beforeEnter() {
+                applyTheme('dark');
                 console.log("Entering News Item page...");
                 components.initCustomCursor();
                 animations.initSplitTextAnimation();
