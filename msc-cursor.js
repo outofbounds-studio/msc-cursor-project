@@ -1142,6 +1142,9 @@
                 return tl;
             },
             async enter(data) {
+                // Always scroll to top when entering a new page
+                window.scrollTo(0, 0);
+                
                 const tl = gsap.timeline();
                 tl.from(data.next.container, { 
                     autoAlpha: 0, 
@@ -1161,33 +1164,69 @@
                 ['home', 'about'].includes(key)
             ).map(([namespace, handlers]) => ({
                 namespace,
-                ...handlers
+                beforeEnter() {
+                    // Ensure scroll to top before entering any page
+                    window.scrollTo(0, 0);
+                    if (handlers.beforeEnter) handlers.beforeEnter();
+                },
+                afterEnter: handlers.afterEnter,
+                afterLeave: handlers.afterLeave
             })),
             // Collection list views (work, styles, news)
             {
                 namespace: 'work',
-                ...pages.work
+                beforeEnter() {
+                    window.scrollTo(0, 0);
+                    if (pages.work.beforeEnter) pages.work.beforeEnter();
+                },
+                afterEnter: pages.work.afterEnter,
+                afterLeave: pages.work.afterLeave
             },
             {
                 namespace: 'styles',
-                ...pages.styles
+                beforeEnter() {
+                    window.scrollTo(0, 0);
+                    if (pages.styles.beforeEnter) pages.styles.beforeEnter();
+                },
+                afterEnter: pages.styles.afterEnter,
+                afterLeave: pages.styles.afterLeave
             },
             {
                 namespace: 'news',
-                ...pages.news
+                beforeEnter() {
+                    window.scrollTo(0, 0);
+                    if (pages.news.beforeEnter) pages.news.beforeEnter();
+                },
+                afterEnter: pages.news.afterEnter,
+                afterLeave: pages.news.afterLeave
             },
             // Individual item views
             {
                 namespace: 'work-item',
-                ...pages['work-item']
+                beforeEnter() {
+                    window.scrollTo(0, 0);
+                    if (pages['work-item'].beforeEnter) pages['work-item'].beforeEnter();
+                },
+                afterEnter: pages['work-item'].afterEnter,
+                afterLeave: pages['work-item'].afterLeave
             },
             {
                 namespace: 'style-item',
-                ...pages['style-item']
+                beforeEnter() {
+                    window.scrollTo(0, 0);
+                    if (pages['style-item'].beforeEnter) pages['style-item'].beforeEnter();
+                },
+                afterEnter: pages['style-item'].afterEnter,
+                afterLeave: pages['style-item'].afterLeave
             },
             {
                 namespace: 'news-item',
-                ...pages['news-item']
+                beforeEnter() {
+                    window.scrollTo(0, 0);
+                    if (pages['news-item'].beforeEnter) pages['news-item'].beforeEnter();
+                },
+                afterEnter: pages['news-item'].afterEnter,
+                afterLeave: pages['news-item'].afterLeave
             }
         ]
     };
