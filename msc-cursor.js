@@ -68,41 +68,54 @@
 
     // Main initialization function
     async function init() {
+        console.log('Starting initialization...');
         // 1. Wait for all dependencies
         const dependenciesLoaded = await loadDependencies();
+        console.log('Dependencies loaded:', dependenciesLoaded);
         if (!dependenciesLoaded) {
             console.error('Failed to load dependencies');
             return;
         }
 
         // 2. Wait for Slater scripts (SplitText, etc)
+        console.log('Loading Slater scripts...');
         await loadSlaterScripts();
+        console.log('Slater scripts loaded');
 
         // 3. Now all libraries are loaded, safe to use barba, SplitText, etc
+        console.log('Initializing GSAP defaults...');
         utils.initGSAPDefaults();
+        console.log('Initializing Lenis...');
         utils.lenis.init();
+        console.log('Initializing Barba...');
         barba.init(barbaConfig);
 
         // ---- Barba.js Hooks (must be after barba.init) ----
         barba.hooks.leave((data) => {
+            console.log('Barba leave hook triggered');
             utils.lenis.destroy();
         });
 
+        console.log('Initializing custom cursor...');
         components.initCustomCursor();
-        // ...rest of your initialization...
-        console.log('Initialization complete');
-
+        
         // Global Barba hook to run on every page transition
-        barba.hooks.afterEnter(() => {
+        barba.hooks.afterEnter((data) => {
+            console.log('Barba afterEnter hook triggered', data);
+            console.log('Initializing animations...');
             initMaskTextScrollReveal();
             initScrambleText();
             initSpecLineReveal();
             wrapFirstWordInSpan();
             initDividerLineReveal();
+            console.log('All animations initialized');
         });
 
+        console.log('Checking GSAP plugins...');
         console.log('GSAP:', typeof gsap !== 'undefined' ? 'Loaded' : 'Not loaded');
+        console.log('ScrollTrigger:', typeof ScrollTrigger !== 'undefined' ? 'Loaded' : 'Not loaded');
         console.log('SplitText:', typeof SplitText !== 'undefined' ? 'Loaded' : 'Not loaded');
+        console.log('Initialization complete');
     }
 
     // Start initialization when DOM is ready
@@ -1036,7 +1049,15 @@
 
     // SplitText/ScrollTrigger heading animation
     function initMaskTextScrollReveal() {
-        console.log('initMaskTextScrollReveal running');
+        console.log('initMaskTextScrollReveal starting...');
+        if (typeof SplitText === 'undefined') {
+            console.error('SplitText plugin not loaded!');
+            return;
+        }
+        if (typeof ScrollTrigger === 'undefined') {
+            console.error('ScrollTrigger plugin not loaded!');
+            return;
+        }
         const headings = document.querySelectorAll('[data-split="heading"]');
         console.log('Found headings:', headings.length, headings);
         headings.forEach(heading => {
