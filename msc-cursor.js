@@ -1631,18 +1631,23 @@
 
     // Animate .divider-line divs from 0% to 100% width, staggered, on scroll
     function initDividerLineReveal() {
-        document.querySelectorAll('.container').forEach(container => {
-            const lines = container.querySelectorAll('.divider-line');
-            if (!lines.length) return;
-            gsap.set(lines, { width: '0%' });
-            gsap.to(lines, {
+        // Find all divider lines and their immediate parent containers
+        document.querySelectorAll('.divider-line').forEach(line => {
+            const container = line.closest('.container');
+            if (!container) return;
+            
+            // Set initial state
+            gsap.set(line, { width: '0%' });
+            
+            // Create animation
+            gsap.to(line, {
                 width: '100%',
                 duration: 1,
-                stagger: 0.08,
                 ease: 'expo.out',
                 scrollTrigger: {
-                    trigger: container,
-                    start: 'top 60%',
+                    trigger: line, // Trigger on the line itself
+                    start: 'top 70%', // Start when the line is 70% from the top of viewport
+                    containerAnimation: true, // This ensures the animation is tied to the line's position
                     once: true
                 }
             });
