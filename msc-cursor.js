@@ -896,7 +896,7 @@
         about: {
             beforeEnter() {
                 console.log('[Barba] about.beforeEnter');
-                utils.theme.set('light', false);
+                utils.theme.set('dark', false);
                 console.log("Entering about page...");
             },
             afterEnter() {
