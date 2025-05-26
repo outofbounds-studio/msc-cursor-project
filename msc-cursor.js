@@ -162,7 +162,95 @@
         // Error Handler
         handleError(component, error) {
             console.error(`Error in ${component}:`, error);
-        }
+        },
+
+        // Theme Manager
+        theme: {
+            current: 'dark',
+            isTransitioning: false,
+            defaultThemes: {
+                'home': 'dark',
+                'about': 'light',
+                'work': 'dark',
+                'styles': 'dark',
+                'work-item': 'dark'
+            },
+
+            init() {
+                // Set initial theme based on current namespace
+                const currentNamespace = barba.current?.namespace || 'home';
+                const initialTheme = this.defaultThemes[currentNamespace] || 'dark';
+                this.set(initialTheme, false); // Set without animation on init
+                
+                // Initialize scroll-based theme changes
+                this.initScrollTriggers();
+                
+                // Add Barba hooks for theme management
+                barba.hooks.beforeLeave(() => {
+                    this.isTransitioning = true;
+                });
+                
+                barba.hooks.afterEnter((data) => {
+                    const newTheme = this.defaultThemes[data.next.namespace] || 'dark';
+                    this.set(newTheme, true);
+                    this.isTransitioning = false;
+                });
+            },
+
+            set(theme, animate = true) {
+                if (this.current === theme || !theme) return;
+                
+                console.log(`[Theme] Changing theme to: ${theme}`);
+                this.current = theme;
+                
+                if (animate && !this.isTransitioning) {
+                    this.animateThemeChange(theme);
+                } else {
+                    // Direct set without animation
+                    document.body.setAttribute('element-theme', theme);
+                    document.body.style.backgroundColor = `var(--color--background-${theme})`;
+                }
+            },
+
+            animateThemeChange(theme) {
+                const tl = gsap.timeline({
+                    onStart: () => {
+                        document.body.setAttribute('element-theme', theme);
+                    },
+                    onComplete: () => {
+                        console.log(`[Theme] Theme change complete: ${theme}`);
+                    }
+                });
+
+                tl.to('body', {
+                    backgroundColor: `var(--color--background-${theme})`,
+                    duration: 0.5,
+                    ease: 'power2.out'
+                });
+            },
+
+            initScrollTriggers() {
+                const navBar = document.querySelector('.nav_bar');
+                const navBarMidpoint = navBar ? navBar.offsetHeight / 2 : 0;
+
+                ScrollTrigger.create({
+                    trigger: '[data-theme-section]',
+                    start: `top ${navBarMidpoint}px`,
+                    toggleActions: 'play none none reverse',
+                    onEnter: (self) => {
+                        if (this.isTransitioning) return;
+                        const theme = self.trigger.getAttribute('data-theme-section');
+                        this.set(theme);
+                    },
+                    onLeaveBack: (self) => {
+                        if (this.isTransitioning) return;
+                        const theme = self.trigger.getAttribute('data-theme-section');
+                        const oppositeTheme = theme === 'dark' ? 'light' : 'dark';
+                        this.set(oppositeTheme);
+                    }
+                });
+            }
+        },
     };
     
     // Animation Functions
@@ -745,7 +833,7 @@
         home: {
             beforeEnter() {
                 console.log('[Barba] home.beforeEnter');
-                applyTheme('dark');
+                utils.theme.set('dark', false);
                 setTimeout(() => {
                     initThemeScrollTriggers();
                 }, 0);
@@ -778,7 +866,7 @@
         about: {
             beforeEnter() {
                 console.log('[Barba] about.beforeEnter');
-                applyTheme('dark');
+                utils.theme.set('light', false);
                 setTimeout(() => {
                     initThemeScrollTriggers();
                 }, 0);
@@ -809,7 +897,7 @@
         work: {
             beforeEnter() {
                 console.log('[Barba] work.beforeEnter');
-                applyTheme('dark');
+                utils.theme.set('dark', false);
                 console.log("Entering Work collection list page...");
                 if (typeof Jetboost !== 'undefined') Jetboost.ReInit();
                 if (typeof Webflow !== 'undefined') {
@@ -840,7 +928,7 @@
         styles: {
             beforeEnter() {
                 console.log('[Barba] styles.beforeEnter');
-                applyTheme('dark');
+                utils.theme.set('dark', false);
                 console.log("Entering Styles collection list page...");
                 if (typeof Webflow !== 'undefined') {
                     Webflow.destroy();
@@ -869,7 +957,7 @@
         news: {
             beforeEnter() {
                 console.log('[Barba] news.beforeEnter');
-                applyTheme('dark');
+                utils.theme.set('dark', false);
                 console.log("Entering News collection list page...");
                 if (typeof Webflow !== 'undefined') {
                     Webflow.destroy();
@@ -899,7 +987,7 @@
         'work-item': {
             beforeEnter() {
                 console.log('[Barba] work-item.beforeEnter');
-                applyTheme('dark');
+                utils.theme.set('dark', false);
                 console.log("Entering Work Item page...");
                 if (typeof Webflow !== 'undefined') {
                     Webflow.destroy();
@@ -942,7 +1030,7 @@
         'style-item': {
             beforeEnter() {
                 console.log('[Barba] style-item.beforeEnter');
-                applyTheme('dark');
+                utils.theme.set('dark', false);
                 console.log("Entering Style Item page...");
                 if (typeof Webflow !== 'undefined') {
                     Webflow.destroy();
@@ -976,7 +1064,7 @@
         'news-item': {
             beforeEnter() {
                 console.log('[Barba] news-item.beforeEnter');
-                applyTheme('dark');
+                utils.theme.set('dark', false);
                 console.log("Entering News Item page...");
                 if (typeof Webflow !== 'undefined') {
                     Webflow.destroy();
@@ -1675,3 +1763,8 @@
         });
     }
 })();
+
+// Initialize theme system when the script loads
+document.addEventListener('DOMContentLoaded', () => {
+    utils.theme.init();
+});
