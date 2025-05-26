@@ -932,12 +932,23 @@
                 components.initCustomCursor();
                 animations.initSplitTextAnimation();
                 initScrambleText();
-                if (typeof Jetboost !== 'undefined') Jetboost.ReInit();
-                if (typeof Webflow !== 'undefined') {
-                    Webflow.destroy();
-                    Webflow.ready();
-                    Webflow.require('tabs').redraw();
-                }
+
+                // Debug logs and delayed re-init for Jetboost and Webflow Tabs
+                setTimeout(() => {
+                    console.log('Jetboost:', typeof Jetboost);
+                    if (typeof Jetboost !== 'undefined') {
+                        Jetboost.ReInit();
+                        console.log('Jetboost.ReInit() called');
+                    }
+
+                    console.log('Webflow:', typeof Webflow);
+                    if (typeof Webflow !== 'undefined') {
+                        Webflow.destroy();
+                        Webflow.ready();
+                        Webflow.require('tabs').redraw();
+                        console.log('Webflow tabs re-initialized');
+                    }
+                }, 100); // 100ms delay
             },
             afterLeave() {
                 console.log('[Barba] work.afterLeave');
