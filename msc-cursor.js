@@ -1639,7 +1639,7 @@
             // Create animation
             gsap.to(line, {
                 width: '100%',
-                duration: 1,
+                duration: 1.4,
                 ease: 'expo.out',
                 scrollTrigger: {
                     trigger: line,
