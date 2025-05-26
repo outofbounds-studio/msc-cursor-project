@@ -102,6 +102,7 @@
         // Global Barba hook to run on every page transition
         barba.hooks.afterEnter((data) => {
             console.log('Barba afterEnter hook triggered', data);
+            console.log('Barba namespace:', data.next && data.next.namespace);
             console.log('Initializing animations...');
             initMaskTextScrollReveal();
             initScrambleText();
