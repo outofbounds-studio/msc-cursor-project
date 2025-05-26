@@ -724,7 +724,9 @@
         home: {
             beforeEnter() {
                 applyTheme('dark');
-                initThemeScrollTriggers();
+                setTimeout(() => {
+                    initThemeScrollTriggers();
+                }, 0);
                 console.log("Entering home page...");
                 animations.stylesScrub();
                 components.initVimeoBGVideo();
@@ -750,7 +752,9 @@
         about: {
             beforeEnter() {
                 applyTheme('dark');
-                initThemeScrollTriggers();
+                setTimeout(() => {
+                    initThemeScrollTriggers();
+                }, 0);
                 console.log("Entering about page...");
                 components.initCustomCursor();
                 animations.initSplitTextAnimation();
