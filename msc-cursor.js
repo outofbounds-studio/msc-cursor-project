@@ -119,12 +119,6 @@
         console.log('ScrollTrigger:', typeof ScrollTrigger !== 'undefined' ? 'Loaded' : 'Not loaded');
         console.log('SplitText:', typeof SplitText !== 'undefined' ? 'Loaded' : 'Not loaded');
         console.log('Initialization complete');
-
-        setTimeout(() => {
-            // Jetboost re-initialization (new method)
-            window.dispatchEvent(new Event("jetboost:reinitialize"));
-            console.log('Dispatched jetboost:reinitialize event');
-        }, 100);
     }
 
     // Start initialization when DOM is ready
@@ -952,7 +946,8 @@
                                 const tabs = Webflow.require('tabs');
                                 if (tabs && typeof tabs.redraw === 'function') {
                                     tabs.redraw();
-                                    console.log('Webflow tabs.redraw() called');
+                                    Webflow.ready();
+                                    console.log('Webflow tabs.redraw() called and Webflow.ready() called again');
                                 } else {
                                     console.warn('Webflow tabs.redraw is not available:', tabs);
                                 }
@@ -961,7 +956,7 @@
                     } else {
                         console.log('No tabs wrapper found in DOM, skipping tabs.redraw');
                     }
-                }, 500);
+                }, 1000);
             },
             afterLeave() {
                 console.log('[Barba] work.afterLeave');
