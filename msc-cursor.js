@@ -116,20 +116,6 @@
             // Jetboost re-initialization (new method)
             window.dispatchEvent(new Event('jetboost:reinitialize'));
             console.log('Dispatched jetboost:reinitialize event');
-
-            // Webflow Tabs debug
-            console.log('Webflow:', typeof Webflow);
-            if (typeof Webflow !== 'undefined') {
-                Webflow.destroy();
-                Webflow.ready();
-                const tabs = Webflow.require && Webflow.require('tabs');
-                if (tabs && typeof tabs.redraw === 'function') {
-                    tabs.redraw();
-                    console.log('Webflow tabs.redraw() called');
-                } else {
-                    console.warn('Webflow tabs.redraw is not available:', tabs);
-                }
-            }
         });
 
         console.log('Checking GSAP plugins...');
@@ -142,20 +128,6 @@
             // Jetboost re-initialization (new method)
             window.dispatchEvent(new Event("jetboost:reinitialize"));
             console.log('Dispatched jetboost:reinitialize event');
-
-            // Webflow Tabs debug
-            console.log('Webflow:', typeof Webflow);
-            if (typeof Webflow !== 'undefined') {
-                Webflow.destroy();
-                Webflow.ready();
-                const tabs = Webflow.require && Webflow.require('tabs');
-                if (tabs && typeof tabs.redraw === 'function') {
-                    tabs.redraw();
-                    console.log('Webflow tabs.redraw() called');
-                } else {
-                    console.warn('Webflow tabs.redraw is not available:', tabs);
-                }
-            }
         }, 100);
     }
 
