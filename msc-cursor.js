@@ -112,10 +112,6 @@
             wrapFirstWordInSpan();
             initDividerLineReveal();
             console.log('All animations initialized');
-
-            // Jetboost re-initialization (new method)
-            window.dispatchEvent(new Event('jetboost:reinitialize'));
-            console.log('Dispatched jetboost:reinitialize event');
         });
 
         console.log('Checking GSAP plugins...');
@@ -942,24 +938,30 @@
                 components.initCustomCursor();
                 animations.initSplitTextAnimation();
                 initScrambleText();
+                setTimeout(() => {
+                    // Jetboost re-initialization (Work page only)
+                    window.dispatchEvent(new Event('jetboost:reinitialize'));
+                    console.log('Dispatched jetboost:reinitialize event');
 
-                // Jetboost re-initialization (new method)
-                window.dispatchEvent(new Event('jetboost:reinitialize'));
-                console.log('Dispatched jetboost:reinitialize event');
-
-                // Webflow Tabs debug
-                console.log('Webflow:', typeof Webflow);
-                if (typeof Webflow !== 'undefined') {
-                    Webflow.destroy();
-                    Webflow.ready();
-                    const tabs = Webflow.require && Webflow.require('tabs');
-                    if (tabs && typeof tabs.redraw === 'function') {
-                        tabs.redraw();
-                        console.log('Webflow tabs.redraw() called');
+                    // Webflow Tabs re-initialization (Work page only, if tabs exist)
+                    if (document.querySelector('[data-tabs="wrapper"]')) {
+                        if (typeof Webflow !== 'undefined') {
+                            Webflow.destroy();
+                            Webflow.ready();
+                            if (Webflow.require) {
+                                const tabs = Webflow.require('tabs');
+                                if (tabs && typeof tabs.redraw === 'function') {
+                                    tabs.redraw();
+                                    console.log('Webflow tabs.redraw() called');
+                                } else {
+                                    console.warn('Webflow tabs.redraw is not available:', tabs);
+                                }
+                            }
+                        }
                     } else {
-                        console.warn('Webflow tabs.redraw is not available:', tabs);
+                        console.log('No tabs wrapper found in DOM, skipping tabs.redraw');
                     }
-                }
+                }, 500);
             },
             afterLeave() {
                 console.log('[Barba] work.afterLeave');
