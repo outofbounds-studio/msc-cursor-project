@@ -98,9 +98,6 @@
             utils.lenis.destroy();
         });
 
-        console.log('Initializing custom cursor...');
-        components.initCustomCursor();
-        
         // Global Barba hook to run on every page transition
         barba.hooks.afterEnter((data) => {
             console.log('Barba afterEnter hook triggered', data);
@@ -112,6 +109,16 @@
             wrapFirstWordInSpan();
             initDividerLineReveal();
             console.log('All animations initialized');
+        });
+
+        // Add Jetboost.ReInit() to Barba enter hook
+        barba.hooks.enter((data) => {
+            if (window.Jetboost && typeof Jetboost.ReInit === 'function') {
+                Jetboost.ReInit();
+                console.log('Jetboost.ReInit() called in Barba enter hook');
+            } else {
+                console.warn('Jetboost.ReInit() is not available');
+            }
         });
 
         console.log('Checking GSAP plugins...');
@@ -937,37 +944,6 @@
                 animations.initSplitTextAnimation();
                 initScrambleText();
                 setTimeout(() => {
-                    // Jetboost re-initialization (Work page only)
-                    if (window.Jetboost) {
-                        console.log('Jetboost object is present, loaded:', window.Jetboost.loaded);
-                    } else {
-                        console.warn('Jetboost object is NOT present');
-                    }
-                    window.addEventListener('jetboost:reinitialize', () => {
-                        console.log('jetboost:reinitialize event detected');
-                    });
-                    window.dispatchEvent(new Event('jetboost:reinitialize'));
-                    console.log('Dispatched jetboost:reinitialize event');
-                    if (window.Jetboost && typeof Jetboost.ReInit === 'function') {
-                        Jetboost.ReInit();
-                        console.log('Called Jetboost.ReInit() directly');
-                    } else {
-                        console.warn('Jetboost.ReInit() is not available');
-                    }
-
-                    // Jetboost script re-injection workaround
-                    function reloadJetboostScript() {
-                        // Remove any existing Jetboost script
-                        document.querySelectorAll('script[src*="jetboost.io/jetboost.js"]').forEach(s => s.remove());
-                        // Create a new script tag
-                        const script = document.createElement('script');
-                        script.src = 'https://cdn.jetboost.io/jetboost.js';
-                        script.async = true;
-                        script.onload = () => console.log('Jetboost script reloaded after Barba transition');
-                        document.body.appendChild(script);
-                    }
-                    reloadJetboostScript();
-
                     // Webflow Tabs re-initialization (Work page only, if tabs exist)
                     function waitForTabsWrapperAndRedraw(maxWait = 3000) {
                         const selector = '.w-tabs';
