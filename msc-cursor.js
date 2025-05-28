@@ -938,24 +938,31 @@
                     console.log('Dispatched jetboost:reinitialize event');
 
                     // Webflow Tabs re-initialization (Work page only, if tabs exist)
-                    if (document.querySelector('[data-tabs="wrapper"]')) {
-                        if (typeof Webflow !== 'undefined') {
-                            Webflow.destroy();
-                            Webflow.ready();
-                            if (Webflow.require) {
-                                const tabs = Webflow.require('tabs');
-                                if (tabs && typeof tabs.redraw === 'function') {
-                                    tabs.redraw();
+                    function waitForTabsWrapperAndRedraw(maxWait = 3000) {
+                        const selector = '.w-tabs';
+                        const interval = 100;
+                        let waited = 0;
+
+                        function tryRedraw() {
+                            const tabsWrapper = document.querySelector(selector);
+                            if (tabsWrapper) {
+                                console.log('Tabs wrapper found, running redraw');
+                                if (window.Webflow && Webflow.require) {
+                                    Webflow.destroy();
                                     Webflow.ready();
-                                    console.log('Webflow tabs.redraw() called and Webflow.ready() called again');
-                                } else {
-                                    console.warn('Webflow tabs.redraw is not available:', tabs);
+                                    Webflow.require('tabs').redraw();
                                 }
+                            } else if (waited < maxWait) {
+                                waited += interval;
+                                setTimeout(tryRedraw, interval);
+                            } else {
+                                console.warn('Tabs wrapper not found after waiting, skipping tabs.redraw');
                             }
                         }
-                    } else {
-                        console.log('No tabs wrapper found in DOM, skipping tabs.redraw');
+
+                        tryRedraw();
                     }
+                    waitForTabsWrapperAndRedraw();
                 }, 1000);
             },
             afterLeave() {
