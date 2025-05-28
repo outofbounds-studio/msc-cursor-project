@@ -928,7 +928,11 @@
                 console.log("Entering Work collection list page...");
             },
             afterEnter() {
-                console.log('[Barba] work.afterEnter');
+                const currentNamespace = (barba && barba.current && barba.current.namespace) || 'unknown';
+                const nextNamespace = (barba && barba.history && barba.history.current && barba.history.current.namespace) || 'unknown';
+                console.log('[Barba] work.afterEnter triggered');
+                console.log('[Barba] current namespace:', currentNamespace);
+                console.log('[Barba] next namespace:', nextNamespace);
                 components.initCustomCursor();
                 animations.initSplitTextAnimation();
                 initScrambleText();
@@ -947,10 +951,23 @@
                             const tabsWrapper = document.querySelector(selector);
                             if (tabsWrapper) {
                                 console.log('Tabs wrapper found, running redraw');
-                                if (window.Webflow && Webflow.require) {
-                                    Webflow.destroy();
-                                    Webflow.ready();
-                                    Webflow.require('tabs').redraw();
+                                if (window.Webflow) {
+                                    console.log('Webflow object is present');
+                                    if (Webflow.require) {
+                                        const tabsModule = Webflow.require('tabs');
+                                        if (tabsModule && typeof tabsModule.redraw === 'function') {
+                                            console.log('Webflow tabs module and redraw function are available');
+                                            Webflow.destroy();
+                                            Webflow.ready();
+                                            tabsModule.redraw();
+                                        } else {
+                                            console.warn('Webflow tabs module or redraw function not available:', tabsModule);
+                                        }
+                                    } else {
+                                        console.warn('Webflow.require is not available');
+                                    }
+                                } else {
+                                    console.warn('Webflow object is not present');
                                 }
                             } else if (waited < maxWait) {
                                 waited += interval;
