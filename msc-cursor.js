@@ -955,6 +955,19 @@
                         console.warn('Jetboost.ReInit() is not available');
                     }
 
+                    // Jetboost script re-injection workaround
+                    function reloadJetboostScript() {
+                        // Remove any existing Jetboost script
+                        document.querySelectorAll('script[src*="jetboost.io/jetboost.js"]').forEach(s => s.remove());
+                        // Create a new script tag
+                        const script = document.createElement('script');
+                        script.src = 'https://cdn.jetboost.io/jetboost.js';
+                        script.async = true;
+                        script.onload = () => console.log('Jetboost script reloaded after Barba transition');
+                        document.body.appendChild(script);
+                    }
+                    reloadJetboostScript();
+
                     // Webflow Tabs re-initialization (Work page only, if tabs exist)
                     function waitForTabsWrapperAndRedraw(maxWait = 3000) {
                         const selector = '.w-tabs';
