@@ -938,8 +938,22 @@
                 initScrambleText();
                 setTimeout(() => {
                     // Jetboost re-initialization (Work page only)
+                    if (window.Jetboost) {
+                        console.log('Jetboost object is present, loaded:', window.Jetboost.loaded);
+                    } else {
+                        console.warn('Jetboost object is NOT present');
+                    }
+                    window.addEventListener('jetboost:reinitialize', () => {
+                        console.log('jetboost:reinitialize event detected');
+                    });
                     window.dispatchEvent(new Event('jetboost:reinitialize'));
                     console.log('Dispatched jetboost:reinitialize event');
+                    if (window.Jetboost && typeof Jetboost.ReInit === 'function') {
+                        Jetboost.ReInit();
+                        console.log('Called Jetboost.ReInit() directly');
+                    } else {
+                        console.warn('Jetboost.ReInit() is not available');
+                    }
 
                     // Webflow Tabs re-initialization (Work page only, if tabs exist)
                     function waitForTabsWrapperAndRedraw(maxWait = 3000) {
