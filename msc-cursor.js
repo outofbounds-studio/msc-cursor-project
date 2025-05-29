@@ -109,15 +109,26 @@
             wrapFirstWordInSpan();
             initDividerLineReveal();
             console.log('All animations initialized');
+            setTimeout(() => {
+                console.log('About to call Jetboost.ReInit() in Barba afterEnter hook (with delay)');
+                if (window.Jetboost && typeof Jetboost.ReInit === 'function') {
+                    Jetboost.ReInit();
+                    console.log('Jetboost.ReInit() called in Barba afterEnter hook (with delay)');
+                } else {
+                    console.warn('Jetboost.ReInit() is not available in Barba afterEnter hook');
+                }
+            }, 200);
+            console.log('REMINDER: Check that Jetboost markup is present in the DOM after transition.');
         });
 
-        // Add Jetboost.ReInit() to Barba enter hook
+        // Add Jetboost.ReInit() to Barba enter hook with logging
         barba.hooks.enter((data) => {
+            console.log('About to call Jetboost.ReInit() in Barba enter hook');
             if (window.Jetboost && typeof Jetboost.ReInit === 'function') {
                 Jetboost.ReInit();
                 console.log('Jetboost.ReInit() called in Barba enter hook');
             } else {
-                console.warn('Jetboost.ReInit() is not available');
+                console.warn('Jetboost.ReInit() is not available in Barba enter hook');
             }
         });
 
