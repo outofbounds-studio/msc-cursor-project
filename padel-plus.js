@@ -1,6 +1,95 @@
 document.addEventListener('DOMContentLoaded', function() {
   // ... (plugin checks, etc.)
 
+  // Inject CSS to ensure proper initial states
+  function injectFlipStyles() {
+    const style = document.createElement('style');
+    style.textContent = `
+      .logo-wrapper[data-flip-container="logo"] {
+        width: 10em !important;
+        max-width: 10em !important;
+        transition: none !important;
+      }
+      
+      .hero-logo-wrapper[data-flip-container="logo"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        transition: none !important;
+      }
+      
+      [data-flip-id="logo"] {
+        width: 100% !important;
+        height: auto !important;
+        transition: none !important;
+      }
+    `;
+    document.head.appendChild(style);
+    console.log('[Flip Debug] Injected flip styles');
+  }
+
+  // Initialize container widths
+  function initializeContainerWidths() {
+    const navbarContainer = document.querySelector('.logo-wrapper[data-flip-container="logo"]');
+    const heroContainer = document.querySelector('.hero-logo-wrapper[data-flip-container="logo"]');
+    
+    if (navbarContainer) {
+      gsap.set(navbarContainer, {
+        width: "10em",
+        maxWidth: "10em"
+      });
+      console.log('[Flip Debug] Initialized navbar container to 10em');
+    }
+    
+    if (heroContainer) {
+      gsap.set(heroContainer, {
+        width: "100%",
+        maxWidth: "100%"
+      });
+      console.log('[Flip Debug] Initialized hero container to 100%');
+    }
+  }
+
+  // Manual test function
+  function addManualTestButton() {
+    const testButton = document.createElement('button');
+    testButton.textContent = 'Test Logo Animation';
+    testButton.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 10000;
+      padding: 10px 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    `;
+    
+    let isInNavbar = false;
+    testButton.addEventListener('click', () => {
+      console.log('[Flip Debug] Manual test button clicked');
+      if (isInNavbar) {
+        moveLogoToHero();
+        isInNavbar = false;
+        testButton.textContent = 'Test Logo Animation (Move to Hero)';
+      } else {
+        moveLogoToNavbar();
+        isInNavbar = true;
+        testButton.textContent = 'Test Logo Animation (Move to Navbar)';
+      }
+    });
+    
+    document.body.appendChild(testButton);
+    console.log('[Flip Debug] Added manual test button');
+  }
+
+  // Initialize on load
+  injectFlipStyles();
+  initializeContainerWidths();
+  addManualTestButton();
+
   // LOGO FLIP
   ScrollTrigger.create({
     trigger: ".hero",
@@ -91,18 +180,25 @@ document.addEventListener('DOMContentLoaded', function() {
     const state = Flip.getState(logo, { props: "width" });
     heroContainer.appendChild(logo);
 
-    gsap.to(navbarContainer, {
-      width: "100vw",
-      maxWidth: "100vw",
+    // Reset navbar container to 10em width (in case it was changed)
+    gsap.set(navbarContainer, {
+      width: "10em",
+      maxWidth: "10em"
+    });
+
+    // Animate hero container to full width
+    gsap.to(heroContainer, {
+      width: "100%",
+      maxWidth: "100%",
       duration: 0.7,
       ease: "power2.inOut",
       onStart: () => {
-        console.log('[Flip Debug] gsap.to (navbar width to 100vw) started');
-        logLogoState('gsap.to start (to 100vw)');
+        console.log('[Flip Debug] gsap.to (hero width to 100%) started');
+        logLogoState('gsap.to start (to 100%)');
       },
       onComplete: () => {
-        console.log('[Flip Debug] gsap.to (navbar width to 100vw) complete');
-        logLogoState('gsap.to complete (to 100vw)');
+        console.log('[Flip Debug] gsap.to (hero width to 100%) complete');
+        logLogoState('gsap.to complete (to 100%)');
       }
     });
 
