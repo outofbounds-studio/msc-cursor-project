@@ -125,28 +125,24 @@ document.addEventListener('DOMContentLoaded', function() {
   initializeContainerWidths();
   addManualTestButton();
 
-  // LOGO FLIP
+  // Remove logo FLIP logic and replace with simple width/opacity animation
+  // Set initial state
+  gsap.set('.logo-contain', { width: '100%' });
+  gsap.set(['.nav-menu', '.contact-btn-wrap'], { opacity: 0, y: -20, pointerEvents: 'none' });
+
+  // ScrollTrigger for logo/nav animation
   ScrollTrigger.create({
-    trigger: ".hero",
-    start: "top top+=1",
-    end: "+=1",
+    trigger: '.hero', // or your hero section selector
+    start: 'bottom top', // when hero leaves viewport
     onEnter: () => {
-      console.log('[Flip Debug] ScrollTrigger LOGO onEnter (moveLogoToNavbar)');
-      logLogoState('onEnter');
-      moveLogoToNavbar();
+      gsap.to('.logo-contain', { width: '10em', duration: 0.7, ease: 'power2.inOut' });
+      gsap.to(['.nav-menu', '.contact-btn-wrap'], { opacity: 1, y: 0, pointerEvents: 'auto', duration: 0.4, delay: 0.2 });
+      document.body.classList.add('nav-active');
     },
     onLeaveBack: () => {
-      console.log('[Flip Debug] ScrollTrigger LOGO onLeaveBack (moveLogoToHero)');
-      logLogoState('onLeaveBack');
-      moveLogoToHero();
-    },
-    onUpdate: self => {
-      console.log('[Flip Debug] ScrollTrigger LOGO onUpdate', {
-        progress: self.progress,
-        scroll: self.scroll(),
-        start: self.start,
-        end: self.end
-      });
+      gsap.to('.logo-contain', { width: '100%', duration: 0.7, ease: 'power2.inOut' });
+      gsap.to(['.nav-menu', '.contact-btn-wrap'], { opacity: 0, y: -20, pointerEvents: 'none', duration: 0.4 });
+      document.body.classList.remove('nav-active');
     }
   });
 
