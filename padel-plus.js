@@ -150,11 +150,17 @@ document.addEventListener('DOMContentLoaded', function() {
     
     logLogoState('moveLogoToNavbar (before)');
     
-    // First, ensure hero container is at full width
+    // Pre-set both containers to their final states BEFORE FLIP
     gsap.set(heroContainer, {
       width: "100%",
       maxWidth: "100%",
       paddingRight: "0"
+    });
+    
+    gsap.set(navbarContainer, {
+      width: "10em",
+      maxWidth: "10em",
+      paddingRight: "1em"
     });
     
     // Get the FLIP state before moving
@@ -163,37 +169,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // Move logo to navbar container
     navbarContainer.appendChild(logo);
     
-    // Create a timeline to sequence the animations properly
-    const tl = gsap.timeline();
-    
-    // First animate the navbar container to its final state
-    tl.to(navbarContainer, {
-      width: "10em",
-      maxWidth: "10em",
-      paddingRight: "1em",
+    // Only animate the logo with FLIP - no container animations
+    Flip.from(state, {
       duration: 0.7,
       ease: "power2.inOut",
+      absolute: true,
+      scale: true,
       onStart: () => {
-        console.log('[Flip Debug] gsap.to (navbar width to 10em) started');
-        logLogoState('gsap.to start (to 10em)');
+        console.log('[Flip Debug] Flip.from (logo to navbar) started');
+        logLogoState('Flip.from start (to navbar)');
       },
       onComplete: () => {
-        console.log('[Flip Debug] gsap.to (navbar width to 10em) complete');
-        logLogoState('gsap.to complete (to 10em)');
+        console.log('[Flip Debug] Flip.from (logo to navbar) complete');
+        logLogoState('Flip.from complete (to navbar)');
       }
     });
-    
-    // Then run the FLIP animation
-    tl.add(() => {
-      Flip.from(state, {
-        duration: 0.7,
-        ease: "power2.inOut",
-        absolute: true,
-        scale: true,
-        onStart: () => console.log('[Flip Debug] Flip.from (logo to navbar) started'),
-        onComplete: () => console.log('[Flip Debug] Flip.from (logo to navbar) complete')
-      });
-    }, 0); // Start FLIP at the same time as container animation
   }
 
   function moveLogoToHero() {
@@ -208,11 +198,17 @@ document.addEventListener('DOMContentLoaded', function() {
     
     logLogoState('moveLogoToHero (before)');
     
-    // First, ensure navbar container is at its final state
+    // Pre-set both containers to their final states BEFORE FLIP
     gsap.set(navbarContainer, {
       width: "10em",
       maxWidth: "10em",
       paddingRight: "1em"
+    });
+    
+    gsap.set(heroContainer, {
+      width: "100%",
+      maxWidth: "100%",
+      paddingRight: "0"
     });
     
     // Get the FLIP state before moving
@@ -221,36 +217,20 @@ document.addEventListener('DOMContentLoaded', function() {
     // Move logo to hero container
     heroContainer.appendChild(logo);
     
-    // Create a timeline to sequence the animations properly
-    const tl = gsap.timeline();
-    
-    // First animate the hero container to its final state
-    tl.to(heroContainer, {
-      width: "100%",
-      maxWidth: "100%",
-      paddingRight: "0",
+    // Only animate the logo with FLIP - no container animations
+    Flip.from(state, {
       duration: 0.7,
       ease: "power2.inOut",
+      absolute: true,
+      scale: true,
       onStart: () => {
-        console.log('[Flip Debug] gsap.to (hero width to 100%) started');
-        logLogoState('gsap.to start (to 100%)');
+        console.log('[Flip Debug] Flip.from (logo to hero) started');
+        logLogoState('Flip.from start (to hero)');
       },
       onComplete: () => {
-        console.log('[Flip Debug] gsap.to (hero width to 100%) complete');
-        logLogoState('gsap.to complete (to 100%)');
+        console.log('[Flip Debug] Flip.from (logo to hero) complete');
+        logLogoState('Flip.from complete (to hero)');
       }
     });
-    
-    // Then run the FLIP animation
-    tl.add(() => {
-      Flip.from(state, {
-        duration: 0.7,
-        ease: "power2.inOut",
-        absolute: true,
-        scale: true,
-        onStart: () => console.log('[Flip Debug] Flip.from (logo to hero) started'),
-        onComplete: () => console.log('[Flip Debug] Flip.from (logo to hero) complete')
-      });
-    }, 0); // Start FLIP at the same time as container animation
   }
 }); 
