@@ -9,12 +9,14 @@ document.addEventListener('DOMContentLoaded', function() {
         width: 10em !important;
         max-width: 10em !important;
         transition: none !important;
+        padding-right: 1em !important;
       }
       
       .hero-logo-wrapper[data-flip-container="logo"] {
         width: 100% !important;
         max-width: 100% !important;
         transition: none !important;
+        padding-right: 0 !important;
       }
       
       [data-flip-id="logo"] {
@@ -35,15 +37,17 @@ document.addEventListener('DOMContentLoaded', function() {
     if (navbarContainer) {
       gsap.set(navbarContainer, {
         width: "10em",
-        maxWidth: "10em"
+        maxWidth: "10em",
+        paddingRight: "1em"
       });
-      console.log('[Flip Debug] Initialized navbar container to 10em');
+      console.log('[Flip Debug] Initialized navbar container to 10em with padding');
     }
     
     if (heroContainer) {
       gsap.set(heroContainer, {
         width: "100%",
-        maxWidth: "100%"
+        maxWidth: "100%",
+        paddingRight: "0"
       });
       console.log('[Flip Debug] Initialized hero container to 100%');
     }
@@ -123,9 +127,11 @@ document.addEventListener('DOMContentLoaded', function() {
       console.log(`[Flip Debug] [${context}] Logo parent:`, logo.parentElement);
       if (navbarContainer) {
         console.log(`[Flip Debug] [${context}] .logo-wrapper width:`, getComputedStyle(navbarContainer).width);
+        console.log(`[Flip Debug] [${context}] .logo-wrapper padding-right:`, getComputedStyle(navbarContainer).paddingRight);
       }
       if (heroContainer) {
         console.log(`[Flip Debug] [${context}] .hero-logo-wrapper width:`, getComputedStyle(heroContainer).width);
+        console.log(`[Flip Debug] [${context}] .hero-logo-wrapper padding-right:`, getComputedStyle(heroContainer).paddingRight);
       }
     } else {
       console.warn(`[Flip Debug] [${context}] Logo not found`);
@@ -135,17 +141,36 @@ document.addEventListener('DOMContentLoaded', function() {
   function moveLogoToNavbar() {
     const logo = document.querySelector('[data-flip-id="logo"]');
     const navbarContainer = document.querySelector('.logo-wrapper[data-flip-container="logo"]');
-    if (!logo || !navbarContainer) {
-      console.warn('[Flip Debug] moveLogoToNavbar: logo or navbarContainer not found');
+    const heroContainer = document.querySelector('.hero-logo-wrapper[data-flip-container="logo"]');
+    
+    if (!logo || !navbarContainer || !heroContainer) {
+      console.warn('[Flip Debug] moveLogoToNavbar: logo, navbarContainer, or heroContainer not found');
       return;
     }
+    
     logLogoState('moveLogoToNavbar (before)');
+    
+    // First, ensure hero container is at full width
+    gsap.set(heroContainer, {
+      width: "100%",
+      maxWidth: "100%",
+      paddingRight: "0"
+    });
+    
+    // Get the FLIP state before moving
     const state = Flip.getState(logo, { props: "width" });
+    
+    // Move logo to navbar container
     navbarContainer.appendChild(logo);
-
-    gsap.to(navbarContainer, {
+    
+    // Create a timeline to sequence the animations properly
+    const tl = gsap.timeline();
+    
+    // First animate the navbar container to its final state
+    tl.to(navbarContainer, {
       width: "10em",
       maxWidth: "10em",
+      paddingRight: "1em",
       duration: 0.7,
       ease: "power2.inOut",
       onStart: () => {
@@ -157,39 +182,53 @@ document.addEventListener('DOMContentLoaded', function() {
         logLogoState('gsap.to complete (to 10em)');
       }
     });
-
-    Flip.from(state, {
-      duration: 0.7,
-      ease: "power2.inOut",
-      absolute: true,
-      scale: true,
-      onStart: () => console.log('[Flip Debug] Flip.from (logo to navbar) started'),
-      onComplete: () => console.log('[Flip Debug] Flip.from (logo to navbar) complete')
-    });
+    
+    // Then run the FLIP animation
+    tl.add(() => {
+      Flip.from(state, {
+        duration: 0.7,
+        ease: "power2.inOut",
+        absolute: true,
+        scale: true,
+        onStart: () => console.log('[Flip Debug] Flip.from (logo to navbar) started'),
+        onComplete: () => console.log('[Flip Debug] Flip.from (logo to navbar) complete')
+      });
+    }, 0); // Start FLIP at the same time as container animation
   }
 
   function moveLogoToHero() {
     const logo = document.querySelector('[data-flip-id="logo"]');
     const heroContainer = document.querySelector('.hero-logo-wrapper[data-flip-container="logo"]');
     const navbarContainer = document.querySelector('.logo-wrapper[data-flip-container="logo"]');
+    
     if (!logo || !heroContainer || !navbarContainer) {
       console.warn('[Flip Debug] moveLogoToHero: logo, heroContainer, or navbarContainer not found');
       return;
     }
+    
     logLogoState('moveLogoToHero (before)');
-    const state = Flip.getState(logo, { props: "width" });
-    heroContainer.appendChild(logo);
-
-    // Reset navbar container to 10em width (in case it was changed)
+    
+    // First, ensure navbar container is at its final state
     gsap.set(navbarContainer, {
       width: "10em",
-      maxWidth: "10em"
+      maxWidth: "10em",
+      paddingRight: "1em"
     });
-
-    // Animate hero container to full width
-    gsap.to(heroContainer, {
+    
+    // Get the FLIP state before moving
+    const state = Flip.getState(logo, { props: "width" });
+    
+    // Move logo to hero container
+    heroContainer.appendChild(logo);
+    
+    // Create a timeline to sequence the animations properly
+    const tl = gsap.timeline();
+    
+    // First animate the hero container to its final state
+    tl.to(heroContainer, {
       width: "100%",
       maxWidth: "100%",
+      paddingRight: "0",
       duration: 0.7,
       ease: "power2.inOut",
       onStart: () => {
@@ -201,14 +240,17 @@ document.addEventListener('DOMContentLoaded', function() {
         logLogoState('gsap.to complete (to 100%)');
       }
     });
-
-    Flip.from(state, {
-      duration: 0.7,
-      ease: "power2.inOut",
-      absolute: true,
-      scale: true,
-      onStart: () => console.log('[Flip Debug] Flip.from (logo to hero) started'),
-      onComplete: () => console.log('[Flip Debug] Flip.from (logo to hero) complete')
-    });
+    
+    // Then run the FLIP animation
+    tl.add(() => {
+      Flip.from(state, {
+        duration: 0.7,
+        ease: "power2.inOut",
+        absolute: true,
+        scale: true,
+        onStart: () => console.log('[Flip Debug] Flip.from (logo to hero) started'),
+        onComplete: () => console.log('[Flip Debug] Flip.from (logo to hero) complete')
+      });
+    }, 0); // Start FLIP at the same time as container animation
   }
 }); 
