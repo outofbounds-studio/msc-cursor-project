@@ -5,28 +5,55 @@ document.addEventListener('DOMContentLoaded', function() {
   function injectFlipStyles() {
     const style = document.createElement('style');
     style.textContent = `
+      /* Override any 100vw styles and ensure proper container behavior */
       .logo-wrapper[data-flip-container="logo"] {
         width: 10em !important;
         max-width: 10em !important;
+        min-width: 8em !important;
         transition: none !important;
         padding-right: 1em !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
       }
       
       .hero-logo-wrapper[data-flip-container="logo"] {
         width: 100% !important;
         max-width: 100% !important;
+        min-width: auto !important;
         transition: none !important;
         padding-right: 0 !important;
+        padding-left: 0 !important;
+        padding: 0 0.8em !important;
+        box-sizing: border-box !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        z-index: 10 !important;
+        overflow: visible !important;
       }
       
       [data-flip-id="logo"] {
         width: 100% !important;
         height: auto !important;
         transition: none !important;
+        display: block !important;
+      }
+      
+      /* Override any existing 100vw styles */
+      .logo-wrapper {
+        width: 10em !important;
+        max-width: 10em !important;
+        min-width: 8em !important;
+      }
+      
+      .hero-logo-wrapper {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: auto !important;
       }
     `;
     document.head.appendChild(style);
-    console.log('[Flip Debug] Injected flip styles');
+    console.log('[Flip Debug] Injected flip styles with 100% overrides');
   }
 
   // Initialize container widths
@@ -38,7 +65,9 @@ document.addEventListener('DOMContentLoaded', function() {
       gsap.set(navbarContainer, {
         width: "10em",
         maxWidth: "10em",
-        paddingRight: "1em"
+        minWidth: "8em",
+        paddingRight: "1em",
+        boxSizing: "border-box"
       });
       console.log('[Flip Debug] Initialized navbar container to 10em with padding');
     }
@@ -47,9 +76,11 @@ document.addEventListener('DOMContentLoaded', function() {
       gsap.set(heroContainer, {
         width: "100%",
         maxWidth: "100%",
-        paddingRight: "0"
+        minWidth: "auto",
+        padding: "0 0.8em",
+        boxSizing: "border-box"
       });
-      console.log('[Flip Debug] Initialized hero container to 100%');
+      console.log('[Flip Debug] Initialized hero container to 100% with padding');
     }
   }
 
@@ -154,14 +185,21 @@ document.addEventListener('DOMContentLoaded', function() {
     gsap.set(heroContainer, {
       width: "100%",
       maxWidth: "100%",
-      paddingRight: "0"
+      minWidth: "auto",
+      padding: "0 0.8em",
+      boxSizing: "border-box"
     });
     
     gsap.set(navbarContainer, {
       width: "10em",
       maxWidth: "10em",
-      paddingRight: "1em"
+      minWidth: "8em",
+      paddingRight: "1em",
+      boxSizing: "border-box"
     });
+    
+    console.log('[Flip Debug] Containers set to final states before FLIP');
+    logLogoState('moveLogoToNavbar (after container set)');
     
     // Get the FLIP state before moving
     const state = Flip.getState(logo, { props: "width" });
@@ -202,14 +240,21 @@ document.addEventListener('DOMContentLoaded', function() {
     gsap.set(navbarContainer, {
       width: "10em",
       maxWidth: "10em",
-      paddingRight: "1em"
+      minWidth: "8em",
+      paddingRight: "1em",
+      boxSizing: "border-box"
     });
     
     gsap.set(heroContainer, {
       width: "100%",
       maxWidth: "100%",
-      paddingRight: "0"
+      minWidth: "auto",
+      padding: "0 0.8em",
+      boxSizing: "border-box"
     });
+    
+    console.log('[Flip Debug] Containers set to final states before FLIP');
+    logLogoState('moveLogoToHero (after container set)');
     
     // Get the FLIP state before moving
     const state = Flip.getState(logo, { props: "width" });
