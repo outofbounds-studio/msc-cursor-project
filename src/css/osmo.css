@@ -1,0 +1,131 @@
+
+
+  /* ------------------------- Osmo [https://osmo.supply/] ------------------------- */
+	/* ------------------------- Variables -------------------------------------------------- */
+  
+  :root {
+    --cubic-default: cubic-bezier(0.65, 0.05, 0, 1);
+    --duration-default: 0.735s;
+    --animation-default: var(--duration-default) var(--cubic-default);
+    --one-col-width: calc(8.33% - var(--gap-size));
+    --three-col-width: calc(25% - 2 * var(--gap-size));
+    
+      /* Colors (not changing with Dark/Light Theme) */
+    --color-ignore-neutral-100: #ffffff;
+    --color-ignore-neutral-200: #efeeec;
+    --color-ignore-neutral-300: #e3e1de;
+    --color-ignore-neutral-400: #d0cfcd;
+    --color-ignore-neutral-500: #818180;
+    --color-ignore-neutral-600: #2c2c2c;
+    --color-ignore-neutral-700: #1f1f1f;
+    --color-ignore-neutral-800: #131313;
+    --color-ignore-neutral-900: #000000;
+    --color-ignore-white: var(--color-ignore-neutral-100);
+    --color-ignore-light: var(--color-ignore-neutral-200);
+    --color-ignore-dark: var(--color-ignore-neutral-800);
+    --color-ignore-black: var(--color-ignore-neutral-900);
+
+    --color-ignore-rgb-dark: 19, 19, 19;
+    --color-ignore-rgb-light: 239, 238, 236;
+    --color-ignore-rgb-black: 0, 0, 0;
+    --color-ignore-rgb-white: 255, 255, 255;
+  }
+    
+  /* ------------------------- Scaling System by Osmo [https://osmo.supply/] -------------------------------------------------- */
+
+  /* Desktop */
+  :root {
+     --size-unit: 16; /* body font-size in design - no px */
+     --size-container-ideal: 1440; /* screen-size in design - no px */
+     --size-container-min: 992px;
+     --size-container-max: 1920px;
+     --size-container: clamp(var(--size-container-min), 100vw, var(--size-container-max));
+     --size-font: calc(var(--size-container) / (var(--size-container-ideal) / var(--size-unit)));
+  }
+
+  /* Tablet */
+  @media screen and (max-width: 991px) {
+    :root {
+      --size-container-ideal: 1080; /* screen-size in design - no px */
+      --size-container-min: 768px;
+      --size-container-max: 991px;
+    }
+  }
+
+  /* Mobile Landscape */
+  @media screen and (max-width: 767px) {
+    :root {
+      --size-container-ideal: 550; /* screen-size in design - no px */
+      --size-container-min: 480px;
+      --size-container-max: 767px;
+      --container-padding: 1.25em;
+    }
+  }
+
+  /* Mobile Portrait */
+  @media screen and (max-width: 479px) {
+    :root {
+      --size-container-ideal: 402; /* screen-size in design - no px */
+      --size-container-min: 320px;
+      --size-container-max: 479px;
+    }
+  }
+  
+  /* Apply to body */
+  body {font-size: var(--size-font);}
+  
+  /* ------------------------- Hide Scrollbar -------------------------------------------------- */
+
+  body ::-webkit-scrollbar{display: none;} /* Chrome, Safari, Opera */
+  body {-ms-overflow-style: none;} /* IE & Edge */
+  html {scrollbar-width: none;} /* Firefox */
+  
+  /* ------------------------- body -------------------------------------------------- */
+
+  *, *:after, *:before { -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;}
+  html {scroll-behavior: initial;}
+  html, body {-webkit-font-smoothing: antialiased;}
+  svg {max-width: none; height: auto; box-sizing: border-box; vertical-align: middle;}
+
+  /* Selection */
+  ::selection {
+     background-color: var(--color-primary);
+     color: var(--color-neutral-800);
+     text-shadow: none;
+  }
+
+  ::-moz-selection {
+     background-color: var(--color-primary);
+     color: var(--color-neutral-800);
+     text-shadow: none;
+  }
+  
+  a {
+  	color: inherit;
+  	text-decoration: none;
+  }
+  
+.button-bg {
+    transition: transform var(--animation-default), background-color 0.2s ease-in-out;
+} 
+
+/* Button & Link letter hovers */
+.button:hover .single-letter,
+.link:not(.w--current):hover .single-letter { 
+    transform: translate(0px, -1.25em); 
+}
+
+.button:hover .button-bg { 
+    transform: scale(0.95); 
+}
+
+/* Ensure the default state of the arrow has a transition defined */
+.main-btn-arrow {
+    transition: transform var(--animation-default); /* Ensure smooth transition for all states */
+}
+
+.button:hover .main-btn-arrow,
+.button-main:hover .main-btn-arrow {
+    transform: translateX(0.25rem); 
+}
+  

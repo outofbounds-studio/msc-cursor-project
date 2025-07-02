@@ -121,6 +121,48 @@
             console.log('REMINDER: Check that Jetboost markup is present in the DOM after transition.');
         });
 
+        // Initialize page-specific functions for direct page loads (not through Barba)
+        function initPageSpecificFunctions() {
+            const currentNamespace = barba.current?.namespace;
+            console.log('Initializing page-specific functions for namespace:', currentNamespace);
+            
+            if (currentNamespace === 'style-item') {
+                console.log('Initializing style-item specific functions');
+                components.initCustomCursor();
+                animations.initSplitTextAnimation();
+                components.initVimeoBGVideo();
+                components.initSliders();
+                components.initTestimonial();
+                components.initModalBasic();
+                components.initAccordionCSS();
+                initNumberTickerAnimation();
+                initScrambleText();
+            } else if (currentNamespace === 'work-item') {
+                console.log('Initializing work-item specific functions');
+                components.initCustomCursor();
+                animations.initSplitTextAnimation();
+                components.initVimeoBGVideo();
+                animations.stylesScrub();
+                components.initSliders();
+                components.initTestimonial();
+                components.initTabSystem();
+                components.initAccordionCSS();
+                initNumberTickerAnimation();
+                initScrambleText();
+            } else if (currentNamespace === 'news-item') {
+                console.log('Initializing news-item specific functions');
+                components.initCustomCursor();
+                animations.initSplitTextAnimation();
+                components.initVimeoBGVideo();
+                components.initModalBasic();
+                components.initAccordionCSS();
+                initScrambleText();
+            }
+        }
+
+        // Call page-specific initialization after a short delay to ensure DOM is ready
+        setTimeout(initPageSpecificFunctions, 100);
+
         // Add Jetboost.ReInit() to Barba enter hook with logging
         barba.hooks.enter((data) => {
             console.log('About to call Jetboost.ReInit() in Barba enter hook');
@@ -193,7 +235,9 @@
                 'about': 'light',
                 'work': 'dark',
                 'styles': 'dark',
-                'work-item': 'dark'
+                'work-item': 'dark',
+                'style-item': 'dark',
+                'news-item': 'dark'
             },
 
             init() {
