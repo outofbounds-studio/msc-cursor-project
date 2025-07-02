@@ -157,6 +157,11 @@
                 components.initModalBasic();
                 components.initAccordionCSS();
                 initScrambleText();
+            } else if (currentNamespace === 'faqs') {
+                console.log('Initializing faqs specific functions');
+                components.initCustomCursor();
+                animations.initSplitTextAnimation();
+                components.initAccordionCSS();
             }
         }
 
@@ -1221,6 +1226,30 @@
                     }
                 });
             }
+        },
+        
+        faqs: {
+            beforeEnter() {
+                console.log('[Barba] faqs.beforeEnter');
+                // Add any theme logic if needed
+            },
+            afterEnter() {
+                console.log('[Barba] faqs.afterEnter');
+                components.initCustomCursor();
+                animations.initSplitTextAnimation();
+                components.initAccordionCSS();
+            },
+            afterLeave() {
+                console.log('[Barba] faqs.afterLeave');
+                console.log("Leaving faqs page...");
+                ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+                document.querySelectorAll('[data-split="heading"]').forEach(heading => {
+                    if (heading._splitText) {
+                        heading._splitText.revert();
+                        heading._splitText = null;
+                    }
+                });
+            }
         }
     };
     
@@ -1328,6 +1357,15 @@
                 },
                 afterEnter: pages['news-item'].afterEnter,
                 afterLeave: pages['news-item'].afterLeave
+            },
+            {
+                namespace: 'faqs',
+                beforeEnter() {
+                    window.scrollTo(0, 0);
+                    if (pages.faqs.beforeEnter) pages.faqs.beforeEnter();
+                },
+                afterEnter: pages.faqs.afterEnter,
+                afterLeave: pages.faqs.afterLeave
             }
         ]
     };
