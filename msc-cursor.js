@@ -2009,7 +2009,7 @@
 
     if (!burgerBtn || !navBar || !pageWrap || !menuOverlay) return;
 
-    // Add backdrop blur
+    // Add backdrop blur (in case not set in CSS)
     menuOverlay.style.backdropFilter = 'blur(8px)';
     menuOverlay.style.webkitBackdropFilter = 'blur(8px)';
 
