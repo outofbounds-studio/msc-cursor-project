@@ -2041,7 +2041,7 @@
         pageWrap.style.width = '100vw';
 
         menuOverlay.classList.add('open');
-        pageWrap.classList.add('menu-open');
+        pageWrap.classList.add('menu-open'); // Only scale and shadow, no translateY
         navBar.classList.add('hide');
         document.body.style.overflow = 'hidden';
         trapFocus(menuOverlay);
