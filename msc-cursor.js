@@ -2015,20 +2015,22 @@
 
     function closeMenu() {
         menuOverlay.classList.remove('open');
-        navBar.classList.remove('open');
         pageWrap.classList.remove('menu-open');
         pageWrap.style.transform = '';
+        navBar.classList.remove('hide');
         document.body.style.overflow = '';
         removeTrapFocus();
     }
 
     function openMenu() {
         menuOverlay.classList.add('open');
-        navBar.classList.add('open');
+        navBar.classList.add('hide');
         pageWrap.classList.add('menu-open');
-        // Dynamically set translateY to navBar height
-        const navHeight = navBar.offsetHeight;
-        pageWrap.style.transform = `translateY(${navHeight}px) scale(0.98)`;
+        // Dynamically set translateY to menuOverlay height
+        setTimeout(() => {
+            const menuHeight = menuOverlay.offsetHeight;
+            pageWrap.style.transform = `translateY(${menuHeight}px) scale(0.98)`;
+        }, 10); // Wait for menuOverlay to be visible
         document.body.style.overflow = 'hidden';
         trapFocus(menuOverlay);
     }
