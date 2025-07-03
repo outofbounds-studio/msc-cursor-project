@@ -2015,16 +2015,20 @@
 
     function closeMenu() {
         menuOverlay.classList.remove('open');
+        navBar.classList.remove('open');
         pageWrap.classList.remove('menu-open');
-        navBar.classList.remove('hide');
+        pageWrap.style.transform = '';
         document.body.style.overflow = '';
         removeTrapFocus();
     }
 
     function openMenu() {
         menuOverlay.classList.add('open');
+        navBar.classList.add('open');
         pageWrap.classList.add('menu-open');
-        navBar.classList.add('hide');
+        // Dynamically set translateY to navBar height
+        const navHeight = navBar.offsetHeight;
+        pageWrap.style.transform = `translateY(${navHeight}px) scale(0.98)`;
         document.body.style.overflow = 'hidden';
         trapFocus(menuOverlay);
     }
