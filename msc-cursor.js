@@ -2013,15 +2013,33 @@
     menuOverlay.style.backdropFilter = 'blur(8px)';
     menuOverlay.style.webkitBackdropFilter = 'blur(8px)';
 
+    let scrollPosition = 0;
+
     function closeMenu() {
         menuOverlay.classList.remove('open');
         pageWrap.classList.remove('menu-open');
         navBar.classList.remove('hide');
         document.body.style.overflow = '';
+        // Restore scroll position and remove fixed positioning
+        pageWrap.style.position = '';
+        pageWrap.style.top = '';
+        pageWrap.style.left = '';
+        pageWrap.style.right = '';
+        pageWrap.style.width = '';
+        window.scrollTo(0, scrollPosition);
         removeTrapFocus();
     }
 
     function openMenu() {
+        // Store the current scroll position
+        scrollPosition = window.scrollY || window.pageYOffset;
+        // Lock scroll by fixing the page_wrap in place
+        pageWrap.style.position = 'fixed';
+        pageWrap.style.top = `-${scrollPosition}px`;
+        pageWrap.style.left = '0';
+        pageWrap.style.right = '0';
+        pageWrap.style.width = '100vw';
+
         menuOverlay.classList.add('open');
         pageWrap.classList.add('menu-open');
         navBar.classList.add('hide');
