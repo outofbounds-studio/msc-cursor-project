@@ -1997,3 +1997,86 @@
         });
     }
 })();
+
+// === Global Menu Overlay Logic ===
+(function() {
+    // Selectors
+    const burgerBtn = document.querySelector('.burger_wrap');
+    const navBar = document.querySelector('.nav_bar');
+    const pageWrap = document.querySelector('.page_wrap');
+    const menuOverlay = document.querySelector('.menu-overlay');
+    const closeMenuBtn = document.querySelector('.close-menu');
+
+    if (!burgerBtn || !navBar || !pageWrap || !menuOverlay) return;
+
+    // Add backdrop blur
+    menuOverlay.style.backdropFilter = 'blur(8px)';
+    menuOverlay.style.webkitBackdropFilter = 'blur(8px)';
+
+    function closeMenu() {
+        menuOverlay.classList.remove('open');
+        pageWrap.classList.remove('menu-open');
+        navBar.classList.remove('hide');
+        document.body.style.overflow = '';
+        removeTrapFocus();
+    }
+
+    function openMenu() {
+        menuOverlay.classList.add('open');
+        pageWrap.classList.add('menu-open');
+        navBar.classList.add('hide');
+        document.body.style.overflow = 'hidden';
+        trapFocus(menuOverlay);
+    }
+
+    burgerBtn.addEventListener('click', openMenu);
+    if (closeMenuBtn) closeMenuBtn.addEventListener('click', closeMenu);
+
+    // Click outside (on .page_wrap) closes menu if open
+    pageWrap.addEventListener('click', function() {
+        if (menuOverlay.classList.contains('open')) closeMenu();
+    });
+
+    // Prevent closing when clicking inside the menu
+    menuOverlay.addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
+
+    // === Accessibility: Trap Focus in the Menu ===
+    let lastFocusedElement = null;
+    function trapFocus(element) {
+        const focusableSelectors = 'a, button, textarea, input, select, [tabindex]:not([tabindex="-1"])';
+        const focusableEls = element.querySelectorAll(focusableSelectors);
+        if (!focusableEls.length) return;
+        const firstEl = focusableEls[0];
+        const lastEl = focusableEls[focusableEls.length - 1];
+        lastFocusedElement = document.activeElement;
+        function handleTab(e) {
+            if (e.key !== 'Tab') return;
+            if (e.shiftKey) {
+                if (document.activeElement === firstEl) {
+                    e.preventDefault();
+                    lastEl.focus();
+                }
+            } else {
+                if (document.activeElement === lastEl) {
+                    e.preventDefault();
+                    firstEl.focus();
+                }
+            }
+        }
+        element.addEventListener('keydown', handleTab);
+        firstEl.focus();
+        element._focusTrapHandler = handleTab;
+    }
+    function removeTrapFocus() {
+        if (menuOverlay._focusTrapHandler) {
+            menuOverlay.removeEventListener('keydown', menuOverlay._focusTrapHandler);
+            menuOverlay._focusTrapHandler = null;
+        }
+        if (lastFocusedElement) {
+            lastFocusedElement.focus();
+            lastFocusedElement = null;
+        }
+    }
+})();
