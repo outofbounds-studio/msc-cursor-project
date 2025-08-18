@@ -187,7 +187,7 @@
         console.log('Checking GSAP plugins...');
         console.log('GSAP:', typeof gsap !== 'undefined' ? 'Loaded' : 'Not loaded');
         console.log('ScrollTrigger:', typeof ScrollTrigger !== 'undefined' ? 'Loaded' : 'Not loaded');
-        console.log('SplitText:', typeof SplitText !== 'undefined' : 'Loaded' : 'Not loaded');
+        console.log('SplitText:', typeof SplitText !== 'undefined' ? 'Loaded' : 'Not loaded');
         console.log('About to call components.initAdvancedFormValidation() in main init');
         components.initAdvancedFormValidation();
         console.log('components.initAdvancedFormValidation() called in main init');
