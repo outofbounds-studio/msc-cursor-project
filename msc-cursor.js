@@ -932,20 +932,37 @@
 
         initAdvancedFormValidation() {
             try {
+                console.log('=== Form Validation Debug ===');
                 const forms = document.querySelectorAll('[data-form-validate]');
+                console.log('Forms with data-form-validate:', forms.length);
 
-                forms.forEach((formContainer) => {
+                forms.forEach((formContainer, index) => {
+                    console.log(`Processing form ${index + 1}:`, formContainer);
                     const startTime = new Date().getTime();
 
                     const form = formContainer.querySelector('form');
-                    if (!form) return;
+                    if (!form) {
+                        console.log(`Form ${index + 1}: No form element found`);
+                        return;
+                    }
+                    console.log(`Form ${index + 1}: Form element found:`, form);
 
                     const validateFields = form.querySelectorAll('[data-validate]');
+                    console.log(`Form ${index + 1}: Fields with data-validate:`, validateFields.length);
+
                     const dataSubmit = form.querySelector('[data-submit]');
-                    if (!dataSubmit) return;
+                    if (!dataSubmit) {
+                        console.log(`Form ${index + 1}: No data-submit element found`);
+                        return;
+                    }
+                    console.log(`Form ${index + 1}: data-submit element found:`, dataSubmit);
 
                     const realSubmitInput = dataSubmit.querySelector('input[type="submit"]');
-                    if (!realSubmitInput) return;
+                    if (!realSubmitInput) {
+                        console.log(`Form ${index + 1}: No submit input found in data-submit`);
+                        return;
+                    }
+                    console.log(`Form ${index + 1}: Submit input found:`, realSubmitInput);
 
                     function isSpam() {
                         const currentTime = new Date().getTime();
@@ -971,21 +988,29 @@
                     });
 
                     function validateAndStartLiveValidationForAll() {
+                        console.log(`Form ${index + 1}: Starting validation for all fields`);
                         let allValid = true;
                         let firstInvalidField = null;
 
-                        validateFields.forEach(function (fieldGroup) {
+                        validateFields.forEach(function (fieldGroup, fieldIndex) {
                             const input = fieldGroup.querySelector('input, textarea, select');
                             const radioCheckGroup = fieldGroup.querySelector('[data-radiocheck-group]');
-                            if (!input && !radioCheckGroup) return;
+                            if (!input && !radioCheckGroup) {
+                                console.log(`Form ${index + 1}, Field ${fieldIndex + 1}: No input or radio group found`);
+                                return;
+                            }
 
-                            if (input) input.__validationStarted = true;
+                            if (input) {
+                                input.__validationStarted = true;
+                                console.log(`Form ${index + 1}, Field ${fieldIndex + 1}: Input found:`, input.type, input.name);
+                            }
                             if (radioCheckGroup) {
                                 radioCheckGroup.__validationStarted = true;
                                 const inputs = radioCheckGroup.querySelectorAll('input[type="radio"], input[type="checkbox"]');
                                 inputs.forEach(function (input) {
                                     input.__validationStarted = true;
                                 });
+                                console.log(`Form ${index + 1}, Field ${fieldIndex + 1}: Radio/checkbox group found with ${inputs.length} inputs`);
                             }
 
                             updateFieldStatus(fieldGroup);
@@ -995,6 +1020,9 @@
                                 if (!firstInvalidField) {
                                     firstInvalidField = input || radioCheckGroup.querySelector('input');
                                 }
+                                console.log(`Form ${index + 1}, Field ${fieldIndex + 1}: Validation failed`);
+                            } else {
+                                console.log(`Form ${index + 1}, Field ${fieldIndex + 1}: Validation passed`);
                             }
                         });
 
@@ -1002,6 +1030,7 @@
                             firstInvalidField.focus();
                         }
 
+                        console.log(`Form ${index + 1}: Overall validation result:`, allValid);
                         return allValid;
                     }
 
@@ -1181,24 +1210,35 @@
                     });
 
                     dataSubmit.addEventListener('click', function () {
+                        console.log(`Form ${index + 1}: Submit button clicked`);
                         if (validateAndStartLiveValidationForAll()) {
+                            console.log(`Form ${index + 1}: Validation passed, checking spam protection`);
                             if (isSpam()) {
+                                console.log(`Form ${index + 1}: Spam protection triggered`);
                                 alert('Form submitted too quickly. Please try again.');
                                 return;
                             }
+                            console.log(`Form ${index + 1}: Triggering form submission`);
                             realSubmitInput.click();
+                        } else {
+                            console.log(`Form ${index + 1}: Validation failed`);
                         }
                     });
 
                     form.addEventListener('keydown', function (event) {
                         if (event.key === 'Enter' && event.target.tagName !== 'TEXTAREA') {
                             event.preventDefault();
+                            console.log(`Form ${index + 1}: Enter key pressed`);
                             if (validateAndStartLiveValidationForAll()) {
                                 if (isSpam()) {
+                                    console.log(`Form ${index + 1}: Spam protection triggered (Enter key)`);
                                     alert('Form submitted too quickly. Please try again.');
                                     return;
                                 }
+                                console.log(`Form ${index + 1}: Triggering form submission (Enter key)`);
                                 realSubmitInput.click();
+                            } else {
+                                console.log(`Form ${index + 1}: Validation failed (Enter key)`);
                             }
                         }
                     });
