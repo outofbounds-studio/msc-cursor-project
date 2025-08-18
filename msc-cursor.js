@@ -1,7 +1,8 @@
 // msc.js - Metal Staircase Co. Website Scripts
-// Version: 1.0.1 updated 02/07/2025 13.40
+// Version: 1.0.2 updated 18/08/2025 15.14
 
 (function() {
+    console.log('🚀 msc-cursor.js script loaded and executing!');
     // Load required scripts dynamically
     function loadScript(src) {
         return new Promise((resolve, reject) => {
@@ -108,7 +109,9 @@
             initSpecLineReveal();
             wrapFirstWordInSpan();
             initDividerLineReveal();
+            console.log('🔍 About to call components.initAdvancedFormValidation()');
             components.initAdvancedFormValidation();
+            console.log('✅ components.initAdvancedFormValidation() called');
             console.log('All animations initialized');
             setTimeout(() => {
                 console.log('About to call Jetboost.ReInit() in Barba afterEnter hook (with delay)');
@@ -184,8 +187,10 @@
         console.log('Checking GSAP plugins...');
         console.log('GSAP:', typeof gsap !== 'undefined' ? 'Loaded' : 'Not loaded');
         console.log('ScrollTrigger:', typeof ScrollTrigger !== 'undefined' ? 'Loaded' : 'Not loaded');
-        console.log('SplitText:', typeof SplitText !== 'undefined' ? 'Loaded' : 'Not loaded');
+        console.log('SplitText:', typeof SplitText !== 'undefined' : 'Loaded' : 'Not loaded');
+        console.log('🔍 About to call components.initAdvancedFormValidation() in main init');
         components.initAdvancedFormValidation();
+        console.log('✅ components.initAdvancedFormValidation() called in main init');
         console.log('Initialization complete');
     }
 
@@ -931,6 +936,7 @@
         },
 
         initAdvancedFormValidation() {
+            console.log('🚀 initAdvancedFormValidation function called!');
             try {
                 console.log('=== Form Validation Debug ===');
                 const forms = document.querySelectorAll('[data-form-validate]');
