@@ -109,9 +109,17 @@
             initSpecLineReveal();
             wrapFirstWordInSpan();
             initDividerLineReveal();
-            console.log('About to call components.initAdvancedFormValidation()');
-            components.initAdvancedFormValidation();
-            console.log('components.initAdvancedFormValidation() called');
+            
+            // Only run form validation on pages that have forms
+            const hasForms = document.querySelectorAll('[data-form-validate]').length > 0;
+            if (hasForms) {
+                console.log('Forms detected, running form validation...');
+                components.initAdvancedFormValidation();
+                console.log('components.initAdvancedFormValidation() called');
+            } else {
+                console.log('No forms detected, skipping form validation');
+            }
+            
             console.log('All animations initialized');
             setTimeout(() => {
                 console.log('About to call Jetboost.ReInit() in Barba afterEnter hook (with delay)');
@@ -188,9 +196,17 @@
         console.log('GSAP:', typeof gsap !== 'undefined' ? 'Loaded' : 'Not loaded');
         console.log('ScrollTrigger:', typeof ScrollTrigger !== 'undefined' ? 'Loaded' : 'Not loaded');
         console.log('SplitText:', typeof SplitText !== 'undefined' ? 'Loaded' : 'Not loaded');
-        console.log('About to call components.initAdvancedFormValidation() in main init');
-        components.initAdvancedFormValidation();
-        console.log('components.initAdvancedFormValidation() called in main init');
+        
+        // Only run form validation on pages that have forms
+        const hasForms = document.querySelectorAll('[data-form-validate]').length > 0;
+        if (hasForms) {
+            console.log('Forms detected in main init, running form validation...');
+            components.initAdvancedFormValidation();
+            console.log('components.initAdvancedFormValidation() called in main init');
+        } else {
+            console.log('No forms detected in main init, skipping form validation');
+        }
+        
         console.log('Initialization complete');
     }
 
