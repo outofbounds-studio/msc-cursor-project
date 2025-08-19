@@ -2131,59 +2131,98 @@
             mainTimeline.add(tl);
             return;
           }
-          const state = Flip.getState(img);
-          const triggerRect = trigger.getBoundingClientRect();
-          trigger.parentElement.style.height = `${triggerRect.height}px`;
-          trigger.setAttribute('data-lightbox', 'original-parent');
-          img.setAttribute('data-lightbox', 'original');
-          updateActiveItem(index);
-          container.addEventListener('click', handleOutsideClick);
-          const tl = gsap.timeline({
-            onComplete: () => {
-              onOpen?.();
+          try {
+            const state = Flip.getState(img);
+            const triggerRect = trigger.getBoundingClientRect();
+            trigger.parentElement.style.height = `${triggerRect.height}px`;
+            trigger.setAttribute('data-lightbox', 'original-parent');
+            img.setAttribute('data-lightbox', 'original');
+            updateActiveItem(index);
+            container.addEventListener('click', handleOutsideClick);
+            const tl = gsap.timeline({
+              onComplete: () => {
+                onOpen?.();
+              }
+            });
+            elements.wrapper.classList.add('is-active');
+            const targetItem = elements.items[index];
+            const lightboxImage = targetItem ? targetItem.querySelector('img') : null;
+            if (lightboxImage) {
+              lightboxImage.style.display = 'none';
             }
-          });
-          elements.wrapper.classList.add('is-active');
-          const targetItem = elements.items[index];
-          const lightboxImage = targetItem ? targetItem.querySelector('img') : null;
-          if (lightboxImage) {
-            lightboxImage.style.display = 'none';
-          }
-          elements.triggerParents.forEach(otherTrigger => {
-            if (otherTrigger !== trigger) {
-              gsap.to(otherTrigger, {
-                autoAlpha: 0,
-                duration: 0.4,
-                stagger:0.02,
-                overwrite: true
+            elements.triggerParents.forEach(otherTrigger => {
+              if (otherTrigger !== trigger) {
+                gsap.to(otherTrigger, {
+                  autoAlpha: 0,
+                  duration: 0.4,
+                  stagger:0.02,
+                  overwrite: true
+                });
+              }
+            });
+            if (targetItem && !targetItem.contains(img)) {
+              targetItem.appendChild(img);
+              // Add error handling for Flip animation
+              try {
+                tl.add(
+                  Flip.from(state, {
+                    targets: img,
+                    absolute: true,
+                    duration: 0.6,
+                    ease: "power2.inOut",
+                    onUpdate: function() {
+                      // Ensure proper positioning during animation
+                      if (img.style.transform && img.style.transform.includes('translate')) {
+                        // Clean up any invalid transform values
+                        const transform = img.style.transform;
+                        if (transform.includes('translate(NaN') || transform.includes('translate(n')) {
+                          img.style.transform = transform.replace(/translate\([^)]*\)/g, '');
+                        }
+                      }
+                    }
+                  }), 0
+                );
+              } catch (flipError) {
+                console.error('Flip animation error:', flipError);
+                // Fallback: manually position the image
+                gsap.set(img, {
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  xPercent: -50,
+                  yPercent: -50,
+                  scale: 1
+                });
+              }
+            }
+            tl.to(elements.wrapper, {
+              backgroundColor: "rgba(0,0,0,0.8)",
+              duration: 0.6
+            }, 0)
+            .fromTo(elements.nav, {
+              autoAlpha: 0,
+              y: "1rem"
+            }, {
+              autoAlpha: 1,
+              y: "0rem",
+              duration: 0.6,
+              stagger: { each: 0.05, from: "center" }
+            }, 0.2);
+            mainTimeline.add(tl);
+          } catch (error) {
+            console.error('Lightbox animation error:', error);
+            // Fallback: manually position the image
+            if (img) {
+              gsap.set(img, {
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                xPercent: -50,
+                yPercent: -50,
+                scale: 1
               });
             }
-          });
-          if (targetItem && !targetItem.contains(img)) {
-            targetItem.appendChild(img);
-            tl.add(
-              Flip.from(state, {
-                targets: img,
-                absolute: true,
-                duration: 0.6,
-                ease: "power2.inOut"
-              }), 0
-            );
           }
-          tl.to(elements.wrapper, {
-            backgroundColor: "rgba(0,0,0,0.8)",
-            duration: 0.6
-          }, 0)
-          .fromTo(elements.nav, {
-            autoAlpha: 0,
-            y: "1rem"
-          }, {
-            autoAlpha: 1,
-            y: "0rem",
-            duration: 0.6,
-            stagger: { each: 0.05, from: "center" }
-          }, 0.2);
-          mainTimeline.add(tl);
         });
       });
       if (elements.buttons.next) {
