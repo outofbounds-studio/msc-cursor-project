@@ -2164,6 +2164,25 @@
               targetItem.appendChild(img);
               // Add error handling for Flip animation
               try {
+                // Pre-clean any existing invalid styles
+                if (img.style.transform) {
+                  img.style.transform = img.style.transform.replace(/translate\([^)]*\)/g, '');
+                }
+                if (img.style.translate) {
+                  img.style.translate = '';
+                }
+                
+                // Set initial position before Flip
+                gsap.set(img, {
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  xPercent: -50,
+                  yPercent: -50,
+                  scale: 1,
+                  clearProps: "transform"
+                });
+                
                 tl.add(
                   Flip.from(state, {
                     targets: img,
@@ -2171,13 +2190,21 @@
                     duration: 0.6,
                     ease: "power2.inOut",
                     onUpdate: function() {
-                      // Ensure proper positioning during animation
-                      if (img.style.transform && img.style.transform.includes('translate')) {
-                        // Clean up any invalid transform values
-                        const transform = img.style.transform;
-                        if (transform.includes('translate(NaN') || transform.includes('translate(n')) {
-                          img.style.transform = transform.replace(/translate\([^)]*\)/g, '');
-                        }
+                      // Aggressively clean invalid values
+                      if (img.style.transform && (img.style.transform.includes('translate(NaN') || img.style.transform.includes('translate(n') || img.style.transform.includes('translate(undefined'))) {
+                        img.style.transform = img.style.transform.replace(/translate\([^)]*\)/g, '');
+                      }
+                      if (img.style.translate && (img.style.translate === 'n' || img.style.translate === 'NaN' || img.style.translate === 'undefined')) {
+                        img.style.translate = '';
+                      }
+                    },
+                    onComplete: function() {
+                      // Final cleanup
+                      if (img.style.transform && (img.style.transform.includes('translate(NaN') || img.style.transform.includes('translate(n') || img.style.transform.includes('translate(undefined'))) {
+                        img.style.transform = img.style.transform.replace(/translate\([^)]*\)/g, '');
+                      }
+                      if (img.style.translate && (img.style.translate === 'n' || img.style.translate === 'NaN' || img.style.translate === 'undefined')) {
+                        img.style.translate = '';
                       }
                     }
                   }), 0
@@ -2191,7 +2218,8 @@
                   left: '50%',
                   xPercent: -50,
                   yPercent: -50,
-                  scale: 1
+                  scale: 1,
+                  clearProps: "transform"
                 });
               }
             }
