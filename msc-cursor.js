@@ -1297,6 +1297,7 @@
                 console.log('[Barba] about.afterEnter');
                 components.initCustomCursor();
                 animations.initSplitTextAnimation();
+                components.initTabSystem();
                 components.initAccordionCSS();
                 components.initModalBasic();
                 initNumberTickerAnimation();
@@ -1467,7 +1468,11 @@
                 components.initAccordionCSS();
                 initNumberTickerAnimation();
                 initScrambleText();
-                document.querySelectorAll('[data-gallery]').forEach(wrapper => {
+                console.log('Initializing lightbox for work-item page');
+                const galleryWrappers = document.querySelectorAll('[data-gallery]');
+                console.log('Found gallery wrappers:', galleryWrappers.length);
+                galleryWrappers.forEach((wrapper, index) => {
+                    console.log(`Creating lightbox for gallery ${index + 1}:`, wrapper);
                     createLightbox(wrapper, {
                         onStart: () => window.lenis?.stop(),
                         onOpen: () => {},
@@ -1972,6 +1977,7 @@
       onClose,
       onCloseComplete
     } = {}) {
+      console.log('createLightbox called with container:', container);
       const elements = {
         wrapper: container.querySelector('[data-lightbox="wrapper"]'),
         triggers: container.querySelectorAll('[data-lightbox="trigger"]'),
@@ -1988,6 +1994,23 @@
           close: container.querySelector('[data-lightbox="close"]')
         }
       };
+      
+      console.log('Lightbox elements found:', {
+        wrapper: !!elements.wrapper,
+        triggers: elements.triggers.length,
+        triggerParents: elements.triggerParents.length,
+        items: elements.items.length,
+        nav: elements.nav.length,
+        counter: {
+          current: !!elements.counter.current,
+          total: !!elements.counter.total
+        },
+        buttons: {
+          prev: !!elements.buttons.prev,
+          next: !!elements.buttons.next,
+          close: !!elements.buttons.close
+        }
+      });
       const mainTimeline = gsap.timeline();
       if (elements.counter.total) {
         elements.counter.total.textContent = elements.triggers.length;
