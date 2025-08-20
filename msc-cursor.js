@@ -2656,8 +2656,8 @@
             console.log('🔍 Page wrap current state:', {
                 y: pageWrap.style.transform,
                 classes: pageWrap.className,
-                gsapProps: gsap.getProperty(pageWrap, "y"),
-                scale: gsap.getProperty(pageWrap, "scale")
+                gsapProps: gsap.getProperty ? gsap.getProperty(pageWrap, "y") : "GSAP not ready",
+                scale: gsap.getProperty ? gsap.getProperty(pageWrap, "scale") : "GSAP not ready"
             });
             
             // Debug: Check if GSAP is working
