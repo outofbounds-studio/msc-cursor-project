@@ -183,8 +183,8 @@
         console.log('Initializing GSAP defaults...');
         utils.initGSAPDefaults();
         
-        // Initialize simple menu system now that GSAP is available
-        initSimpleMenu();
+        // Initialize Aker-style menu system now that GSAP is available
+        initAkerMenu();
         
         console.log('Initializing Lenis...');
         utils.lenis.init();
@@ -2512,9 +2512,11 @@
         });
     }
     
-    // === Simple Menu System (Aker Companies Style) ===
-    function initSimpleMenu() {
-        console.log('🔍 Initializing simple menu system...');
+
+
+    // === Aker Companies Style Menu System ===
+    function initAkerMenu() {
+        console.log('🔍 Initializing Aker-style menu system...');
         
         const burgerBtn = document.querySelector('.burger_wrap');
         const menuOverlay = document.querySelector('.menu-overlay');
@@ -2533,13 +2535,13 @@
             return;
         }
         
-        console.log('✅ GSAP available, setting up simple menu...');
+        console.log('✅ GSAP available, setting up Aker-style menu...');
         
-        // Set initial state: menu hidden behind page content
+        // Set initial state: menu completely hidden, page in normal position
         gsap.set(menuOverlay, { 
-            y: 0,           // Menu is in final position
-            opacity: 1,     // Menu is fully visible
-            pointerEvents: 'none'  // But not clickable yet
+            y: -100,        // Menu starts hidden above viewport
+            opacity: 0,     // Menu starts invisible
+            pointerEvents: 'none'  // Not clickable
         });
         
         gsap.set(pageWrap, { 
@@ -2550,39 +2552,49 @@
         function openMenu() {
             console.log('🔍 Opening menu...');
             
-            // Enable menu interactions
-            menuOverlay.style.pointerEvents = 'auto';
-            
-            // Hide nav bar
+            // Hide nav bar and lock body scroll
             navBar.classList.add('hide');
             document.body.style.overflow = 'hidden';
             
-            // Animate page content down and scale down to reveal menu
-            gsap.to(pageWrap, {
-                y: 200,           // Move page down
-                scale: 0.98,      // Scale down slightly
-                duration: 0.7,
-                ease: "power2.inOut"
-            });
+            // Create timeline for simultaneous animations
+            gsap.timeline()
+                .to(menuOverlay, {
+                    y: 0,               // Menu slides down from top
+                    opacity: 1,         // Menu becomes visible
+                    pointerEvents: 'auto', // Enable interactions
+                    duration: 0.7,
+                    ease: "power2.inOut"
+                }, 0) // Start at same time
+                .to(pageWrap, {
+                    y: 200,             // Page moves down
+                    scale: 0.98,        // Page scales down slightly
+                    duration: 0.7,
+                    ease: "power2.inOut"
+                }, 0); // Start at same time
         }
         
         function closeMenu() {
             console.log('🔍 Closing menu...');
             
-            // Disable menu interactions
-            menuOverlay.style.pointerEvents = 'none';
-            
-            // Show nav bar
+            // Show nav bar and restore body scroll
             navBar.classList.remove('hide');
             document.body.style.overflow = '';
             
-            // Animate page content back to original position
-            gsap.to(pageWrap, {
-                y: 0,             // Move page back up
-                scale: 1,         // Scale back to normal
-                duration: 0.7,
-                ease: "power2.inOut"
-            });
+            // Create timeline for simultaneous closing animations
+            gsap.timeline()
+                .to(menuOverlay, {
+                    y: -100,            // Menu slides back up
+                    opacity: 0,         // Menu becomes invisible
+                    pointerEvents: 'none', // Disable interactions
+                    duration: 0.7,
+                    ease: "power2.inOut"
+                }, 0) // Start at same time
+                .to(pageWrap, {
+                    y: 0,               // Page moves back up
+                    scale: 1,           // Page scales back to normal
+                    duration: 0.7,
+                    ease: "power2.inOut"
+                }, 0); // Start at same time
         }
         
         // Event listeners
@@ -2608,7 +2620,7 @@
             e.stopPropagation();
         });
         
-        console.log('✅ Simple menu system initialized successfully');
+        console.log('✅ Aker-style menu system initialized successfully');
     }
 
 
