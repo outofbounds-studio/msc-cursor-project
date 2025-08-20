@@ -38,7 +38,6 @@
         if (menuOverlay && menuOverlay._focusTrapHandler) {
             menuOverlay.removeEventListener('keydown', menuOverlay._focusTrapHandler);
             menuOverlay._focusTrapHandler = null;
-            menuOverlay._focusTrapHandler = null;
         }
         if (lastFocusedElement) {
             lastFocusedElement.focus();
@@ -2554,9 +2553,7 @@
             }
         }
 
-
-
-    function closeMenu() {
+        function closeMenu() {
         console.log('🔍 closeMenu function called');
         
         // Prevent multiple simultaneous calls
