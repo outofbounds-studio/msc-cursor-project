@@ -2592,13 +2592,14 @@ function initMenu() {
                 // Use GSAP timeline for synchronized animations
                 gsap.timeline()
                     .set(menuOverlay, { 
-                        y: 0, // Menu starts in final position
+                        y: -100, // Menu overlay starts off-screen
                         opacity: 0 // Start invisible
                     })
                     .to(menuOverlay, {
-                        opacity: 1, // Fade in quickly
-                        duration: 0.1, // Very fast fade
-                        ease: "power2.out"
+                        y: 0, // Menu overlay slides down
+                        opacity: 1, // Fade in smoothly
+                        duration: 0.7, // Same duration as other animations
+                        ease: "power2.inOut"
                     }, 0)
                     .to(pageWrap, {
                         y: fallbackHeight,
@@ -2610,19 +2611,20 @@ function initMenu() {
                         y: 0, // Menu content slides down
                         duration: 0.7, // Same duration as page animation
                         ease: "power2.inOut"
-                    }, 0.7); // Start at 0.7s to sync with page scaling
+                    }, 0); // Start immediately to sync with overlay
             } else {
                 console.log('✅ Using actual menu height for animation');
                 // Use GSAP timeline for synchronized animations
                 gsap.timeline()
                     .set(menuOverlay, { 
-                        y: 0, // Menu starts in final position
+                        y: -100, // Menu overlay starts off-screen
                         opacity: 0 // Start invisible
                     })
                     .to(menuOverlay, {
-                        opacity: 1, // Fade in quickly
-                        duration: 0.1, // Very fast fade
-                        ease: "power2.out"
+                        y: 0, // Menu overlay slides down
+                        opacity: 1, // Fade in smoothly
+                        duration: 0.7, // Same duration as other animations
+                        ease: "power2.inOut"
                     }, 0)
                     .to(pageWrap, {
                         y: menuHeight,
@@ -2634,7 +2636,7 @@ function initMenu() {
                         y: 0, // Menu content slides down
                         duration: 0.7, // Same duration as page animation
                         ease: "power2.inOut"
-                    }, 0.7); // Start at 0.7s to sync with page scaling
+                    }, 0); // Start immediately to sync with overlay
             }
         });
     }
