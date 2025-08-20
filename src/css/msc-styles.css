@@ -872,14 +872,10 @@ body {
   pointer-events: auto;
 }
 
-/* Menu content slides down from off-screen */
+/* Menu content positioning - GSAP handles animations */
 .menu-overlay .menu_content {
-  transform: translateY(-100%);
-  transition: transform 0.7s cubic-bezier(0.77,0,0.175,1);
-}
-
-.menu-overlay.open .menu_content {
-  transform: translateY(0);
+  /* GSAP will handle all transforms */
+  will-change: transform;
 }
 
 .page_wrap {

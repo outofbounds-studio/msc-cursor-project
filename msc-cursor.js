@@ -2460,12 +2460,11 @@ function initMenu() {
             gsap.set(pageWrap, { y: 0, scale: 1 });
             gsap.set(menuOverlay, { y: 0, opacity: 0 });
             
-            // Reset menu content position using CSS classes instead of inline styles
+            // Reset menu content position using GSAP
             const menuContent = menuOverlay.querySelector('.menu_content');
             if (menuContent) {
-                // Remove any inline styles that might interfere
-                menuContent.removeAttribute('style');
-                // Let CSS handle the positioning naturally
+                // Use GSAP to reset position
+                gsap.set(menuContent, { y: -100 });
             }
             
             // Remove focus trap
@@ -2492,30 +2491,34 @@ function initMenu() {
         // Reset menu overlay position to hide it
         gsap.set(menuOverlay, { y: 0, opacity: 0 });
         
-        // Reset menu content position using CSS classes instead of inline styles
+        // Reset menu content position using GSAP
         const menuContent = menuOverlay.querySelector('.menu_content');
         if (menuContent) {
             console.log('🔄 Resetting menu content position');
-            // Remove any inline styles that might interfere
-            menuContent.removeAttribute('style');
-            // Let CSS handle the positioning naturally
+            // Use GSAP to reset position
+            gsap.set(menuContent, { y: -100 });
         }
         
-        // Animate page content back to cover the menu
+        // Animate page content and menu content back to original positions
         gsap.timeline()
             .to(pageWrap, {
                 y: 0,
                 scale: 1,
                 duration: 0.7,
-                ease: "power2.inOut",
-                onComplete: () => {
-                    // Clean up after animation completes
-                    pageWrap.classList.remove('menu-open');
-                    pageWrap.classList.remove('closing');
-                    pageWrap.style.transform = '';
-                    console.log('✅ Menu close animation complete');
-                }
-            }, 0);
+                ease: "power2.inOut"
+            }, 0)
+            .to(menuContent, {
+                y: -100, // Menu content slides back up
+                duration: 0.7, // Same duration as page animation
+                ease: "power2.inOut"
+            }, 0)
+            .call(() => {
+                // Clean up after animation completes
+                pageWrap.classList.remove('menu-open');
+                pageWrap.classList.remove('closing');
+                pageWrap.style.transform = '';
+                console.log('✅ Menu close animation complete');
+            });
         
         // Hide nav and restore body scroll
         navBar.classList.remove('hide');
@@ -2545,11 +2548,11 @@ function initMenu() {
         document.body.style.overflow = 'hidden';
         trapFocus(menuOverlay);
         
-        // Ensure menu content is ready for CSS animation
+        // Ensure menu content is ready for GSAP animation
         const menuContent = menuOverlay.querySelector('.menu_content');
         if (menuContent) {
-            // Remove any inline styles to let CSS handle positioning
-            menuContent.removeAttribute('style');
+            // Set initial position for GSAP animation
+            gsap.set(menuContent, { y: -100 });
         }
         
         // Wait a frame to ensure menu is visible and has dimensions
@@ -2563,22 +2566,52 @@ function initMenu() {
                 // Use a fallback height if menu height is 0
                 const fallbackHeight = window.innerHeight * 0.8; // 80% of viewport height
                 
-                // Use CSS transitions for menu, GSAP only for page content
-                gsap.to(pageWrap, {
-                    y: fallbackHeight,
-                    scale: 0.98,
-                    duration: 0.7, // Match CSS transition timing
-                    ease: "power2.inOut"
-                });
+                // Use GSAP timeline for synchronized animations
+                gsap.timeline()
+                    .set(menuOverlay, { 
+                        y: 0, // Menu starts in final position
+                        opacity: 0 // Start invisible
+                    })
+                    .to(menuOverlay, {
+                        opacity: 1, // Fade in quickly
+                        duration: 0.1, // Very fast fade
+                        ease: "power2.out"
+                    }, 0)
+                    .to(pageWrap, {
+                        y: fallbackHeight,
+                        scale: 0.98,
+                        duration: 0.7, // Page animation
+                        ease: "power2.inOut"
+                    }, 0)
+                    .to(menuContent, {
+                        y: 0, // Menu content slides down
+                        duration: 0.7, // Same duration as page animation
+                        ease: "power2.inOut"
+                    }, 0);
             } else {
                 console.log('✅ Using actual menu height for animation');
-                // Use CSS transitions for menu, GSAP only for page content
-                gsap.to(pageWrap, {
-                    y: menuHeight,
-                    scale: 0.98,
-                    duration: 0.7, // Match CSS transition timing
-                    ease: "power2.inOut"
-                });
+                // Use GSAP timeline for synchronized animations
+                gsap.timeline()
+                    .set(menuOverlay, { 
+                        y: 0, // Menu starts in final position
+                        opacity: 0 // Start invisible
+                    })
+                    .to(menuOverlay, {
+                        opacity: 1, // Fade in quickly
+                        duration: 0.1, // Very fast fade
+                        ease: "power2.out"
+                    }, 0)
+                    .to(pageWrap, {
+                        y: menuHeight,
+                        scale: 0.98,
+                        duration: 0.7, // Page animation
+                        ease: "power2.inOut"
+                    }, 0)
+                    .to(menuContent, {
+                        y: 0, // Menu content slides down
+                        duration: 0.7, // Same duration as page animation
+                        ease: "power2.inOut"
+                    }, 0);
             }
         });
     }
