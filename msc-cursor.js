@@ -3,6 +3,101 @@
 
 (function() {
     console.log('msc-cursor.js script loaded and executing!');
+    
+    // === Global Menu State Management Functions ===
+    let lastFocusedElement = null;
+    
+    function trapFocus(element) {
+        const focusableSelectors = 'a, button, textarea, input, select, [tabindex]:not([tabindex="-1"])';
+        const focusableEls = element.querySelectorAll(focusableSelectors);
+        if (!focusableEls.length) return;
+        const firstEl = focusableEls[0];
+        const lastEl = focusableEls[focusableEls.length - 1];
+        lastFocusedElement = document.activeElement;
+        function handleTab(e) {
+            if (e.key !== 'Tab') return;
+            if (e.shiftKey) {
+                if (document.activeElement === firstEl) {
+                    e.preventDefault();
+                    lastEl.focus();
+                }
+            } else {
+                if (document.activeElement === lastEl) {
+                    e.preventDefault();
+                    firstEl.focus();
+                }
+            }
+        }
+        element.addEventListener('keydown', handleTab);
+        firstEl.focus();
+        element._focusTrapHandler = handleTab;
+    }
+    
+    function removeTrapFocus() {
+        const menuOverlay = document.querySelector('.menu-overlay');
+        if (menuOverlay && menuOverlay._focusTrapHandler) {
+            menuOverlay.removeEventListener('keydown', menuOverlay._focusTrapHandler);
+            menuOverlay._focusTrapHandler = null;
+            menuOverlay._focusTrapHandler = null;
+        }
+        if (lastFocusedElement) {
+            lastFocusedElement.focus();
+            lastFocusedElement = null;
+        }
+    }
+    
+    function resetMenuState() {
+        const menuOverlay = document.querySelector('.menu-overlay');
+        const pageWrap = document.querySelector('.page_wrap');
+        const navBar = document.querySelector('.nav_bar');
+        
+        if (menuOverlay && pageWrap && navBar) {
+            console.log('🔄 Resetting menu state...');
+            
+            // Remove all menu-related classes
+            menuOverlay.classList.remove('open');
+            pageWrap.classList.remove('menu-open');
+            navBar.classList.remove('hide');
+            document.body.classList.remove('menu-open');
+            document.body.style.overflow = '';
+            
+            // Reset GSAP transforms with more aggressive cleanup
+            if (typeof gsap !== 'undefined') {
+                gsap.set(pageWrap, { 
+                    y: 0, 
+                    scale: 1,
+                    clearProps: "all" // Clear all GSAP properties
+                });
+                gsap.set(menuOverlay, { 
+                    y: 0, 
+                    opacity: 0,
+                    clearProps: "all" // Clear all GSAP properties
+                });
+                
+                // Reset menu content position using GSAP
+                const menuContent = menuOverlay.querySelector('.menu_content');
+                if (menuContent) {
+                    // Use GSAP to reset position
+                    gsap.set(menuContent, { 
+                        y: -100,
+                        clearProps: "all" // Clear all GSAP properties
+                    });
+                }
+            }
+            
+            // Force a reflow to ensure changes take effect
+            pageWrap.offsetHeight;
+            menuOverlay.offsetHeight;
+            const menuContent = menuOverlay.querySelector('.menu_content');
+            if (menuContent) menuContent.offsetHeight;
+            
+            // Remove focus trap
+            removeTrapFocus();
+            
+            console.log('✅ Menu state reset complete');
+        }
+    }
+    
     // Load required scripts dynamically
     function loadScript(src) {
         return new Promise((resolve, reject) => {
@@ -140,94 +235,7 @@
             console.log('REMINDER: Check that Jetboost markup is present in the DOM after transition.');
         });
 
-        // === Menu State Management Functions (Global Scope) ===
-        let lastFocusedElement = null;
         
-        function trapFocus(element) {
-            const focusableSelectors = 'a, button, textarea, input, select, [tabindex]:not([tabindex="-1"])';
-            const focusableEls = element.querySelectorAll(focusableSelectors);
-            if (!focusableEls.length) return;
-            const firstEl = focusableEls[0];
-            const lastEl = focusableEls[focusableEls.length - 1];
-            lastFocusedElement = document.activeElement;
-            function handleTab(e) {
-                if (e.key !== 'Tab') return;
-                if (e.shiftKey) {
-                    if (document.activeElement === firstEl) {
-                        e.preventDefault();
-                        lastEl.focus();
-                    }
-                } else {
-                    if (document.activeElement === lastEl) {
-                        e.preventDefault();
-                        firstEl.focus();
-                    }
-                }
-            }
-            element.addEventListener('keydown', handleTab);
-            firstEl.focus();
-            element._focusTrapHandler = handleTab;
-        }
-        
-        function removeTrapFocus() {
-            if (menuOverlay && menuOverlay._focusTrapHandler) {
-                menuOverlay.removeEventListener('keydown', menuOverlay._focusTrapHandler);
-                menuOverlay._focusTrapHandler = null;
-            }
-            if (lastFocusedElement) {
-                lastFocusedElement.focus();
-                lastFocusedElement = null;
-            }
-        }
-        
-        function resetMenuState() {
-            const menuOverlay = document.querySelector('.menu-overlay');
-            const pageWrap = document.querySelector('.page_wrap');
-            const navBar = document.querySelector('.nav_bar');
-            
-            if (menuOverlay && pageWrap && navBar) {
-                console.log('🔄 Resetting menu state...');
-                
-                // Remove all menu-related classes
-                menuOverlay.classList.remove('open');
-                pageWrap.classList.remove('menu-open');
-                navBar.classList.remove('hide');
-                document.body.classList.remove('menu-open');
-                document.body.style.overflow = '';
-                
-                // Reset GSAP transforms with more aggressive cleanup
-                gsap.set(pageWrap, { 
-                    y: 0, 
-                    scale: 1,
-                    clearProps: "all" // Clear all GSAP properties
-                });
-                gsap.set(menuOverlay, { 
-                    y: 0, 
-                    opacity: 0,
-                    clearProps: "all" // Clear all GSAP properties
-                });
-                
-                // Reset menu content position using GSAP
-                const menuContent = menuOverlay.querySelector('.menu_content');
-                if (menuContent) {
-                    // Use GSAP to reset position
-                    gsap.set(menuContent, { 
-                        y: -100,
-                        clearProps: "all" // Clear all GSAP properties
-                    });
-                }
-                
-                // Force a reflow to ensure changes take effect
-                pageWrap.offsetHeight;
-                menuOverlay.offsetHeight;
-                if (menuContent) menuContent.offsetHeight;
-                
-                // Remove focus trap
-                removeTrapFocus();
-                
-                console.log('✅ Menu state reset complete');
-            }
-        }
 
         // Initialize page-specific functions for direct page loads (not through Barba)
         function initPageSpecificFunctions() {
