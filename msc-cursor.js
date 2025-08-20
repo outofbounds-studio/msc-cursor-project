@@ -2423,27 +2423,52 @@
     // Add backdrop blur (in case not set in CSS)
     menuOverlay.style.backdropFilter = 'blur(8px)';
     menuOverlay.style.webkitBackdropFilter = 'blur(8px)';
+    
+    // Ensure GSAP is available
+    if (typeof gsap === 'undefined') {
+        console.error('GSAP is not loaded. Menu animations will not work.');
+        return;
+    }
 
     function closeMenu() {
+        // Animate page content back with GSAP
+        gsap.to(pageWrap, {
+            y: 0,
+            scale: 1,
+            duration: 0.7,
+            ease: "power2.inOut",
+            onComplete: () => {
+                // Clean up after animation completes
+                pageWrap.classList.remove('menu-open');
+                pageWrap.style.transform = '';
+            }
+        });
+        
+        // Hide menu overlay
         menuOverlay.classList.remove('open');
-        pageWrap.classList.remove('menu-open');
-        pageWrap.style.transform = '';
         navBar.classList.remove('hide');
         document.body.style.overflow = '';
         removeTrapFocus();
     }
 
     function openMenu() {
+        // Show menu overlay first
         menuOverlay.classList.add('open');
         navBar.classList.add('hide');
         pageWrap.classList.add('menu-open');
-        // Dynamically set translateY to menuOverlay height
-        setTimeout(() => {
-            const menuHeight = menuOverlay.offsetHeight;
-            pageWrap.style.transform = `translateY(${menuHeight}px) scale(0.98)`;
-        }, 10); // Wait for menuOverlay to be visible
         document.body.style.overflow = 'hidden';
         trapFocus(menuOverlay);
+        
+        // Wait for menu to be visible, then animate page content
+        setTimeout(() => {
+            const menuHeight = menuOverlay.offsetHeight;
+            gsap.to(pageWrap, {
+                y: menuHeight,
+                scale: 0.98,
+                duration: 0.7,
+                ease: "power2.inOut"
+            });
+        }, 10);
     }
 
     burgerBtn.addEventListener('click', openMenu);
