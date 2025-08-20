@@ -2456,16 +2456,32 @@ function initMenu() {
             document.body.classList.remove('menu-open');
             document.body.style.overflow = '';
             
-            // Reset GSAP transforms
-            gsap.set(pageWrap, { y: 0, scale: 1 });
-            gsap.set(menuOverlay, { y: 0, opacity: 0 });
+            // Reset GSAP transforms with more aggressive cleanup
+            gsap.set(pageWrap, { 
+                y: 0, 
+                scale: 1,
+                clearProps: "all" // Clear all GSAP properties
+            });
+            gsap.set(menuOverlay, { 
+                y: 0, 
+                opacity: 0,
+                clearProps: "all" // Clear all GSAP properties
+            });
             
             // Reset menu content position using GSAP
             const menuContent = menuOverlay.querySelector('.menu_content');
             if (menuContent) {
                 // Use GSAP to reset position
-                gsap.set(menuContent, { y: -100 });
+                gsap.set(menuContent, { 
+                    y: -100,
+                    clearProps: "all" // Clear all GSAP properties
+                });
             }
+            
+            // Force a reflow to ensure changes take effect
+            pageWrap.offsetHeight;
+            menuOverlay.offsetHeight;
+            if (menuContent) menuContent.offsetHeight;
             
             // Remove focus trap
             removeTrapFocus();
@@ -2561,6 +2577,13 @@ function initMenu() {
             const menuHeight = menuOverlay.offsetHeight;
             console.log('🔍 Menu height:', menuHeight);
             
+            // Debug: Check current page wrap state
+            console.log('🔍 Page wrap current state:', {
+                y: pageWrap.style.transform,
+                classes: pageWrap.className,
+                gsapProps: gsap.getProperty(pageWrap, "y")
+            });
+            
             if (menuHeight === 0) {
                 console.warn('⚠️ Menu height is 0, using fallback height');
                 // Use a fallback height if menu height is 0
@@ -2587,7 +2610,7 @@ function initMenu() {
                         y: 0, // Menu content slides down
                         duration: 0.7, // Same duration as page animation
                         ease: "power2.inOut"
-                    }, 0);
+                    }, 0.7); // Start at 0.7s to sync with page scaling
             } else {
                 console.log('✅ Using actual menu height for animation');
                 // Use GSAP timeline for synchronized animations
@@ -2611,7 +2634,7 @@ function initMenu() {
                         y: 0, // Menu content slides down
                         duration: 0.7, // Same duration as page animation
                         ease: "power2.inOut"
-                    }, 0);
+                    }, 0.7); // Start at 0.7s to sync with page scaling
             }
         });
     }
