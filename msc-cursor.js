@@ -1988,15 +1988,36 @@
 
     // Force lightbox centering function
     function forceLightboxCentering() {
-      const lightboxWrap = document.querySelector('.lightbox-wrap.is-active');
-      const lightboxImgWrap = lightboxWrap?.querySelector('.lightbox-img__wrap');
+      console.log('🔍 forceLightboxCentering function called!');
       
-      if (lightboxImgWrap) {
-        lightboxImgWrap.style.display = 'flex';
-        lightboxImgWrap.style.alignItems = 'center';
-        lightboxImgWrap.style.justifyContent = 'center';
-        lightboxImgWrap.style.width = '90vw';
-        lightboxImgWrap.style.height = 'calc(100svh - 10em)';
+      const lightboxWrap = document.querySelector('.lightbox-wrap.is-active');
+      console.log('🔍 lightboxWrap found:', !!lightboxWrap);
+      
+      if (lightboxWrap) {
+        const lightboxImgWrap = lightboxWrap.querySelector('.lightbox-img__wrap');
+        console.log('🔍 lightboxImgWrap found:', !!lightboxImgWrap);
+        console.log('🔍 lightboxImgWrap element:', lightboxImgWrap);
+        
+        if (lightboxImgWrap) {
+          console.log('🔍 Setting styles on lightboxImgWrap...');
+          lightboxImgWrap.style.display = 'flex';
+          lightboxImgWrap.style.alignItems = 'center';
+          lightboxImgWrap.style.justifyContent = 'center';
+          lightboxImgWrap.style.width = '90vw';
+          lightboxImgWrap.style.height = 'calc(100svh - 10em)';
+          
+          console.log('🔍 Styles set. Current styles:', {
+            display: lightboxImgWrap.style.display,
+            alignItems: lightboxImgWrap.style.alignItems,
+            justifyContent: lightboxImgWrap.style.justifyContent,
+            width: lightboxImgWrap.style.width,
+            height: lightboxImgWrap.style.height
+          });
+        } else {
+          console.log('❌ lightboxImgWrap not found!');
+        }
+      } else {
+        console.log('❌ lightboxWrap not found!');
       }
     }
 
