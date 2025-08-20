@@ -97,6 +97,242 @@
         }
     }
     
+    // === Global Menu Overlay Logic ===
+    function initMenu() {
+        console.log('🔍 Initializing menu system...');
+        
+        // Selectors
+        const burgerBtn = document.querySelector('.burger_wrap');
+        const navBar = document.querySelector('.nav_bar');
+        const pageWrap = document.querySelector('.page_wrap');
+        const menuOverlay = document.querySelector('.menu-overlay');
+        const closeMenuBtn = document.querySelector('.close-menu');
+
+        if (!burgerBtn || !navBar || !pageWrap || !menuOverlay) {
+            console.warn('⚠️ Menu elements not found, skipping menu initialization');
+            return;
+        }
+
+        // Add backdrop blur (in case not set in CSS)
+        menuOverlay.style.backdropFilter = 'blur(8px)';
+        menuOverlay.style.webkitBackdropFilter = 'blur(8px)';
+        
+        // Ensure GSAP is available
+        if (typeof gsap === 'undefined') {
+            console.error('GSAP is not loaded. Menu animations will not work.');
+            return;
+        }
+        
+        console.log('✅ GSAP available, setting up menu functions...');
+
+        // Function to initialize menu state (called on page load)
+        function initMenuState() {
+            if (menuOverlay && pageWrap && navBar) {
+                console.log('🔄 Initializing menu state...');
+                
+                // Call global resetMenuState to ensure complete cleanup
+                resetMenuState();
+                
+                console.log('✅ Menu state initialized');
+            }
+        }
+
+        function closeMenu() {
+            console.log('🔍 closeMenu function called');
+            
+            // Prevent multiple simultaneous calls
+            if (pageWrap.classList.contains('closing')) {
+                console.log('⚠️ Menu already closing, ignoring duplicate call');
+                return;
+            }
+            
+            pageWrap.classList.add('closing');
+            
+            // Hide menu overlay immediately when closing starts
+            menuOverlay.classList.remove('open');
+            
+            // Reset menu overlay position to hide it
+            gsap.set(menuOverlay, { y: 0, opacity: 0 });
+            
+            // Reset menu content position using GSAP
+            const menuContent = menuOverlay.querySelector('.menu_content');
+            if (menuContent) {
+                console.log('🔄 Resetting menu content position');
+                // Use GSAP to reset position
+                gsap.set(menuContent, { y: -100 });
+            }
+            
+            // Animate page content, menu overlay, and menu content back to original positions
+            gsap.timeline()
+                .to(pageWrap, {
+                    y: 0,
+                    scale: 1,
+                    duration: 0.7,
+                    ease: "power2.inOut"
+                }, 0)
+                .to(menuOverlay, {
+                    y: -100, // Menu overlay slides back up
+                    opacity: 0, // Fade out
+                    duration: 0.7, // Same duration as page animation
+                    ease: "power2.inOut"
+                }, 0)
+                .to(menuContent, {
+                    y: -100, // Menu content slides back up
+                    duration: 0.7, // Same duration as page animation
+                    ease: "power2.inOut"
+                }, 0)
+                .call(() => {
+                    // Clean up after animation completes
+                    pageWrap.classList.remove('menu-open');
+                    pageWrap.classList.remove('closing');
+                    pageWrap.style.transform = '';
+                    console.log('✅ Menu close animation complete');
+                });
+            
+            // Hide nav and restore body scroll
+            navBar.classList.remove('hide');
+            document.body.style.overflow = '';
+            removeTrapFocus();
+        }
+
+        function openMenu() {
+            console.log('🔍 openMenu function called');
+            
+            // Prevent opening while closing
+            if (pageWrap.classList.contains('closing')) {
+                console.log('⚠️ Menu is closing, waiting for close to complete');
+                return;
+            }
+            
+            // Prevent opening if already open
+            if (menuOverlay.classList.contains('open')) {
+                console.log('⚠️ Menu already open, ignoring duplicate call');
+                return;
+            }
+            
+            // First, prepare the menu overlay (hidden behind page content)
+            menuOverlay.classList.add('open');
+            navBar.classList.add('hide');
+            pageWrap.classList.add('menu-open');
+            document.body.style.overflow = 'hidden';
+            trapFocus(menuOverlay);
+            
+            // Ensure menu overlay and content are properly positioned for animation
+            gsap.set(menuOverlay, { 
+                y: -100, // Start off-screen
+                opacity: 0, // Start invisible
+                pointerEvents: 'auto' // Enable clicking on menu content
+            });
+            
+            const menuContent = menuOverlay.querySelector('.menu_content');
+            if (menuContent) {
+                // Set initial position for GSAP animation
+                gsap.set(menuContent, { y: -100 });
+            }
+            
+            // Wait a frame to ensure menu is visible and has dimensions
+            requestAnimationFrame(() => {
+                // Get menu height for the animation
+                const menuHeight = menuOverlay.offsetHeight;
+                console.log('🔍 Menu height:', menuHeight);
+                
+                // Debug: Check current page wrap state
+                console.log('🔍 Page wrap current state:', {
+                    y: pageWrap.style.transform,
+                    classes: pageWrap.className,
+                    gsapProps: gsap.getProperty ? gsap.getProperty(pageWrap, "y") : "GSAP not ready",
+                    scale: gsap.getProperty ? gsap.getProperty(pageWrap, "scale") : "GSAP not ready"
+                });
+                
+                // Debug: Check if GSAP is working
+                console.log('🔍 GSAP status:', {
+                    gsapLoaded: typeof gsap !== 'undefined',
+                    pageWrapElement: !!pageWrap,
+                    menuOverlayElement: !!menuOverlay
+                });
+                
+                if (menuHeight === 0) {
+                    console.warn('⚠️ Menu height is 0, using fallback height');
+                    // Use a fallback height if menu height is 0
+                    const fallbackHeight = window.innerHeight * 0.8; // 80% of viewport height
+                    
+                    // Use GSAP timeline for synchronized animations
+                    gsap.timeline()
+                        .to(menuOverlay, {
+                            y: 0, // Menu overlay slides down
+                            opacity: 1, // Fade in smoothly
+                            duration: 0.7, // Same duration as page animation
+                            ease: "power2.inOut"
+                        }, 0)
+                        .to(pageWrap, {
+                            y: fallbackHeight,
+                            scale: 0.98,
+                            duration: 0.7, // Page animation
+                            ease: "power2.inOut"
+                        }, 0)
+                        .to(menuContent, {
+                            y: 0, // Menu content slides down
+                            duration: 0.7, // Same duration as page animation
+                            ease: "power2.inOut"
+                        }, 0); // All animations start together
+                } else {
+                    console.log('✅ Using actual menu height for animation');
+                    // Use GSAP timeline for synchronized animations
+                    gsap.timeline()
+                        .to(menuOverlay, {
+                            y: 0, // Menu overlay slides down
+                            opacity: 1, // Fade in smoothly
+                            duration: 0.7, // Same duration as page animation
+                            ease: "power2.inOut"
+                        }, 0)
+                        .to(pageWrap, {
+                            y: menuHeight,
+                            scale: 0.98,
+                            duration: 0.7, // Page animation
+                            ease: "power2.inOut"
+                        }, 0)
+                        .to(menuContent, {
+                            y: 0, // Menu content slides down
+                            duration: 0.7, // Same duration as page animation
+                            ease: "power2.inOut"
+                        }, 0); // All animations start together
+                }
+            });
+        }
+
+        // Initialize menu state
+        initMenuState();
+        
+        // Remove any existing event listeners to prevent duplicates
+        burgerBtn.removeEventListener('click', openMenu);
+        closeMenuBtn?.removeEventListener('click', closeMenu);
+        
+        // Add event listeners
+        burgerBtn.addEventListener('click', openMenu);
+        
+        // Click outside (on .page_wrap) closes menu if open
+        pageWrap.addEventListener('click', function() {
+            if (menuOverlay.classList.contains('open')) closeMenu();
+        });
+
+        // Prevent closing when clicking inside the menu
+        menuOverlay.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+
+        // Prevent default behavior on close button to avoid URL hash
+        if (closeMenuBtn) {
+            closeMenuBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('🔍 Close button clicked, preventing default behavior');
+                closeMenu();
+            });
+        }
+
+        console.log('✅ Menu system initialized successfully');
+    }
+    
     // Load required scripts dynamically
     function loadScript(src) {
         return new Promise((resolve, reject) => {
@@ -2511,244 +2747,8 @@
         });
     }
     
-    // === Global Menu Overlay Logic ===
-    function initMenu() {
-        console.log('🔍 Initializing menu system...');
-        
-        // Selectors
-        const burgerBtn = document.querySelector('.burger_wrap');
-        const navBar = document.querySelector('.nav_bar');
-        const pageWrap = document.querySelector('.page_wrap');
-        const menuOverlay = document.querySelector('.menu-overlay');
-        const closeMenuBtn = document.querySelector('.close-menu');
-
-        if (!burgerBtn || !navBar || !pageWrap || !menuOverlay) {
-            console.warn('⚠️ Menu elements not found, skipping menu initialization');
-            return;
-        }
-
-        // Add backdrop blur (in case not set in CSS)
-        menuOverlay.style.backdropFilter = 'blur(8px)';
-        menuOverlay.style.webkitBackdropFilter = 'blur(8px)';
-        
-        // Ensure GSAP is available
-        if (typeof gsap === 'undefined') {
-            console.error('GSAP is not loaded. Menu animations will not work.');
-            return;
-        }
-        
-        console.log('✅ GSAP available, setting up menu functions...');
 
 
 
-        // Function to initialize menu state (called on page load)
-        function initMenuState() {
-            if (menuOverlay && pageWrap && navBar) {
-                console.log('🔄 Initializing menu state...');
-                
-                // Call global resetMenuState to ensure complete cleanup
-                resetMenuState();
-                
-                console.log('✅ Menu state initialized');
-            }
-        }
-
-        function closeMenu() {
-        console.log('🔍 closeMenu function called');
-        
-        // Prevent multiple simultaneous calls
-        if (pageWrap.classList.contains('closing')) {
-            console.log('⚠️ Menu already closing, ignoring duplicate call');
-            return;
-        }
-        
-        pageWrap.classList.add('closing');
-        
-        // Hide menu overlay immediately when closing starts
-        menuOverlay.classList.remove('open');
-        
-        // Reset menu overlay position to hide it
-        gsap.set(menuOverlay, { y: 0, opacity: 0 });
-        
-        // Reset menu content position using GSAP
-        const menuContent = menuOverlay.querySelector('.menu_content');
-        if (menuContent) {
-            console.log('🔄 Resetting menu content position');
-            // Use GSAP to reset position
-            gsap.set(menuContent, { y: -100 });
-        }
-        
-        // Animate page content, menu overlay, and menu content back to original positions
-        gsap.timeline()
-            .to(pageWrap, {
-                y: 0,
-                scale: 1,
-                duration: 0.7,
-                ease: "power2.inOut"
-            }, 0)
-            .to(menuOverlay, {
-                y: -100, // Menu overlay slides back up
-                opacity: 0, // Fade out
-                duration: 0.7, // Same duration as page animation
-                ease: "power2.inOut"
-            }, 0)
-            .to(menuContent, {
-                y: -100, // Menu content slides back up
-                duration: 0.7, // Same duration as page animation
-                ease: "power2.inOut"
-            }, 0)
-            .call(() => {
-                // Clean up after animation completes
-                pageWrap.classList.remove('menu-open');
-                pageWrap.classList.remove('closing');
-                pageWrap.style.transform = '';
-                console.log('✅ Menu close animation complete');
-            });
-        
-        // Hide nav and restore body scroll
-        navBar.classList.remove('hide');
-        document.body.style.overflow = '';
-        removeTrapFocus();
-    }
-
-    function openMenu() {
-        console.log('🔍 openMenu function called');
-        
-        // Prevent opening while closing
-        if (pageWrap.classList.contains('closing')) {
-            console.log('⚠️ Menu is closing, waiting for close to complete');
-            return;
-        }
-        
-        // Prevent opening if already open
-        if (menuOverlay.classList.contains('open')) {
-            console.log('⚠️ Menu already open, ignoring duplicate call');
-            return;
-        }
-        
-        // First, prepare the menu overlay (hidden behind page content)
-        menuOverlay.classList.add('open');
-        navBar.classList.add('hide');
-        pageWrap.classList.add('menu-open');
-        document.body.style.overflow = 'hidden';
-        trapFocus(menuOverlay);
-        
-        // Ensure menu overlay and content are properly positioned for animation
-        gsap.set(menuOverlay, { 
-            y: -100, // Start off-screen
-            opacity: 0, // Start invisible
-            pointerEvents: 'auto' // Enable clicking on menu content
-        });
-        
-        const menuContent = menuOverlay.querySelector('.menu_content');
-        if (menuContent) {
-            // Set initial position for GSAP animation
-            gsap.set(menuContent, { y: -100 });
-        }
-        
-        // Wait a frame to ensure menu is visible and has dimensions
-        requestAnimationFrame(() => {
-            // Get menu height for the animation
-            const menuHeight = menuOverlay.offsetHeight;
-            console.log('🔍 Menu height:', menuHeight);
-            
-            // Debug: Check current page wrap state
-            console.log('🔍 Page wrap current state:', {
-                y: pageWrap.style.transform,
-                classes: pageWrap.className,
-                gsapProps: gsap.getProperty ? gsap.getProperty(pageWrap, "y") : "GSAP not ready",
-                scale: gsap.getProperty ? gsap.getProperty(pageWrap, "scale") : "GSAP not ready"
-            });
-            
-            // Debug: Check if GSAP is working
-            console.log('🔍 GSAP status:', {
-                gsapLoaded: typeof gsap !== 'undefined',
-                pageWrapElement: !!pageWrap,
-                menuOverlayElement: !!menuOverlay
-            });
-            
-            if (menuHeight === 0) {
-                console.warn('⚠️ Menu height is 0, using fallback height');
-                // Use a fallback height if menu height is 0
-                const fallbackHeight = window.innerHeight * 0.8; // 80% of viewport height
-                
-                // Use GSAP timeline for synchronized animations
-                gsap.timeline()
-                    .to(menuOverlay, {
-                        y: 0, // Menu overlay slides down
-                        opacity: 1, // Fade in smoothly
-                        duration: 0.7, // Same duration as page animation
-                        ease: "power2.inOut"
-                    }, 0)
-                    .to(pageWrap, {
-                        y: fallbackHeight,
-                        scale: 0.98,
-                        duration: 0.7, // Page animation
-                        ease: "power2.inOut"
-                    }, 0)
-                    .to(menuContent, {
-                        y: 0, // Menu content slides down
-                        duration: 0.7, // Same duration as page animation
-                        ease: "power2.inOut"
-                    }, 0); // All animations start together
-            } else {
-                console.log('✅ Using actual menu height for animation');
-                // Use GSAP timeline for synchronized animations
-                gsap.timeline()
-                    .to(menuOverlay, {
-                        y: 0, // Menu overlay slides down
-                        opacity: 1, // Fade in smoothly
-                        duration: 0.7, // Same duration as page animation
-                        ease: "power2.inOut"
-                    }, 0)
-                    .to(pageWrap, {
-                        y: menuHeight,
-                        scale: 0.98,
-                        duration: 0.7, // Page animation
-                        ease: "power2.inOut"
-                    }, 0)
-                    .to(menuContent, {
-                        y: 0, // Menu content slides down
-                        duration: 0.7, // Same duration as page animation
-                        ease: "power2.inOut"
-                    }, 0); // All animations start together
-            }
-        });
-    }
-
-    // Initialize menu state
-    initMenuState();
-    
-    // Remove any existing event listeners to prevent duplicates
-    burgerBtn.removeEventListener('click', openMenu);
-    closeMenuBtn?.removeEventListener('click', closeMenu);
-    
-    // Add event listeners
-    burgerBtn.addEventListener('click', openMenu);
-    
-    // Click outside (on .page_wrap) closes menu if open
-    pageWrap.addEventListener('click', function() {
-        if (menuOverlay.classList.contains('open')) closeMenu();
-    });
-
-    // Prevent closing when clicking inside the menu
-    menuOverlay.addEventListener('click', function(e) {
-        e.stopPropagation();
-    });
-
-    // Prevent default behavior on close button to avoid URL hash
-    if (closeMenuBtn) {
-        closeMenuBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('🔍 Close button clicked, preventing default behavior');
-            closeMenu();
-        });
-    }
-
-
-    
-    console.log('✅ Menu system initialized successfully');
-}
 
 })();
