@@ -2446,18 +2446,19 @@
         trapFocus(menuOverlay);
     }
 
-    burgerBtn.addEventListener('click', openMenu);
-    if (closeMenuBtn) closeMenuBtn.addEventListener('click', closeMenu);
+    // TEMPORARILY COMMENTED OUT TO TEST LIGHTBOX
+    // burgerBtn.addEventListener('click', openMenu);
+    // if (closeMenuBtn) closeMenuBtn.addEventListener('click', closeMenu);
 
     // Click outside (on .page_wrap) closes menu if open
-    pageWrap.addEventListener('click', function() {
-        if (menuOverlay.classList.contains('open')) closeMenu();
-    });
+    // pageWrap.addEventListener('click', function() {
+    //     if (menuOverlay.classList.contains('open')) closeMenu();
+    // });
 
     // Prevent closing when clicking inside the menu
-    menuOverlay.addEventListener('click', function(e) {
-        e.stopPropagation();
-    });
+    // menuOverlay.addEventListener('click', function(e) {
+    //     e.stopPropagation();
+    // });
 
     // === Accessibility: Trap Focus in the Menu ===
     let lastFocusedElement = null;
