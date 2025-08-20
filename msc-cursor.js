@@ -2444,6 +2444,46 @@ function initMenu() {
     
     console.log('✅ GSAP available, setting up menu functions...');
 
+    // === Accessibility: Trap Focus in the Menu ===
+    let lastFocusedElement = null;
+    
+    function trapFocus(element) {
+        const focusableSelectors = 'a, button, textarea, input, select, [tabindex]:not([tabindex="-1"])';
+        const focusableEls = element.querySelectorAll(focusableSelectors);
+        if (!focusableEls.length) return;
+        const firstEl = focusableEls[0];
+        const lastEl = focusableEls[focusableEls.length - 1];
+        lastFocusedElement = document.activeElement;
+        function handleTab(e) {
+            if (e.key !== 'Tab') return;
+            if (e.shiftKey) {
+                if (document.activeElement === firstEl) {
+                    e.preventDefault();
+                    lastEl.focus();
+                }
+            } else {
+                if (document.activeElement === lastEl) {
+                    e.preventDefault();
+                    firstEl.focus();
+                }
+            }
+        }
+        element.addEventListener('keydown', handleTab);
+        firstEl.focus();
+        element._focusTrapHandler = handleTab;
+    }
+    
+    function removeTrapFocus() {
+        if (menuOverlay._focusTrapHandler) {
+            menuOverlay.removeEventListener('keydown', menuOverlay._focusTrapHandler);
+            menuOverlay._focusTrapHandler = null;
+        }
+        if (lastFocusedElement) {
+            lastFocusedElement.focus();
+            lastFocusedElement = null;
+        }
+    }
+
     // Function to initialize menu state (called on page load)
     function initMenuState() {
         if (menuOverlay && pageWrap && navBar) {
@@ -2695,43 +2735,7 @@ function initMenu() {
         });
     }
 
-    // === Accessibility: Trap Focus in the Menu ===
-    let lastFocusedElement = null;
-    function trapFocus(element) {
-        const focusableSelectors = 'a, button, textarea, input, select, [tabindex]:not([tabindex="-1"])';
-        const focusableEls = element.querySelectorAll(focusableSelectors);
-        if (!focusableEls.length) return;
-        const firstEl = focusableEls[0];
-        const lastEl = focusableEls[focusableEls.length - 1];
-        lastFocusedElement = document.activeElement;
-        function handleTab(e) {
-            if (e.key !== 'Tab') return;
-            if (e.shiftKey) {
-                if (document.activeElement === firstEl) {
-                    e.preventDefault();
-                    lastEl.focus();
-                }
-            } else {
-                if (document.activeElement === lastEl) {
-                    e.preventDefault();
-                    firstEl.focus();
-                }
-            }
-        }
-        element.addEventListener('keydown', handleTab);
-        firstEl.focus();
-        element._focusTrapHandler = handleTab;
-    }
-    function removeTrapFocus() {
-        if (menuOverlay._focusTrapHandler) {
-            menuOverlay.removeEventListener('keydown', menuOverlay._focusTrapHandler);
-            menuOverlay._focusTrapHandler = null;
-        }
-        if (lastFocusedElement) {
-            lastFocusedElement.focus();
-            lastFocusedElement = null;
-        }
-    }
+
     
     console.log('✅ Menu system initialized successfully');
 }
