@@ -2486,47 +2486,28 @@ function initMenu() {
             const menuHeight = menuOverlay.offsetHeight;
             console.log('🔍 Menu height:', menuHeight);
             
-                    if (menuHeight === 0) {
-            console.warn('⚠️ Menu height is 0, using fallback height');
-            // Use a fallback height if menu height is 0
-            const fallbackHeight = window.innerHeight * 0.8; // 80% of viewport height
-            
-            gsap.timeline()
-                .set(menuOverlay, { 
-                    y: 0, // Menu starts in final position (behind page content)
-                    opacity: 0 // Start invisible
-                })
-                .to(menuOverlay, {
-                    opacity: 1, // Fade in quickly
-                    duration: 0.05, // Very fast fade
-                    ease: "power2.out"
-                }, 0)
-                .to(pageWrap, {
+            if (menuHeight === 0) {
+                console.warn('⚠️ Menu height is 0, using fallback height');
+                // Use a fallback height if menu height is 0
+                const fallbackHeight = window.innerHeight * 0.8; // 80% of viewport height
+                
+                // Use CSS transitions for menu, GSAP only for page content
+                gsap.to(pageWrap, {
                     y: fallbackHeight,
                     scale: 0.98,
-                    duration: 0.7, // Slow page animation
+                    duration: 0.7, // Match CSS transition timing
                     ease: "power2.inOut"
-                }, 0);
-        } else {
-            console.log('✅ Using actual menu height for animation');
-            // Animate BOTH the page content AND menu overlay together
-            gsap.timeline()
-                .set(menuOverlay, { 
-                    y: 0, // Menu starts in final position (behind page content)
-                    opacity: 0 // Start invisible
-                })
-                .to(menuOverlay, {
-                    opacity: 1, // Fade in quickly
-                    duration: 0.05, // Very fast fade
-                    ease: "power2.out"
-                }, 0)
-                .to(pageWrap, {
+                });
+            } else {
+                console.log('✅ Using actual menu height for animation');
+                // Use CSS transitions for menu, GSAP only for page content
+                gsap.to(pageWrap, {
                     y: menuHeight,
                     scale: 0.98,
-                    duration: 0.7, // Slow page animation
+                    duration: 0.7, // Match CSS transition timing
                     ease: "power2.inOut"
-                }, 0);
-        }
+                });
+            }
         });
     }
 
