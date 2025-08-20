@@ -220,7 +220,8 @@
                 console.log('No forms detected, skipping form validation');
             }
             
-            // Menu state is handled by the simple menu system
+            // Reset menu state on page transitions
+            resetMenuForPageTransition();
             
             console.log('All animations initialized');
             setTimeout(() => {
@@ -2621,6 +2622,36 @@
         });
         
         console.log('✅ Aker-style menu system initialized successfully');
+    }
+    
+    // Function to reset menu state on page transitions
+    function resetMenuForPageTransition() {
+        const menuOverlay = document.querySelector('.menu-overlay');
+        const pageWrap = document.querySelector('.page_wrap');
+        const navBar = document.querySelector('.nav_bar');
+        
+        if (menuOverlay && pageWrap && navBar) {
+            console.log('🔄 Resetting menu for page transition...');
+            
+            // Reset menu overlay to hidden state
+            gsap.set(menuOverlay, { 
+                y: -100,        // Menu hidden above viewport
+                opacity: 0,     // Menu invisible
+                pointerEvents: 'none'  // Not clickable
+            });
+            
+            // Reset page content to normal position
+            gsap.set(pageWrap, { 
+                y: 0,           // Page in normal position
+                scale: 1        // Page at normal scale
+            });
+            
+            // Remove any menu-related classes
+            navBar.classList.remove('hide');
+            document.body.style.overflow = '';
+            
+            console.log('✅ Menu reset complete for page transition');
+        }
     }
 
 
