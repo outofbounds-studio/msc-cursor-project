@@ -2431,44 +2431,60 @@
     }
 
     function closeMenu() {
-        // Animate page content back with GSAP
-        gsap.to(pageWrap, {
-            y: 0,
-            scale: 1,
-            duration: 0.7,
-            ease: "power2.inOut",
-            onComplete: () => {
-                // Clean up after animation completes
-                pageWrap.classList.remove('menu-open');
-                pageWrap.style.transform = '';
-            }
-        });
+        // Animate BOTH elements back together
+        gsap.timeline()
+            .to(pageWrap, {
+                y: 0,
+                scale: 1,
+                duration: 0.7,
+                ease: "power2.inOut"
+            }, 0)
+            .to(menuOverlay, {
+                y: -menuOverlay.offsetHeight, // Slide menu back up
+                duration: 0.7,
+                ease: "power2.inOut",
+                onComplete: () => {
+                    // Clean up after animation completes
+                    menuOverlay.classList.remove('open');
+                    pageWrap.classList.remove('menu-open');
+                    pageWrap.style.transform = '';
+                }
+            }, 0);
         
-        // Hide menu overlay
-        menuOverlay.classList.remove('open');
+        // Hide nav and restore body scroll
         navBar.classList.remove('hide');
         document.body.style.overflow = '';
         removeTrapFocus();
     }
 
     function openMenu() {
-        // Show menu overlay first
+        // First, prepare the menu overlay (hidden behind page content)
         menuOverlay.classList.add('open');
         navBar.classList.add('hide');
         pageWrap.classList.add('menu-open');
         document.body.style.overflow = 'hidden';
         trapFocus(menuOverlay);
         
-        // Wait for menu to be visible, then animate page content
-        setTimeout(() => {
-            const menuHeight = menuOverlay.offsetHeight;
-            gsap.to(pageWrap, {
+        // Get menu height for the animation
+        const menuHeight = menuOverlay.offsetHeight;
+        
+        // Animate BOTH the page content AND menu overlay together
+        gsap.timeline()
+            .set(menuOverlay, { 
+                y: -menuHeight, // Start menu hidden above viewport
+                opacity: 1 
+            })
+            .to(pageWrap, {
                 y: menuHeight,
                 scale: 0.98,
                 duration: 0.7,
                 ease: "power2.inOut"
-            });
-        }, 10);
+            }, 0) // Start at same time
+            .to(menuOverlay, {
+                y: 0, // Slide menu down to top of viewport
+                duration: 0.7,
+                ease: "power2.inOut"
+            }, 0); // Start at same time
     }
 
     burgerBtn.addEventListener('click', openMenu);
