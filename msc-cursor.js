@@ -2460,14 +2460,12 @@ function initMenu() {
             gsap.set(pageWrap, { y: 0, scale: 1 });
             gsap.set(menuOverlay, { y: 0, opacity: 0 });
             
-            // Reset menu content position with CSS instead of GSAP
+            // Reset menu content position using CSS classes instead of inline styles
             const menuContent = menuOverlay.querySelector('.menu_content');
             if (menuContent) {
-                menuContent.style.transform = 'translateY(-100%)';
-                menuContent.style.transition = 'none'; // Temporarily disable transition
-                // Force reflow
-                menuContent.offsetHeight;
-                menuContent.style.transition = ''; // Re-enable transition
+                // Remove any inline styles that might interfere
+                menuContent.removeAttribute('style');
+                // Let CSS handle the positioning naturally
             }
             
             // Remove focus trap
@@ -2494,15 +2492,13 @@ function initMenu() {
         // Reset menu overlay position to hide it
         gsap.set(menuOverlay, { y: 0, opacity: 0 });
         
-        // Reset menu content position to off-screen with CSS
+        // Reset menu content position using CSS classes instead of inline styles
         const menuContent = menuOverlay.querySelector('.menu_content');
         if (menuContent) {
             console.log('🔄 Resetting menu content position');
-            menuContent.style.transform = 'translateY(-100%)';
-            menuContent.style.transition = 'none'; // Temporarily disable transition
-            // Force reflow
-            menuContent.offsetHeight;
-            menuContent.style.transition = ''; // Re-enable transition
+            // Remove any inline styles that might interfere
+            menuContent.removeAttribute('style');
+            // Let CSS handle the positioning naturally
         }
         
         // Animate page content back to cover the menu
@@ -2549,15 +2545,11 @@ function initMenu() {
         document.body.style.overflow = 'hidden';
         trapFocus(menuOverlay);
         
-        // Ensure menu content is properly positioned for animation
+        // Ensure menu content is ready for CSS animation
         const menuContent = menuOverlay.querySelector('.menu_content');
         if (menuContent) {
-            // Force the content to start from off-screen position
-            menuContent.style.transform = 'translateY(-100%)';
-            // Force reflow
-            menuContent.offsetHeight;
-            // Now let CSS handle the animation
-            menuContent.style.transform = '';
+            // Remove any inline styles to let CSS handle positioning
+            menuContent.removeAttribute('style');
         }
         
         // Wait a frame to ensure menu is visible and has dimensions
