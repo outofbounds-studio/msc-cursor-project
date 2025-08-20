@@ -2444,6 +2444,9 @@ function initMenu() {
     function closeMenu() {
         console.log('🔍 closeMenu function called');
         
+        // Hide menu overlay immediately when closing starts
+        menuOverlay.classList.remove('open');
+        
         // Animate page content back to cover the menu
         gsap.timeline()
             .to(pageWrap, {
@@ -2453,7 +2456,6 @@ function initMenu() {
                 ease: "power2.inOut",
                 onComplete: () => {
                     // Clean up after animation completes
-                    menuOverlay.classList.remove('open');
                     pageWrap.classList.remove('menu-open');
                     pageWrap.style.transform = '';
                 }
