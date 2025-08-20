@@ -2566,7 +2566,7 @@
                     ease: "power2.inOut"
                 }, 0) // Start at same time
                 .to(pageWrap, {
-                    y: 200,             // Page moves down
+                    y: 350,             // Page moves down more to reveal full menu
                     scale: 0.98,        // Page scales down slightly
                     duration: 0.7,
                     ease: "power2.inOut"
@@ -2590,7 +2590,7 @@
                     ease: "power2.inOut"
                 }, 0) // Start at same time
                 .to(pageWrap, {
-                    y: 0,               // Page moves back up
+                    y: 0,               // Page moves back up to original position
                     scale: 1,           // Page scales back to normal
                     duration: 0.7,
                     ease: "power2.inOut"
