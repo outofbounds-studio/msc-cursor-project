@@ -861,6 +861,10 @@ body {
   will-change: transform, opacity;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+  /* Ensure menu is hidden by default */
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* Menu content positioning - GSAP handles animations */

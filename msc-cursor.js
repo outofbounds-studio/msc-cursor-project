@@ -2444,6 +2444,33 @@ function initMenu() {
     
     console.log('✅ GSAP available, setting up menu functions...');
 
+    // Function to initialize menu state (called on page load)
+    function initMenuState() {
+        if (menuOverlay && pageWrap && navBar) {
+            console.log('🔄 Initializing menu state...');
+            
+            // Ensure menu is properly hidden on page load
+            gsap.set(menuOverlay, { 
+                y: -100, 
+                opacity: 0 
+            });
+            
+            // Ensure page wrap is in default position
+            gsap.set(pageWrap, { 
+                y: 0, 
+                scale: 1 
+            });
+            
+            // Reset menu content position
+            const menuContent = menuOverlay.querySelector('.menu_content');
+            if (menuContent) {
+                gsap.set(menuContent, { y: -100 });
+            }
+            
+            console.log('✅ Menu state initialized');
+        }
+    }
+
     // Function to reset menu state (used on page transitions)
     function resetMenuState() {
         if (menuOverlay && pageWrap && navBar) {
@@ -2515,12 +2542,18 @@ function initMenu() {
             gsap.set(menuContent, { y: -100 });
         }
         
-        // Animate page content and menu content back to original positions
+        // Animate page content, menu overlay, and menu content back to original positions
         gsap.timeline()
             .to(pageWrap, {
                 y: 0,
                 scale: 1,
                 duration: 0.7,
+                ease: "power2.inOut"
+            }, 0)
+            .to(menuOverlay, {
+                y: -100, // Menu overlay slides back up
+                opacity: 0, // Fade out
+                duration: 0.7, // Same duration as page animation
                 ease: "power2.inOut"
             }, 0)
             .to(menuContent, {
@@ -2564,7 +2597,12 @@ function initMenu() {
         document.body.style.overflow = 'hidden';
         trapFocus(menuOverlay);
         
-        // Ensure menu content is ready for GSAP animation
+        // Ensure menu overlay and content are properly positioned for animation
+        gsap.set(menuOverlay, { 
+            y: -100, // Start off-screen
+            opacity: 0 // Start invisible
+        });
+        
         const menuContent = menuOverlay.querySelector('.menu_content');
         if (menuContent) {
             // Set initial position for GSAP animation
@@ -2591,14 +2629,10 @@ function initMenu() {
                 
                 // Use GSAP timeline for synchronized animations
                 gsap.timeline()
-                    .set(menuOverlay, { 
-                        y: -100, // Menu overlay starts off-screen
-                        opacity: 0 // Start invisible
-                    })
                     .to(menuOverlay, {
                         y: 0, // Menu overlay slides down
                         opacity: 1, // Fade in smoothly
-                        duration: 0.7, // Same duration as other animations
+                        duration: 0.7, // Same duration as page animation
                         ease: "power2.inOut"
                     }, 0)
                     .to(pageWrap, {
@@ -2611,19 +2645,15 @@ function initMenu() {
                         y: 0, // Menu content slides down
                         duration: 0.7, // Same duration as page animation
                         ease: "power2.inOut"
-                    }, 0); // Start immediately to sync with overlay
+                    }, 0); // All animations start together
             } else {
                 console.log('✅ Using actual menu height for animation');
                 // Use GSAP timeline for synchronized animations
                 gsap.timeline()
-                    .set(menuOverlay, { 
-                        y: -100, // Menu overlay starts off-screen
-                        opacity: 0 // Start invisible
-                    })
                     .to(menuOverlay, {
                         y: 0, // Menu overlay slides down
                         opacity: 1, // Fade in smoothly
-                        duration: 0.7, // Same duration as other animations
+                        duration: 0.7, // Same duration as page animation
                         ease: "power2.inOut"
                     }, 0)
                     .to(pageWrap, {
@@ -2636,11 +2666,14 @@ function initMenu() {
                         y: 0, // Menu content slides down
                         duration: 0.7, // Same duration as page animation
                         ease: "power2.inOut"
-                    }, 0); // Start immediately to sync with overlay
+                    }, 0); // All animations start together
             }
         });
     }
 
+    // Initialize menu state
+    initMenuState();
+    
     // Remove any existing event listeners to prevent duplicates
     burgerBtn.removeEventListener('click', openMenu);
     closeMenuBtn?.removeEventListener('click', closeMenu);
