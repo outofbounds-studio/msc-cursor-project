@@ -2498,7 +2498,7 @@ function initMenu() {
                 })
                 .to(menuOverlay, {
                     opacity: 1, // Fade in quickly
-                    duration: 0.2, // Fast fade
+                    duration: 0.05, // Very fast fade
                     ease: "power2.out"
                 }, 0)
                 .to(pageWrap, {
@@ -2517,7 +2517,7 @@ function initMenu() {
                 })
                 .to(menuOverlay, {
                     opacity: 1, // Fade in quickly
-                    duration: 0.2, // Fast fade
+                    duration: 0.05, // Very fast fade
                     ease: "power2.out"
                 }, 0)
                 .to(pageWrap, {
