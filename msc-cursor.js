@@ -124,6 +124,9 @@
                 console.log('No forms detected, skipping form validation');
             }
             
+            // Reset menu state on page transitions
+            resetMenuState();
+            
             console.log('All animations initialized');
             setTimeout(() => {
                 console.log('About to call Jetboost.ReInit() in Barba afterEnter hook (with delay)');
@@ -2441,6 +2444,31 @@ function initMenu() {
     
     console.log('✅ GSAP available, setting up menu functions...');
 
+    // Function to reset menu state (used on page transitions)
+    function resetMenuState() {
+        if (menuOverlay && pageWrap && navBar) {
+            // Remove all menu-related classes
+            menuOverlay.classList.remove('open');
+            pageWrap.classList.remove('menu-open');
+            navBar.classList.remove('hide');
+            document.body.classList.remove('menu-open');
+            document.body.style.overflow = '';
+            
+            // Reset GSAP transforms
+            gsap.set(pageWrap, { y: 0, scale: 1 });
+            gsap.set(menuOverlay, { y: 0, opacity: 0 });
+            
+            // Reset menu content position
+            const menuContent = menuOverlay.querySelector('.menu_content');
+            if (menuContent) {
+                gsap.set(menuContent, { transform: 'translateY(-100%)' });
+            }
+            
+            // Remove focus trap
+            removeTrapFocus();
+        }
+    }
+
     function closeMenu() {
         console.log('🔍 closeMenu function called');
         
@@ -2449,6 +2477,12 @@ function initMenu() {
         
         // Reset menu overlay position to hide it
         gsap.set(menuOverlay, { y: 0, opacity: 0 });
+        
+        // Reset menu content position to off-screen
+        const menuContent = menuOverlay.querySelector('.menu_content');
+        if (menuContent) {
+            gsap.set(menuContent, { transform: 'translateY(-100%)' });
+        }
         
         // Animate page content back to cover the menu
         gsap.timeline()
