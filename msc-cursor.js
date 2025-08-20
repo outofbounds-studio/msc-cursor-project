@@ -2486,47 +2486,37 @@ function initMenu() {
             const menuHeight = menuOverlay.offsetHeight;
             console.log('🔍 Menu height:', menuHeight);
             
-            if (menuHeight === 0) {
-                console.warn('⚠️ Menu height is 0, using fallback height');
-                // Use a fallback height if menu height is 0
-                const fallbackHeight = window.innerHeight * 0.8; // 80% of viewport height
-                
-                gsap.timeline()
-                    .set(menuOverlay, { 
-                        y: -fallbackHeight, // Start menu hidden above viewport
-                        opacity: 1 
-                    })
-                    .to(pageWrap, {
-                        y: fallbackHeight,
-                        scale: 0.98,
-                        duration: 0.7,
-                        ease: "power2.inOut"
-                    }, 0)
-                    .to(menuOverlay, {
-                        y: 0, // Slide menu down to top of viewport
-                        duration: 0.7,
-                        ease: "power2.inOut"
-                    }, 0);
-            } else {
-                console.log('✅ Using actual menu height for animation');
-                // Animate BOTH the page content AND menu overlay together
-                gsap.timeline()
-                    .set(menuOverlay, { 
-                        y: -menuHeight, // Start menu hidden above viewport
-                        opacity: 1 
-                    })
-                    .to(pageWrap, {
-                        y: menuHeight,
-                        scale: 0.98,
-                        duration: 0.7,
-                        ease: "power2.inOut"
-                    }, 0) // Start at same time
-                    .to(menuOverlay, {
-                        y: 0, // Slide menu down to top of viewport
-                        duration: 0.7,
-                        ease: "power2.inOut"
-                    }, 0); // Start at same time
-            }
+                    if (menuHeight === 0) {
+            console.warn('⚠️ Menu height is 0, using fallback height');
+            // Use a fallback height if menu height is 0
+            const fallbackHeight = window.innerHeight * 0.8; // 80% of viewport height
+            
+            gsap.timeline()
+                .set(menuOverlay, { 
+                    y: 0, // Menu starts in final position (behind page content)
+                    opacity: 1 
+                })
+                .to(pageWrap, {
+                    y: fallbackHeight,
+                    scale: 0.98,
+                    duration: 0.7,
+                    ease: "power2.inOut"
+                }, 0); // Only animate page content
+        } else {
+            console.log('✅ Using actual menu height for animation');
+            // Animate BOTH the page content AND menu overlay together
+            gsap.timeline()
+                .set(menuOverlay, { 
+                    y: 0, // Menu starts in final position (behind page content)
+                    opacity: 1 
+                })
+                .to(pageWrap, {
+                    y: menuHeight,
+                    scale: 0.98,
+                    duration: 0.7,
+                    ease: "power2.inOut"
+                }, 0); // Only animate page content
+        }
         });
     }
 
