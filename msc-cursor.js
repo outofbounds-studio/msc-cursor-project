@@ -2480,6 +2480,14 @@ function initMenu() {
     function closeMenu() {
         console.log('🔍 closeMenu function called');
         
+        // Prevent multiple simultaneous calls
+        if (pageWrap.classList.contains('closing')) {
+            console.log('⚠️ Menu already closing, ignoring duplicate call');
+            return;
+        }
+        
+        pageWrap.classList.add('closing');
+        
         // Hide menu overlay immediately when closing starts
         menuOverlay.classList.remove('open');
         
@@ -2489,6 +2497,7 @@ function initMenu() {
         // Reset menu content position to off-screen with CSS
         const menuContent = menuOverlay.querySelector('.menu_content');
         if (menuContent) {
+            console.log('🔄 Resetting menu content position');
             menuContent.style.transform = 'translateY(-100%)';
             menuContent.style.transition = 'none'; // Temporarily disable transition
             // Force reflow
@@ -2506,7 +2515,9 @@ function initMenu() {
                 onComplete: () => {
                     // Clean up after animation completes
                     pageWrap.classList.remove('menu-open');
+                    pageWrap.classList.remove('closing');
                     pageWrap.style.transform = '';
+                    console.log('✅ Menu close animation complete');
                 }
             }, 0);
         
@@ -2518,6 +2529,18 @@ function initMenu() {
 
     function openMenu() {
         console.log('🔍 openMenu function called');
+        
+        // Prevent opening while closing
+        if (pageWrap.classList.contains('closing')) {
+            console.log('⚠️ Menu is closing, waiting for close to complete');
+            return;
+        }
+        
+        // Prevent opening if already open
+        if (menuOverlay.classList.contains('open')) {
+            console.log('⚠️ Menu already open, ignoring duplicate call');
+            return;
+        }
         
         // First, prepare the menu overlay (hidden behind page content)
         menuOverlay.classList.add('open');
@@ -2568,9 +2591,13 @@ function initMenu() {
         });
     }
 
+    // Remove any existing event listeners to prevent duplicates
+    burgerBtn.removeEventListener('click', openMenu);
+    closeMenuBtn?.removeEventListener('click', closeMenu);
+    
+    // Add event listeners
     burgerBtn.addEventListener('click', openMenu);
-    if (closeMenuBtn) closeMenuBtn.addEventListener('click', closeMenu);
-
+    
     // Click outside (on .page_wrap) closes menu if open
     pageWrap.addEventListener('click', function() {
         if (menuOverlay.classList.contains('open')) closeMenu();
@@ -2586,6 +2613,7 @@ function initMenu() {
         closeMenuBtn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
+            console.log('🔍 Close button clicked, preventing default behavior');
             closeMenu();
         });
     }
