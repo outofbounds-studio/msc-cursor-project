@@ -86,6 +86,10 @@
         // 3. Now all libraries are loaded, safe to use barba, SplitText, etc
         console.log('Initializing GSAP defaults...');
         utils.initGSAPDefaults();
+        
+        // Initialize menu system now that GSAP is available
+        initMenu();
+        
         console.log('Initializing Lenis...');
         utils.lenis.init();
         console.log('Initializing theme system...');
@@ -2410,7 +2414,9 @@
 })();
 
 // === Global Menu Overlay Logic ===
-(function() {
+function initMenu() {
+    console.log('🔍 Initializing menu system...');
+    
     // Selectors
     const burgerBtn = document.querySelector('.burger_wrap');
     const navBar = document.querySelector('.nav_bar');
@@ -2418,7 +2424,10 @@
     const menuOverlay = document.querySelector('.menu-overlay');
     const closeMenuBtn = document.querySelector('.close-menu');
 
-    if (!burgerBtn || !navBar || !pageWrap || !menuOverlay) return;
+    if (!burgerBtn || !navBar || !pageWrap || !menuOverlay) {
+        console.warn('⚠️ Menu elements not found, skipping menu initialization');
+        return;
+    }
 
     // Add backdrop blur (in case not set in CSS)
     menuOverlay.style.backdropFilter = 'blur(8px)';
@@ -2429,6 +2438,8 @@
         console.error('GSAP is not loaded. Menu animations will not work.');
         return;
     }
+    
+    console.log('✅ GSAP available, setting up menu functions...');
 
     function closeMenu() {
         console.log('🔍 closeMenu function called');
@@ -2569,4 +2580,6 @@
             lastFocusedElement = null;
         }
     }
-})();
+    
+    console.log('✅ Menu system initialized successfully');
+}
