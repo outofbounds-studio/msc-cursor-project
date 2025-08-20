@@ -2511,49 +2511,48 @@
             }
         });
     }
-})();
-
-// === Global Menu Overlay Logic ===
-function initMenu() {
-    console.log('🔍 Initializing menu system...');
     
-    // Selectors
-    const burgerBtn = document.querySelector('.burger_wrap');
-    const navBar = document.querySelector('.nav_bar');
-    const pageWrap = document.querySelector('.page_wrap');
-    const menuOverlay = document.querySelector('.menu-overlay');
-    const closeMenuBtn = document.querySelector('.close-menu');
+    // === Global Menu Overlay Logic ===
+    function initMenu() {
+        console.log('🔍 Initializing menu system...');
+        
+        // Selectors
+        const burgerBtn = document.querySelector('.burger_wrap');
+        const navBar = document.querySelector('.nav_bar');
+        const pageWrap = document.querySelector('.page_wrap');
+        const menuOverlay = document.querySelector('.menu-overlay');
+        const closeMenuBtn = document.querySelector('.close-menu');
 
-    if (!burgerBtn || !navBar || !pageWrap || !menuOverlay) {
-        console.warn('⚠️ Menu elements not found, skipping menu initialization');
-        return;
-    }
-
-    // Add backdrop blur (in case not set in CSS)
-    menuOverlay.style.backdropFilter = 'blur(8px)';
-    menuOverlay.style.webkitBackdropFilter = 'blur(8px)';
-    
-    // Ensure GSAP is available
-    if (typeof gsap === 'undefined') {
-        console.error('GSAP is not loaded. Menu animations will not work.');
-        return;
-    }
-    
-    console.log('✅ GSAP available, setting up menu functions...');
-
-
-
-    // Function to initialize menu state (called on page load)
-    function initMenuState() {
-        if (menuOverlay && pageWrap && navBar) {
-            console.log('🔄 Initializing menu state...');
-            
-            // Call global resetMenuState to ensure complete cleanup
-            resetMenuState();
-            
-            console.log('✅ Menu state initialized');
+        if (!burgerBtn || !navBar || !pageWrap || !menuOverlay) {
+            console.warn('⚠️ Menu elements not found, skipping menu initialization');
+            return;
         }
-    }
+
+        // Add backdrop blur (in case not set in CSS)
+        menuOverlay.style.backdropFilter = 'blur(8px)';
+        menuOverlay.style.webkitBackdropFilter = 'blur(8px)';
+        
+        // Ensure GSAP is available
+        if (typeof gsap === 'undefined') {
+            console.error('GSAP is not loaded. Menu animations will not work.');
+            return;
+        }
+        
+        console.log('✅ GSAP available, setting up menu functions...');
+
+
+
+        // Function to initialize menu state (called on page load)
+        function initMenuState() {
+            if (menuOverlay && pageWrap && navBar) {
+                console.log('🔄 Initializing menu state...');
+                
+                // Call global resetMenuState to ensure complete cleanup
+                resetMenuState();
+                
+                console.log('✅ Menu state initialized');
+            }
+        }
 
 
 
@@ -2754,3 +2753,5 @@ function initMenu() {
     
     console.log('✅ Menu system initialized successfully');
 }
+
+})();
