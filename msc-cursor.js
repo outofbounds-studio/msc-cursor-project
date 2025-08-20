@@ -2494,28 +2494,38 @@ function initMenu() {
             gsap.timeline()
                 .set(menuOverlay, { 
                     y: 0, // Menu starts in final position (behind page content)
-                    opacity: 1 
+                    opacity: 0 // Start invisible
                 })
+                .to(menuOverlay, {
+                    opacity: 1, // Fade in quickly
+                    duration: 0.2, // Fast fade
+                    ease: "power2.out"
+                }, 0)
                 .to(pageWrap, {
                     y: fallbackHeight,
                     scale: 0.98,
-                    duration: 0.7,
+                    duration: 0.7, // Slow page animation
                     ease: "power2.inOut"
-                }, 0); // Only animate page content
+                }, 0);
         } else {
             console.log('✅ Using actual menu height for animation');
             // Animate BOTH the page content AND menu overlay together
             gsap.timeline()
                 .set(menuOverlay, { 
                     y: 0, // Menu starts in final position (behind page content)
-                    opacity: 1 
+                    opacity: 0 // Start invisible
                 })
+                .to(menuOverlay, {
+                    opacity: 1, // Fade in quickly
+                    duration: 0.2, // Fast fade
+                    ease: "power2.out"
+                }, 0)
                 .to(pageWrap, {
                     y: menuHeight,
                     scale: 0.98,
-                    duration: 0.7,
+                    duration: 0.7, // Slow page animation
                     ease: "power2.inOut"
-                }, 0); // Only animate page content
+                }, 0);
         }
         });
     }
