@@ -1986,6 +1986,20 @@
         });
     }
 
+    // Force lightbox centering function
+    function forceLightboxCentering() {
+      const lightboxWrap = document.querySelector('.lightbox-wrap.is-active');
+      const lightboxImgWrap = lightboxWrap?.querySelector('.lightbox-img__wrap');
+      
+      if (lightboxImgWrap) {
+        lightboxImgWrap.style.display = 'flex';
+        lightboxImgWrap.style.alignItems = 'center';
+        lightboxImgWrap.style.justifyContent = 'center';
+        lightboxImgWrap.style.width = '90vw';
+        lightboxImgWrap.style.height = 'calc(100svh - 10em)';
+      }
+    }
+
     // Lightbox function
     function createLightbox(container, {
       onStart,
@@ -2125,6 +2139,11 @@
             updateActiveItem(0);
             container.addEventListener('click', handleOutsideClick);
             elements.wrapper.classList.add('is-active');
+            
+            // Force centering after lightbox opens
+            setTimeout(() => {
+              forceLightboxCentering();
+            }, 100);
             // Animate background and nav just like the image trigger
             const tl = gsap.timeline({
               onComplete: () => {
@@ -2160,6 +2179,12 @@
             }
           });
           elements.wrapper.classList.add('is-active');
+          
+          // Force centering after lightbox opens
+          setTimeout(() => {
+            forceLightboxCentering();
+          }, 100);
+          
           const targetItem = elements.items[index];
           const lightboxImage = targetItem ? targetItem.querySelector('img') : null;
           if (lightboxImage) {
