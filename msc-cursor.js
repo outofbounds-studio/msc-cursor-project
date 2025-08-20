@@ -2447,6 +2447,8 @@ function initMenu() {
     // Function to reset menu state (used on page transitions)
     function resetMenuState() {
         if (menuOverlay && pageWrap && navBar) {
+            console.log('🔄 Resetting menu state...');
+            
             // Remove all menu-related classes
             menuOverlay.classList.remove('open');
             pageWrap.classList.remove('menu-open');
@@ -2458,14 +2460,20 @@ function initMenu() {
             gsap.set(pageWrap, { y: 0, scale: 1 });
             gsap.set(menuOverlay, { y: 0, opacity: 0 });
             
-            // Reset menu content position
+            // Reset menu content position with CSS instead of GSAP
             const menuContent = menuOverlay.querySelector('.menu_content');
             if (menuContent) {
-                gsap.set(menuContent, { transform: 'translateY(-100%)' });
+                menuContent.style.transform = 'translateY(-100%)';
+                menuContent.style.transition = 'none'; // Temporarily disable transition
+                // Force reflow
+                menuContent.offsetHeight;
+                menuContent.style.transition = ''; // Re-enable transition
             }
             
             // Remove focus trap
             removeTrapFocus();
+            
+            console.log('✅ Menu state reset complete');
         }
     }
 
@@ -2478,10 +2486,14 @@ function initMenu() {
         // Reset menu overlay position to hide it
         gsap.set(menuOverlay, { y: 0, opacity: 0 });
         
-        // Reset menu content position to off-screen
+        // Reset menu content position to off-screen with CSS
         const menuContent = menuOverlay.querySelector('.menu_content');
         if (menuContent) {
-            gsap.set(menuContent, { transform: 'translateY(-100%)' });
+            menuContent.style.transform = 'translateY(-100%)';
+            menuContent.style.transition = 'none'; // Temporarily disable transition
+            // Force reflow
+            menuContent.offsetHeight;
+            menuContent.style.transition = ''; // Re-enable transition
         }
         
         // Animate page content back to cover the menu
@@ -2513,6 +2525,17 @@ function initMenu() {
         pageWrap.classList.add('menu-open');
         document.body.style.overflow = 'hidden';
         trapFocus(menuOverlay);
+        
+        // Ensure menu content is properly positioned for animation
+        const menuContent = menuOverlay.querySelector('.menu_content');
+        if (menuContent) {
+            // Force the content to start from off-screen position
+            menuContent.style.transform = 'translateY(-100%)';
+            // Force reflow
+            menuContent.offsetHeight;
+            // Now let CSS handle the animation
+            menuContent.style.transform = '';
+        }
         
         // Wait a frame to ensure menu is visible and has dimensions
         requestAnimationFrame(() => {
@@ -2557,6 +2580,15 @@ function initMenu() {
     menuOverlay.addEventListener('click', function(e) {
         e.stopPropagation();
     });
+
+    // Prevent default behavior on close button to avoid URL hash
+    if (closeMenuBtn) {
+        closeMenuBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            closeMenu();
+        });
+    }
 
     // === Accessibility: Trap Focus in the Menu ===
     let lastFocusedElement = null;
