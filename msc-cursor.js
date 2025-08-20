@@ -1490,9 +1490,9 @@
                 galleryWrappers.forEach((wrapper, index) => {
                     console.log(`Creating lightbox for gallery ${index + 1}:`, wrapper);
                     createLightbox(wrapper, {
-                        onStart: () => window.lenis?.stop(),
+                        // onStart: () => window.lenis?.stop(), // Temporarily commented out to test lightbox
                         onOpen: () => {},
-                        onClose: () => window.lenis?.start(),
+                        // onClose: () => window.lenis?.start(), // Temporarily commented out to test lightbox
                         onCloseComplete: () => {}
                     });
                 });
