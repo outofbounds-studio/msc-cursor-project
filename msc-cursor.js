@@ -2447,6 +2447,9 @@ function initMenu() {
         // Hide menu overlay immediately when closing starts
         menuOverlay.classList.remove('open');
         
+        // Reset menu overlay position to hide it
+        gsap.set(menuOverlay, { y: 0, opacity: 0 });
+        
         // Animate page content back to cover the menu
         gsap.timeline()
             .to(pageWrap, {
