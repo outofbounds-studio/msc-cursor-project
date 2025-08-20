@@ -2444,16 +2444,11 @@ function initMenu() {
     function closeMenu() {
         console.log('🔍 closeMenu function called');
         
-        // Animate BOTH elements back together
+        // Animate page content back to cover the menu
         gsap.timeline()
             .to(pageWrap, {
                 y: 0,
                 scale: 1,
-                duration: 0.7,
-                ease: "power2.inOut"
-            }, 0)
-            .to(menuOverlay, {
-                y: -menuOverlay.offsetHeight, // Slide menu back up
                 duration: 0.7,
                 ease: "power2.inOut",
                 onComplete: () => {
