@@ -857,14 +857,9 @@ body {
   width: 100vw;
   z-index: 999;
   background: #181716;
-  /* GSAP handles all transforms and opacity */
-  will-change: transform, opacity;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  /* Ensure menu is hidden by default */
-  transform: translateY(-100%);
-  opacity: 0;
-  pointer-events: none;
+  /* GSAP handles everything - no CSS transforms or transitions */
 }
 
 /* Menu content positioning - GSAP handles animations */
@@ -873,17 +868,11 @@ body {
   will-change: transform;
 }
 
+/* Page wrap - GSAP handles all animations */
 .page_wrap {
   position: relative;
   z-index: 2;
-  transition:
-    transform 0.7s cubic-bezier(0.77,0,0.175,1),
-    box-shadow 0.7s cubic-bezier(0.77,0,0.175,1);
-  will-change: transform;
-}
-.page_wrap.menu-open {
-  /* transform is set dynamically in JS to match menu-overlay height */
-  box-shadow: 0 40px 80px rgba(0,0,0,0.25);
+  /* GSAP handles all transforms and transitions */
 }
 
 /* Lightbox */

@@ -2449,23 +2449,8 @@ function initMenu() {
         if (menuOverlay && pageWrap && navBar) {
             console.log('🔄 Initializing menu state...');
             
-            // Ensure menu is properly hidden on page load
-            gsap.set(menuOverlay, { 
-                y: -100, 
-                opacity: 0 
-            });
-            
-            // Ensure page wrap is in default position
-            gsap.set(pageWrap, { 
-                y: 0, 
-                scale: 1 
-            });
-            
-            // Reset menu content position
-            const menuContent = menuOverlay.querySelector('.menu_content');
-            if (menuContent) {
-                gsap.set(menuContent, { y: -100 });
-            }
+            // Call resetMenuState to ensure complete cleanup
+            resetMenuState();
             
             console.log('✅ Menu state initialized');
         }
@@ -2600,7 +2585,8 @@ function initMenu() {
         // Ensure menu overlay and content are properly positioned for animation
         gsap.set(menuOverlay, { 
             y: -100, // Start off-screen
-            opacity: 0 // Start invisible
+            opacity: 0, // Start invisible
+            pointerEvents: 'auto' // Enable clicking on menu content
         });
         
         const menuContent = menuOverlay.querySelector('.menu_content');
@@ -2619,7 +2605,15 @@ function initMenu() {
             console.log('🔍 Page wrap current state:', {
                 y: pageWrap.style.transform,
                 classes: pageWrap.className,
-                gsapProps: gsap.getProperty(pageWrap, "y")
+                gsapProps: gsap.getProperty(pageWrap, "y"),
+                scale: gsap.getProperty(pageWrap, "scale")
+            });
+            
+            // Debug: Check if GSAP is working
+            console.log('🔍 GSAP status:', {
+                gsapLoaded: typeof gsap !== 'undefined',
+                pageWrapElement: !!pageWrap,
+                menuOverlayElement: !!menuOverlay
             });
             
             if (menuHeight === 0) {
