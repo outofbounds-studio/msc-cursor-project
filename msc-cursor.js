@@ -2570,6 +2570,8 @@
                     pageWrap.style.transform = 'translateY(350px) scale(0.98)';
                     pageWrap.style.transition = 'transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
                     pageWrap.setAttribute('data-menu-fallback', 'true');
+                } else {
+                    console.log('✅ CSS transform is working:', computedTransform);
                 }
             }, 100);
         }
@@ -2596,15 +2598,25 @@
             console.log('🔍 pageWrap classes:', pageWrap.className);
             console.log('🔍 pageWrap transform:', getComputedStyle(pageWrap).transform);
             
-            // Fallback: Reset transform directly if CSS isn't working
+            // Always reset any fallback transforms to ensure clean state
+            if (pageWrap.hasAttribute('data-menu-fallback')) {
+                console.log('🔄 Resetting fallback transforms...');
+                pageWrap.style.transform = 'translateY(0) scale(1)';
+                pageWrap.style.transition = 'transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                pageWrap.removeAttribute('data-menu-fallback');
+                console.log('✅ Fallback transforms reset');
+            }
+            
+            // Additional safety: force reset after a delay
             setTimeout(() => {
                 const computedTransform = getComputedStyle(pageWrap).transform;
                 if (computedTransform !== 'none' && computedTransform !== 'matrix(1, 0, 0, 1, 0, 0)') {
-                    console.log('⚠️ CSS reset not working, applying fallback');
-                    pageWrap.style.transform = 'translateY(0) scale(1)';
-                    pageWrap.removeAttribute('data-menu-fallback');
+                    console.log('⚠️ Transform still not reset, forcing cleanup...');
+                    pageWrap.style.transform = '';
+                    pageWrap.style.transition = '';
+                    console.log('✅ Forced transform cleanup complete');
                 }
-            }, 100);
+            }, 200);
         }
 
         // Event listeners
@@ -2767,6 +2779,14 @@
                     pageWrap.style.transform = '';
                     pageWrap.style.transition = '';
                     pageWrap.removeAttribute('data-menu-fallback');
+                }
+                
+                // Force cleanup of any remaining transforms
+                const computedTransform = getComputedStyle(pageWrap).transform;
+                if (computedTransform !== 'none' && computedTransform !== 'matrix(1, 0, 0, 1, 0, 0)') {
+                    console.log('🔄 Forcing cleanup of remaining transforms...');
+                    pageWrap.style.transform = '';
+                    pageWrap.style.transition = '';
                 }
             }
             
