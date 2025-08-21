@@ -2092,6 +2092,18 @@
       onCloseComplete
     } = {}) {
       console.log('createLightbox called with container:', container);
+      
+      // Clear any menu transforms that might interfere with lightbox
+      const pageWrap = document.querySelector('.page_wrap');
+      if (pageWrap && (pageWrap.classList.contains('menu-open') || pageWrap.hasAttribute('data-menu-fallback'))) {
+        console.log('🔄 Clearing menu transforms for lightbox compatibility...');
+        pageWrap.classList.remove('menu-open');
+        if (pageWrap.hasAttribute('data-menu-fallback')) {
+          pageWrap.style.transform = '';
+          pageWrap.style.transition = '';
+          pageWrap.removeAttribute('data-menu-fallback');
+        }
+      }
       const elements = {
         wrapper: container.querySelector('[data-lightbox="wrapper"]'),
         triggers: container.querySelectorAll('[data-lightbox="trigger"]'),
@@ -2224,6 +2236,18 @@
             container.addEventListener('click', handleOutsideClick);
             elements.wrapper.classList.add('is-active');
             
+            // Clear any menu transforms immediately when lightbox opens
+            const pageWrap = document.querySelector('.page_wrap');
+            if (pageWrap && (pageWrap.classList.contains('menu-open') || pageWrap.hasAttribute('data-menu-fallback'))) {
+              console.log('🔄 Clearing menu transforms for lightbox...');
+              pageWrap.classList.remove('menu-open');
+              if (pageWrap.hasAttribute('data-menu-fallback')) {
+                pageWrap.style.transform = '';
+                pageWrap.style.transition = '';
+                pageWrap.removeAttribute('data-menu-fallback');
+              }
+            }
+            
             // Force centering after lightbox opens
             setTimeout(() => {
               forceLightboxCentering();
@@ -2263,6 +2287,18 @@
             }
           });
           elements.wrapper.classList.add('is-active');
+          
+          // Clear any menu transforms immediately when lightbox opens
+          const pageWrap = document.querySelector('.page_wrap');
+          if (pageWrap && (pageWrap.classList.contains('menu-open') || pageWrap.hasAttribute('data-menu-fallback'))) {
+            console.log('🔄 Clearing menu transforms for lightbox...');
+            pageWrap.classList.remove('menu-open');
+            if (pageWrap.hasAttribute('data-menu-fallback')) {
+              pageWrap.style.transform = '';
+              pageWrap.style.transition = '';
+              pageWrap.removeAttribute('data-menu-fallback');
+            }
+          }
           
           // Force centering after lightbox opens
           setTimeout(() => {
@@ -2533,6 +2569,7 @@
                     console.log('⚠️ CSS transform not working, applying fallback');
                     pageWrap.style.transform = 'translateY(350px) scale(0.98)';
                     pageWrap.style.transition = 'transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                    pageWrap.setAttribute('data-menu-fallback', 'true');
                 }
             }, 100);
         }
@@ -2565,6 +2602,7 @@
                 if (computedTransform !== 'none' && computedTransform !== 'matrix(1, 0, 0, 1, 0, 0)') {
                     console.log('⚠️ CSS reset not working, applying fallback');
                     pageWrap.style.transform = 'translateY(0) scale(1)';
+                    pageWrap.removeAttribute('data-menu-fallback');
                 }
             }, 100);
         }
@@ -2718,10 +2756,18 @@
                 pointerEvents: 'none'  // Not clickable
             });
             
-            // Reset page content by removing CSS class
+            // Reset page content by removing CSS class and any fallback transforms
             const pageWrap = document.querySelector('.page_wrap');
             if (pageWrap) {
                 pageWrap.classList.remove('menu-open');
+                
+                // If fallback was used, reset it completely
+                if (pageWrap.hasAttribute('data-menu-fallback')) {
+                    console.log('🔄 Resetting fallback menu transforms...');
+                    pageWrap.style.transform = '';
+                    pageWrap.style.transition = '';
+                    pageWrap.removeAttribute('data-menu-fallback');
+                }
             }
             
             // Remove any menu-related classes
