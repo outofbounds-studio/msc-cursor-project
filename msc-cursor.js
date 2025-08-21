@@ -1446,8 +1446,6 @@
                 console.log('[Barba] contact.afterEnter');
                 components.initCustomCursor();
                 animations.initSplitTextAnimation();
-                components.initAccordionCSS();
-                initNumberTickerAnimation();
                 initScrambleText();
             },
             afterLeave() {
@@ -1472,8 +1470,6 @@
                 console.log('[Barba] request-a-quote.afterEnter');
                 components.initCustomCursor();
                 animations.initSplitTextAnimation();
-                components.initAccordionCSS();
-                initNumberTickerAnimation();
                 initScrambleText();
             },
             afterLeave() {
