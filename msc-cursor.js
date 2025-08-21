@@ -2497,11 +2497,11 @@
             pointerEvents: 'none'  // Not clickable
         });
 
-        // Use CSS transforms for page content to avoid GSAP conflicts
-        pageWrap.style.transform = 'translateY(0px) scale(1)';
-        pageWrap.style.transition = 'transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        // Don't set any transforms initially - let CSS handle it
+        // pageWrap.style.transform = 'translateY(0px) scale(1)';
+        // pageWrap.style.transition = 'transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
         
-        // Also add CSS classes as a backup method
+        // Remove any existing menu classes
         pageWrap.classList.remove('menu-open');
 
         function openMenu() {
@@ -2520,8 +2520,7 @@
                 ease: "power2.inOut"
             });
             
-            // Use CSS transforms for page content to avoid GSAP conflicts
-            pageWrap.style.transform = 'translateY(350px) scale(0.98)';
+            // Use CSS class only - let CSS handle the transforms
             pageWrap.classList.add('menu-open');
         }
 
@@ -2541,8 +2540,7 @@
                 ease: "power2.inOut"
             });
             
-            // Reset page content using CSS transforms
-            pageWrap.style.transform = 'translateY(0px) scale(1)';
+            // Remove CSS class to reset page content
             pageWrap.classList.remove('menu-open');
         }
 
@@ -2695,10 +2693,9 @@
                 pointerEvents: 'none'  // Not clickable
             });
             
-            // Reset page content using CSS transforms
+            // Reset page content by removing CSS class
             const pageWrap = document.querySelector('.page_wrap');
             if (pageWrap) {
-                pageWrap.style.transform = 'translateY(0px) scale(1)';
                 pageWrap.classList.remove('menu-open');
             }
             
