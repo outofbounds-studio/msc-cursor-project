@@ -2497,8 +2497,12 @@
             pointerEvents: 'none'  // Not clickable
         });
 
-        // DON'T transform pageWrap - this might be causing lightbox conflicts
-        // gsap.set(pageWrap, { y: 0, scale: 1 });
+        // Use CSS transforms for page content to avoid GSAP conflicts
+        pageWrap.style.transform = 'translateY(0px) scale(1)';
+        pageWrap.style.transition = 'transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        
+        // Also add CSS classes as a backup method
+        pageWrap.classList.remove('menu-open');
 
         function openMenu() {
             console.log('🔍 Opening menu...');
@@ -2507,7 +2511,7 @@
             navBar.classList.add('hide');
             document.body.style.overflow = 'hidden';
 
-            // Only animate the menu overlay, not the page content
+            // Animate both menu overlay and page content using CSS transforms
             gsap.to(menuOverlay, {
                 y: 0,               // Menu slides down from top
                 opacity: 1,         // Menu becomes visible
@@ -2515,6 +2519,10 @@
                 duration: 0.7,
                 ease: "power2.inOut"
             });
+            
+            // Use CSS transforms for page content to avoid GSAP conflicts
+            pageWrap.style.transform = 'translateY(350px) scale(0.98)';
+            pageWrap.classList.add('menu-open');
         }
 
         function closeMenu() {
@@ -2524,7 +2532,7 @@
             navBar.classList.remove('hide');
             document.body.style.overflow = '';
 
-            // Only animate the menu overlay back
+            // Animate menu overlay back and reset page content
             gsap.to(menuOverlay, {
                 y: -100,            // Menu slides back up
                 opacity: 0,         // Menu becomes invisible
@@ -2532,6 +2540,10 @@
                 duration: 0.7,
                 ease: "power2.inOut"
             });
+            
+            // Reset page content using CSS transforms
+            pageWrap.style.transform = 'translateY(0px) scale(1)';
+            pageWrap.classList.remove('menu-open');
         }
 
         // Event listeners
@@ -2683,8 +2695,12 @@
                 pointerEvents: 'none'  // Not clickable
             });
             
-            // DON'T transform pageWrap - this might be causing lightbox conflicts
-            // gsap.set(pageWrap, { y: 0, scale: 1 });
+            // Reset page content using CSS transforms
+            const pageWrap = document.querySelector('.page_wrap');
+            if (pageWrap) {
+                pageWrap.style.transform = 'translateY(0px) scale(1)';
+                pageWrap.classList.remove('menu-open');
+            }
             
             // Remove any menu-related classes
             navBar.classList.remove('hide');
