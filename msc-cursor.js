@@ -2098,6 +2098,16 @@
       if (pageWrap && (pageWrap.classList.contains('menu-open') || pageWrap.hasAttribute('data-menu-fallback'))) {
         console.log('🔄 Clearing menu transforms for lightbox compatibility...');
         pageWrap.classList.remove('menu-open');
+        
+        // Clear page content wrapper transforms first (preferred method)
+        const pageContentWrapper = pageWrap.querySelector('.page-content-wrapper');
+        if (pageContentWrapper && pageContentWrapper.hasAttribute('data-menu-fallback')) {
+          console.log('🔄 Clearing page content wrapper transforms...');
+          pageContentWrapper.style.transform = '';
+          pageContentWrapper.removeAttribute('data-menu-fallback');
+        }
+        
+        // Clear page_wrap transforms if they exist
         if (pageWrap.hasAttribute('data-menu-fallback')) {
           pageWrap.style.transform = '';
           pageWrap.style.transition = '';
@@ -2533,9 +2543,32 @@
             pointerEvents: 'none'  // Not clickable
         });
 
-        // Don't set any transforms initially - let CSS handle it
-        // pageWrap.style.transform = 'translateY(0px) scale(1)';
-        // pageWrap.style.transition = 'transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        // Create a page content wrapper for transforms (separate from page_wrap to avoid lightbox conflicts)
+        let pageContentWrapper = pageWrap.querySelector('.page-content-wrapper');
+        if (!pageContentWrapper) {
+            pageContentWrapper = document.createElement('div');
+            pageContentWrapper.className = 'page-content-wrapper';
+            pageContentWrapper.style.cssText = `
+                position: relative;
+                width: 100%;
+                height: 100%;
+                transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                transform: translateY(0) scale(1);
+            `;
+            
+            // Move all page content into the wrapper (except lightbox elements)
+            const pageContent = Array.from(pageWrap.children).filter(child => 
+                !child.classList.contains('lightbox-wrap') && 
+                !child.hasAttribute('data-lightbox')
+            );
+            
+            pageContent.forEach(child => {
+                pageContentWrapper.appendChild(child);
+            });
+            
+            pageWrap.appendChild(pageContentWrapper);
+            console.log('✅ Created page content wrapper for menu transforms');
+        }
         
         // Remove any existing menu classes
         pageWrap.classList.remove('menu-open');
@@ -2556,24 +2589,21 @@
                 ease: "power2.inOut"
             });
             
-            // Use CSS class only - let CSS handle the transforms
-            pageWrap.classList.add('menu-open');
+            // Transform the page content wrapper instead of page_wrap to avoid lightbox conflicts
+            const pageContentWrapper = pageWrap.querySelector('.page-content-wrapper');
+            if (pageContentWrapper) {
+                pageContentWrapper.style.transform = 'translateY(350px) scale(0.98)';
+                pageContentWrapper.setAttribute('data-menu-fallback', 'true');
+                console.log('✅ Applied transform to page content wrapper');
+            } else {
+                console.log('⚠️ Page content wrapper not found, falling back to page_wrap transform');
+                pageWrap.style.transform = 'translateY(350px) scale(0.98)';
+                pageWrap.style.transition = 'transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                pageWrap.setAttribute('data-menu-fallback', 'true');
+            }
+            
             console.log('✅ Added menu-open class to pageWrap');
             console.log('🔍 pageWrap classes:', pageWrap.className);
-            console.log('🔍 pageWrap transform:', getComputedStyle(pageWrap).transform);
-            
-            // Fallback: Apply transform directly if CSS isn't working
-            setTimeout(() => {
-                const computedTransform = getComputedStyle(pageWrap).transform;
-                if (computedTransform === 'none' || computedTransform === 'matrix(1, 0, 0, 1, 0, 0)') {
-                    console.log('⚠️ CSS transform not working, applying fallback');
-                    pageWrap.style.transform = 'translateY(350px) scale(0.98)';
-                    pageWrap.style.transition = 'transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                    pageWrap.setAttribute('data-menu-fallback', 'true');
-                } else {
-                    console.log('✅ CSS transform is working:', computedTransform);
-                }
-            }, 100);
         }
 
         function closeMenu() {
@@ -2592,31 +2622,25 @@
                 ease: "power2.inOut"
             });
             
-            // Remove CSS class to reset page content
-            pageWrap.classList.remove('menu-open');
-            console.log('✅ Removed menu-open class from pageWrap');
-            console.log('🔍 pageWrap classes:', pageWrap.className);
-            console.log('🔍 pageWrap transform:', getComputedStyle(pageWrap).transform);
-            
-            // Always reset any fallback transforms to ensure clean state
-            if (pageWrap.hasAttribute('data-menu-fallback')) {
-                console.log('🔄 Resetting fallback transforms...');
+            // Reset the page content wrapper transform instead of page_wrap to avoid lightbox conflicts
+            const pageContentWrapper = pageWrap.querySelector('.page-content-wrapper');
+            if (pageContentWrapper && pageContentWrapper.hasAttribute('data-menu-fallback')) {
+                console.log('🔄 Resetting page content wrapper transforms...');
+                pageContentWrapper.style.transform = 'translateY(0) scale(1)';
+                pageContentWrapper.removeAttribute('data-menu-fallback');
+                console.log('✅ Page content wrapper transforms reset');
+            } else if (pageWrap.hasAttribute('data-menu-fallback')) {
+                console.log('🔄 Resetting fallback transforms on page_wrap...');
                 pageWrap.style.transform = 'translateY(0) scale(1)';
                 pageWrap.style.transition = 'transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
                 pageWrap.removeAttribute('data-menu-fallback');
                 console.log('✅ Fallback transforms reset');
             }
             
-            // Additional safety: force reset after a delay
-            setTimeout(() => {
-                const computedTransform = getComputedStyle(pageWrap).transform;
-                if (computedTransform !== 'none' && computedTransform !== 'matrix(1, 0, 0, 1, 0, 0)') {
-                    console.log('⚠️ Transform still not reset, forcing cleanup...');
-                    pageWrap.style.transform = '';
-                    pageWrap.style.transition = '';
-                    console.log('✅ Forced transform cleanup complete');
-                }
-            }, 200);
+            // Remove CSS class
+            pageWrap.classList.remove('menu-open');
+            console.log('✅ Removed menu-open class from pageWrap');
+            console.log('🔍 pageWrap classes:', pageWrap.className);
         }
 
         // Event listeners
@@ -2773,18 +2797,26 @@
             if (pageWrap) {
                 pageWrap.classList.remove('menu-open');
                 
-                // If fallback was used, reset it completely
+                // Reset page content wrapper transforms first (preferred method)
+                const pageContentWrapper = pageWrap.querySelector('.page-content-wrapper');
+                if (pageContentWrapper && pageContentWrapper.hasAttribute('data-menu-fallback')) {
+                    console.log('🔄 Resetting page content wrapper transforms...');
+                    pageContentWrapper.style.transform = '';
+                    pageContentWrapper.removeAttribute('data-menu-fallback');
+                }
+                
+                // If fallback was used on page_wrap, reset it completely
                 if (pageWrap.hasAttribute('data-menu-fallback')) {
-                    console.log('🔄 Resetting fallback menu transforms...');
+                    console.log('🔄 Resetting fallback menu transforms on page_wrap...');
                     pageWrap.style.transform = '';
                     pageWrap.style.transition = '';
                     pageWrap.removeAttribute('data-menu-fallback');
                 }
                 
-                // Force cleanup of any remaining transforms
+                // Force cleanup of any remaining transforms on page_wrap
                 const computedTransform = getComputedStyle(pageWrap).transform;
                 if (computedTransform !== 'none' && computedTransform !== 'matrix(1, 0, 0, 1, 0, 0)') {
-                    console.log('🔄 Forcing cleanup of remaining transforms...');
+                    console.log('🔄 Forcing cleanup of remaining transforms on page_wrap...');
                     pageWrap.style.transform = '';
                     pageWrap.style.transition = '';
                 }
