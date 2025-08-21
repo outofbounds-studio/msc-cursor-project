@@ -1,101 +1,10 @@
 // msc.js - Metal Staircase Co. Website Scripts
-// Version: 1.0.2 updated 20/08/2025 15.55
+// Version: 1.0.2 updated 21/08/2025 11.02
 
 (function() {
     console.log('msc-cursor.js script loaded and executing!');
     
-    // === Global Menu State Management Functions ===
-    let lastFocusedElement = null;
-    
-    function trapFocus(element) {
-        const focusableSelectors = 'a, button, textarea, input, select, [tabindex]:not([tabindex="-1"])';
-        const focusableEls = element.querySelectorAll(focusableSelectors);
-        if (!focusableEls.length) return;
-        const firstEl = focusableEls[0];
-        const lastEl = focusableEls[focusableEls.length - 1];
-        lastFocusedElement = document.activeElement;
-        function handleTab(e) {
-            if (e.key !== 'Tab') return;
-            if (e.shiftKey) {
-                if (document.activeElement === firstEl) {
-                    e.preventDefault();
-                    lastEl.focus();
-                }
-            } else {
-                if (document.activeElement === lastEl) {
-                    e.preventDefault();
-                    firstEl.focus();
-                }
-            }
-        }
-        element.addEventListener('keydown', handleTab);
-        firstEl.focus();
-        element._focusTrapHandler = handleTab;
-    }
-    
-    function removeTrapFocus() {
-        const menuOverlay = document.querySelector('.menu-overlay');
-        if (menuOverlay && menuOverlay._focusTrapHandler) {
-            menuOverlay.removeEventListener('keydown', menuOverlay._focusTrapHandler);
-            menuOverlay._focusTrapHandler = null;
-        }
-        if (lastFocusedElement) {
-            lastFocusedElement.focus();
-            lastFocusedElement = null;
-        }
-    }
-    
-    function resetMenuState() {
-        const menuOverlay = document.querySelector('.menu-overlay');
-        const pageWrap = document.querySelector('.page_wrap');
-        const navBar = document.querySelector('.nav_bar');
-        
-        if (menuOverlay && pageWrap && navBar) {
-            console.log('🔄 Resetting menu state...');
-            
-            // Remove all menu-related classes
-            menuOverlay.classList.remove('open');
-            pageWrap.classList.remove('menu-open');
-            navBar.classList.remove('hide');
-            document.body.classList.remove('menu-open');
-            document.body.style.overflow = '';
-            
-            // Reset GSAP transforms with more aggressive cleanup
-            if (typeof gsap !== 'undefined') {
-                gsap.set(pageWrap, { 
-                    y: 0, 
-                    scale: 1,
-                    clearProps: "all" // Clear all GSAP properties
-                });
-                gsap.set(menuOverlay, { 
-                    y: 0, 
-                    opacity: 0,
-                    clearProps: "all" // Clear all GSAP properties
-                });
-                
-                // Reset menu content position using GSAP
-                const menuContent = menuOverlay.querySelector('.menu_content');
-                if (menuContent) {
-                    // Use GSAP to reset position
-                    gsap.set(menuContent, { 
-                        y: -100,
-                        clearProps: "all" // Clear all GSAP properties
-                    });
-                }
-            }
-            
-            // Force a reflow to ensure changes take effect
-            pageWrap.offsetHeight;
-            menuOverlay.offsetHeight;
-            const menuContent = menuOverlay.querySelector('.menu_content');
-            if (menuContent) menuContent.offsetHeight;
-            
-            // Remove focus trap
-            removeTrapFocus();
-            
-            console.log('✅ Menu state reset complete');
-        }
-    }
+    // === Menu system is now handled by initAkerMenu() ===
     
 
     
@@ -184,7 +93,7 @@
         utils.initGSAPDefaults();
         
         // Initialize Aker-style menu system now that GSAP is available
-        // initAkerMenu(); // Temporarily commented out to test lightbox
+        initAkerMenu();
         
         console.log('Initializing Lenis...');
         utils.lenis.init();
