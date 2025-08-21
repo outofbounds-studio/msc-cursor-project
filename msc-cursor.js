@@ -2518,6 +2518,12 @@
         const pageWrap = document.querySelector('.page_wrap');
         const navBar = document.querySelector('.nav_bar');
         const closeMenuBtn = document.querySelector('.close-menu');
+        
+        // Check if menu system is already initialized to prevent duplicate initialization
+        if (pageWrap && pageWrap.hasAttribute('data-menu-initialized')) {
+            console.log('✅ Menu system already initialized, skipping...');
+            return;
+        }
 
         if (!burgerBtn || !menuOverlay || !pageWrap || !navBar) {
             console.warn('⚠️ Menu elements not found, skipping menu initialization');
@@ -2564,14 +2570,19 @@
             
             // Fallback: Apply transform directly if CSS isn't working
             setTimeout(() => {
-                const computedTransform = getComputedStyle(pageWrap).transform;
-                if (computedTransform === 'none' || computedTransform === 'matrix(1, 0, 0, 1, 0, 0)') {
-                    console.log('⚠️ CSS transform not working, applying fallback');
-                    pageWrap.style.transform = 'translateY(350px) scale(0.98)';
-                    pageWrap.style.transition = 'transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                    pageWrap.setAttribute('data-menu-fallback', 'true');
+                // Check if we're still on the same page and menu should be open
+                if (pageWrap.classList.contains('menu-open')) {
+                    const computedTransform = getComputedStyle(pageWrap).transform;
+                    if (computedTransform === 'none' || computedTransform === 'matrix(1, 0, 0, 1, 0, 0)') {
+                        console.log('⚠️ CSS transform not working, applying fallback');
+                        pageWrap.style.transform = 'translateY(350px) scale(0.98)';
+                        pageWrap.style.transition = 'transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                        pageWrap.setAttribute('data-menu-fallback', 'true');
+                    } else {
+                        console.log('✅ CSS transform is working:', computedTransform);
+                    }
                 } else {
-                    console.log('✅ CSS transform is working:', computedTransform);
+                    console.log('✅ Menu closed before fallback could apply, skipping transform');
                 }
             }, 100);
         }
@@ -2642,6 +2653,11 @@
             e.stopPropagation();
         });
 
+        // Mark menu system as initialized to prevent duplicate initialization
+        if (pageWrap) {
+            pageWrap.setAttribute('data-menu-initialized', 'true');
+        }
+        
         console.log('✅ Basic Aker-style menu system initialized successfully');
     }
 
