@@ -184,7 +184,7 @@
         utils.initGSAPDefaults();
         
         // Initialize Aker-style menu system now that GSAP is available
-        initAkerMenu();
+        // initAkerMenu(); // Temporarily commented out to test lightbox
         
         console.log('Initializing Lenis...');
         utils.lenis.init();
