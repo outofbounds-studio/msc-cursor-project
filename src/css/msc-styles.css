@@ -868,11 +868,10 @@ body {
   will-change: transform;
 }
 
-/* Page wrap - GSAP handles all animations */
+/* Page wrap - no transforms to avoid lightbox conflicts */
 .page_wrap {
   position: relative;
   z-index: 2;
-  /* GSAP handles all transforms and transitions */
 }
 
 /* Lightbox */
@@ -915,6 +914,11 @@ body {
 .page_wrap.menu-open .lightbox-wrap {
   z-index: 10001 !important;
   transform: none !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
 }
 
 /* Lightbox navigation */
