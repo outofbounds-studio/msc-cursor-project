@@ -93,7 +93,7 @@
         utils.initGSAPDefaults();
         
         // Initialize Aker-style menu system now that GSAP is available
-        initAkerMenu();
+        // initAkerMenu(); // Temporarily commented out to test lightbox
         
         console.log('Initializing Lenis...');
         utils.lenis.init();
@@ -130,7 +130,7 @@
             }
             
             // Reset menu state on page transitions
-            resetMenuForPageTransition();
+            // resetMenuForPageTransition(); // Temporarily commented out to test lightbox
             
             console.log('All animations initialized');
             setTimeout(() => {
@@ -2473,144 +2473,144 @@
     
 
 
-    // === Aker Companies Style Menu System ===
-    function initAkerMenu() {
-        console.log('🔍 Initializing Aker-style menu system...');
-        
-        const burgerBtn = document.querySelector('.burger_wrap');
-        const menuOverlay = document.querySelector('.menu-overlay');
-        const pageWrap = document.querySelector('.page_wrap');
-        const navBar = document.querySelector('.nav_bar');
-        const closeMenuBtn = document.querySelector('.close-menu');
-        
-        if (!burgerBtn || !menuOverlay || !pageWrap || !navBar) {
-            console.warn('⚠️ Menu elements not found, skipping menu initialization');
-            return;
-        }
-        
-        // Ensure GSAP is available
-        if (typeof gsap === 'undefined') {
-            console.error('GSAP is not loaded. Menu animations will not work.');
-            return;
-        }
-        
-        console.log('✅ GSAP available, setting up Aker-style menu...');
-        
-        // Set initial state: menu completely hidden, page in normal position
-        gsap.set(menuOverlay, { 
-            y: -100,        // Menu starts hidden above viewport
-            opacity: 0,     // Menu starts invisible
-            pointerEvents: 'none'  // Not clickable
-        });
-        
-        gsap.set(pageWrap, { 
-            y: 0,           // Page starts in normal position
-            scale: 1        // Page starts at normal scale
-        });
-        
-        function openMenu() {
-            console.log('🔍 Opening menu...');
-            
-            // Hide nav bar and lock body scroll
-            navBar.classList.add('hide');
-            document.body.style.overflow = 'hidden';
-            
-            // Create timeline for simultaneous animations
-            gsap.timeline()
-                .to(menuOverlay, {
-                    y: 0,               // Menu slides down from top
-                    opacity: 1,         // Menu becomes visible
-                    pointerEvents: 'auto', // Enable interactions
-                    duration: 0.7,
-                    ease: "power2.inOut"
-                }, 0) // Start at same time
-                .to(pageWrap, {
-                    y: 350,             // Page moves down more to reveal full menu
-                    scale: 0.98,        // Page scales down slightly
-                    duration: 0.7,
-                    ease: "power2.inOut"
-                }, 0); // Start at same time
-        }
-        
-        function closeMenu() {
-            console.log('🔍 Closing menu...');
-            
-            // Show nav bar and restore body scroll
-            navBar.classList.remove('hide');
-            document.body.style.overflow = '';
-            
-            // Create timeline for simultaneous closing animations
-            gsap.timeline()
-                .to(menuOverlay, {
-                    y: -100,            // Menu slides back up
-                    opacity: 0,         // Menu becomes invisible
-                    pointerEvents: 'none', // Disable interactions
-                    duration: 0.7,
-                    ease: "power2.inOut"
-                }, 0) // Start at same time
-                .to(pageWrap, {
-                    y: 0,               // Page moves back up to original position
-                    scale: 1,           // Page scales back to normal
-                    duration: 0.7,
-                    ease: "power2.inOut"
-                }, 0); // Start at same time
-        }
-        
-        // Event listeners
-        burgerBtn.addEventListener('click', openMenu);
-        
-        if (closeMenuBtn) {
-            closeMenuBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                closeMenu();
-            });
-        }
-        
-        // Click outside to close
-        pageWrap.addEventListener('click', function() {
-            if (menuOverlay.style.pointerEvents === 'auto') {
-                closeMenu();
-            }
-        });
-        
-        // Prevent closing when clicking inside menu
-        menuOverlay.addEventListener('click', function(e) {
-            e.stopPropagation();
-        });
-        
-        console.log('✅ Aker-style menu system initialized successfully');
-    }
+        // === Aker Companies Style Menu System ===
+    // function initAkerMenu() {
+    //     console.log('🔍 Initializing Aker-style menu system...');
+
+    //     const burgerBtn = document.querySelector('.burger_wrap');
+    //     const menuOverlay = document.querySelector('.menu-overlay');
+    //     const pageWrap = document.querySelector('.page_wrap');
+    //     const navBar = document.querySelector('.nav_bar');
+    //     const closeMenuBtn = document.querySelector('.close-menu');
+
+    //     if (!burgerBtn || !menuOverlay || !pageWrap || !navBar) {
+    //         console.warn('⚠️ Menu elements not found, skipping menu initialization');
+    //         return;
+    //     }
+
+    //     // Ensure GSAP is available
+    //     if (typeof gsap === 'undefined') {
+    //         console.error('GSAP is not loaded. Menu animations will not work.');
+    //         return;
+    //     }
+
+    //     console.log('✅ GSAP available, setting up Aker-style menu...');
+
+    //     // Set initial state: menu completely hidden, page in normal position
+    //     gsap.set(menuOverlay, {
+    //         y: -100,        // Menu starts hidden above viewport
+    //         opacity: 0,     // Menu starts invisible
+    //         pointerEvents: 'none'  // Not clickable
+    //     });
+
+    //     gsap.set(pageWrap, {
+    //         y: 0,           // Page starts in normal position
+    //         scale: 1        // Page starts at normal scale
+    //     });
+
+    //     function openMenu() {
+    //         console.log('🔍 Opening menu...');
+
+    //         // Hide nav bar and lock body scroll
+    //         navBar.classList.add('hide');
+    //         document.body.style.overflow = 'hidden';
+
+    //         // Create timeline for simultaneous animations
+    //         gsap.timeline()
+    //             .to(menuOverlay, {
+    //                 y: 0,               // Menu slides down from top
+    //                 opacity: 1,         // Menu becomes visible
+    //                 pointerEvents: 'auto', // Enable interactions
+    //                 duration: 0.7,
+    // ease: "power2.inOut"
+    //             }, 0) // Start at same time
+    //             .to(pageWrap, {
+    //                 y: 350,             // Page moves down more to reveal full menu
+    //                 scale: 0.98,        // Page scales down slightly
+    //                 duration: 0.7,
+    //                 ease: "power2.inOut"
+    //             }, 0); // Start at same time
+    //     }
+
+    //     function closeMenu() {
+    //         console.log('🔍 Closing menu...');
+
+    //         // Show nav bar and restore body scroll
+    //         navBar.classList.remove('hide');
+    //         document.body.style.overflow = '';
+
+    //         // Create timeline for simultaneous closing animations
+    //         gsap.timeline()
+    //             .to(menuOverlay, {
+    //                 y: -100,            // Menu slides back up
+    //                 opacity: 0,         // Menu becomes invisible
+    //                 pointerEvents: 'none', // Disable interactions
+    //                 duration: 0.7,
+    //                 ease: "power2.inOut"
+    //             }, 0) // Start at same time
+    //             .to(pageWrap, {
+    //                 y: 0,               // Page moves back up to original position
+    //                 scale: 1,           // Page scales back to normal
+    //                 duration: 0.7,
+    //                 ease: "power2.inOut"
+    //             }, 0); // Start at same time
+    //     }
+
+    //     // Event listeners
+    //     burgerBtn.addEventListener('click', openMenu);
+
+    //     if (closeMenuBtn) {
+    //         closeMenuBtn.addEventListener('click', function(e) {
+    //                 e.preventDefault();
+    //                 e.stopPropagation();
+    //                 closeMenu();
+    //             });
+    //     }
+
+    //     // Click outside to close
+    //         pageWrap.addEventListener('click', function() {
+    //             if (menuOverlay.style.pointerEvents === 'auto') {
+    //                 closeMenu();
+    //             }
+    //         });
+
+    //     // Prevent closing when clicking inside menu
+    //         menuOverlay.addEventListener('click', function(e) {
+    //                 e.stopPropagation();
+    //             });
+
+    //         console.log('✅ Aker-style menu system initialized successfully');
+    // }
     
     // Function to reset menu state on page transitions
-    function resetMenuForPageTransition() {
-        const menuOverlay = document.querySelector('.menu-overlay');
-        const pageWrap = document.querySelector('.page_wrap');
-        const navBar = document.querySelector('.nav_bar');
-        
-        if (menuOverlay && pageWrap && navBar) {
-            console.log('🔄 Resetting menu for page transition...');
-            
-            // Reset menu overlay to hidden state
-            gsap.set(menuOverlay, { 
-                y: -100,        // Menu hidden above viewport
-                opacity: 0,     // Menu invisible
-                pointerEvents: 'none'  // Not clickable
-            });
-            
-            // Reset page content to normal position
-            gsap.set(pageWrap, { 
-                y: 0,           // Page in normal position
-                scale: 1        // Page at normal scale
-            });
-            
-            // Remove any menu-related classes
-            navBar.classList.remove('hide');
-            document.body.style.overflow = '';
-            
-            console.log('✅ Menu reset complete for page transition');
-        }
-    }
+    // function resetMenuForPageTransition() {
+    //     const menuOverlay = document.querySelector('.menu-overlay');
+    //     const pageWrap = document.querySelector('.page_wrap');
+    //     const navBar = document.querySelector('.nav_bar');
+    //     
+    //     if (menuOverlay && pageWrap && navBar) {
+    //         console.log('🔄 Resetting menu for page transition...');
+    //         
+    //         // Reset menu overlay to hidden state
+    //         gsap.set(menuOverlay, { 
+    //             y: -100,        // Menu hidden above viewport
+    //             opacity: 0,     // Menu invisible
+    //             pointerEvents: 'none'  // Not clickable
+    //         });
+    //         
+    //         // Reset pageWrap to normal position
+    //         gsap.set(pageWrap, { 
+    //             y: 0,           // Page in normal position
+    //             scale: 1        // Page at normal scale
+    //         });
+    //         
+    //         // Remove any menu-related classes
+    //     navBar.classList.remove('hide');
+    //         document.body.style.overflow = '';
+    //         
+    //         console.log('✅ Menu reset complete for page transition');
+    //     }
+    // }
 
 
 
