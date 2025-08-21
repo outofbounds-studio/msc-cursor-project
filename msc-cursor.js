@@ -93,7 +93,7 @@
         utils.initGSAPDefaults();
         
         // Initialize Aker-style menu system now that GSAP is available
-        // initAkerMenu(); // Temporarily commented out to test lightbox
+        initAkerMenuBasic(); // Basic menu without GSAP animations
         
         console.log('Initializing Lenis...');
         utils.lenis.init();
@@ -130,7 +130,7 @@
             }
             
             // Reset menu state on page transitions
-            // resetMenuForPageTransition(); // Temporarily commented out to test lightbox
+            resetMenuForPageTransitionBasic(); // Basic reset without GSAP page transforms
             
             console.log('All animations initialized');
             setTimeout(() => {
@@ -2474,6 +2474,92 @@
 
 
         // === Aker Companies Style Menu System ===
+    function initAkerMenuBasic() {
+        console.log('🔍 Initializing basic Aker-style menu system...');
+
+        const burgerBtn = document.querySelector('.burger_wrap');
+        const menuOverlay = document.querySelector('.menu-overlay');
+        const pageWrap = document.querySelector('.page_wrap');
+        const navBar = document.querySelector('.nav_bar');
+        const closeMenuBtn = document.querySelector('.close-menu');
+
+        if (!burgerBtn || !menuOverlay || !pageWrap || !navBar) {
+            console.warn('⚠️ Menu elements not found, skipping menu initialization');
+            return;
+        }
+
+        console.log('✅ Setting up basic menu system...');
+
+        // Set initial state: menu completely hidden
+        gsap.set(menuOverlay, {
+            y: -100,        // Menu starts hidden above viewport
+            opacity: 0,     // Menu starts invisible
+            pointerEvents: 'none'  // Not clickable
+        });
+
+        // DON'T transform pageWrap - this might be causing lightbox conflicts
+        // gsap.set(pageWrap, { y: 0, scale: 1 });
+
+        function openMenu() {
+            console.log('🔍 Opening menu...');
+
+            // Hide nav bar and lock body scroll
+            navBar.classList.add('hide');
+            document.body.style.overflow = 'hidden';
+
+            // Only animate the menu overlay, not the page content
+            gsap.to(menuOverlay, {
+                y: 0,               // Menu slides down from top
+                opacity: 1,         // Menu becomes visible
+                pointerEvents: 'auto', // Enable interactions
+                duration: 0.7,
+                ease: "power2.inOut"
+            });
+        }
+
+        function closeMenu() {
+            console.log('🔍 Closing menu...');
+
+            // Show nav bar and restore body scroll
+            navBar.classList.remove('hide');
+            document.body.style.overflow = '';
+
+            // Only animate the menu overlay back
+            gsap.to(menuOverlay, {
+                y: -100,            // Menu slides back up
+                opacity: 0,         // Menu becomes invisible
+                pointerEvents: 'none', // Disable interactions
+                duration: 0.7,
+                ease: "power2.inOut"
+            });
+        }
+
+        // Event listeners
+        burgerBtn.addEventListener('click', openMenu);
+
+        if (closeMenuBtn) {
+            closeMenuBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                closeMenu();
+            });
+        }
+
+        // Click outside to close
+        pageWrap.addEventListener('click', function() {
+            if (menuOverlay.style.pointerEvents === 'auto') {
+                closeMenu();
+            }
+        });
+
+        // Prevent closing when clicking inside menu
+        menuOverlay.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+
+        console.log('✅ Basic Aker-style menu system initialized successfully');
+    }
+
     // function initAkerMenu() {
     //     console.log('🔍 Initializing Aker-style menu system...');
 
@@ -2583,6 +2669,31 @@
     // }
     
     // Function to reset menu state on page transitions
+    function resetMenuForPageTransitionBasic() {
+        const menuOverlay = document.querySelector('.menu-overlay');
+        const navBar = document.querySelector('.nav_bar');
+        
+        if (menuOverlay && navBar) {
+            console.log('🔄 Resetting basic menu for page transition...');
+            
+            // Reset menu overlay to hidden state (only the menu, not the page)
+            gsap.set(menuOverlay, { 
+                y: -100,        // Menu hidden above viewport
+                opacity: 0,     // Menu invisible
+                pointerEvents: 'none'  // Not clickable
+            });
+            
+            // DON'T transform pageWrap - this might be causing lightbox conflicts
+            // gsap.set(pageWrap, { y: 0, scale: 1 });
+            
+            // Remove any menu-related classes
+            navBar.classList.remove('hide');
+            document.body.style.overflow = '';
+            
+            console.log('✅ Basic menu reset complete for page transition');
+        }
+    }
+
     // function resetMenuForPageTransition() {
     //     const menuOverlay = document.querySelector('.menu-overlay');
     //     const pageWrap = document.querySelector('.page_wrap');
