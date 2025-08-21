@@ -1422,10 +1422,63 @@
                 components.initAccordionCSS();
                 components.initModalBasic();
                 initNumberTickerAnimation();
+                initScrambleText();
             },
             afterLeave() {
                 console.log('[Barba] about.afterLeave');
                 console.log("Leaving about page...");
+                ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+                document.querySelectorAll('[data-split="heading"]').forEach(heading => {
+                    if (heading._splitText) {
+                        heading._splitText.revert();
+                        heading._splitText = null;
+                    }
+                });
+            }
+        },
+        contact: {
+            beforeEnter() {
+                console.log('[Barba] contact.beforeEnter');
+                utils.theme.set('dark', false);
+                console.log("Entering contact page...");
+            },
+            afterEnter() {
+                console.log('[Barba] contact.afterEnter');
+                components.initCustomCursor();
+                animations.initSplitTextAnimation();
+                components.initAccordionCSS();
+                initNumberTickerAnimation();
+                initScrambleText();
+            },
+            afterLeave() {
+                console.log('[Barba] contact.afterLeave');
+                console.log("Leaving contact page...");
+                ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+                document.querySelectorAll('[data-split="heading"]').forEach(heading => {
+                    if (heading._splitText) {
+                        heading._splitText.revert();
+                        heading._splitText = null;
+                    }
+                });
+            }
+        },
+        'request-a-quote': {
+            beforeEnter() {
+                console.log('[Barba] request-a-quote.beforeEnter');
+                utils.theme.set('dark', false);
+                console.log("Entering request-a-quote page...");
+            },
+            afterEnter() {
+                console.log('[Barba] request-a-quote.afterEnter');
+                components.initCustomCursor();
+                animations.initSplitTextAnimation();
+                components.initAccordionCSS();
+                initNumberTickerAnimation();
+                initScrambleText();
+            },
+            afterLeave() {
+                console.log('[Barba] request-a-quote.afterLeave');
+                console.log("Leaving request-a-quote page...");
                 ScrollTrigger.getAll().forEach(trigger => trigger.kill());
                 document.querySelectorAll('[data-split="heading"]').forEach(heading => {
                     if (heading._splitText) {
@@ -1743,9 +1796,9 @@
             }
         }],
         views: [
-            // Static page views (home and about)
+            // Static page views (home, about, contact, request-a-quote)
             ...Object.entries(pages).filter(([key]) => 
-                ['home', 'about'].includes(key)
+                ['home', 'about', 'contact', 'request-a-quote'].includes(key)
             ).map(([namespace, handlers]) => ({
                 namespace,
                 beforeEnter() {
