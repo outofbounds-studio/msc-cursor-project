@@ -2522,6 +2522,19 @@
             
             // Use CSS class only - let CSS handle the transforms
             pageWrap.classList.add('menu-open');
+            console.log('✅ Added menu-open class to pageWrap');
+            console.log('🔍 pageWrap classes:', pageWrap.className);
+            console.log('🔍 pageWrap transform:', getComputedStyle(pageWrap).transform);
+            
+            // Fallback: Apply transform directly if CSS isn't working
+            setTimeout(() => {
+                const computedTransform = getComputedStyle(pageWrap).transform;
+                if (computedTransform === 'none' || computedTransform === 'matrix(1, 0, 0, 1, 0, 0)') {
+                    console.log('⚠️ CSS transform not working, applying fallback');
+                    pageWrap.style.transform = 'translateY(350px) scale(0.98)';
+                    pageWrap.style.transition = 'transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                }
+            }, 100);
         }
 
         function closeMenu() {
@@ -2542,6 +2555,18 @@
             
             // Remove CSS class to reset page content
             pageWrap.classList.remove('menu-open');
+            console.log('✅ Removed menu-open class from pageWrap');
+            console.log('🔍 pageWrap classes:', pageWrap.className);
+            console.log('🔍 pageWrap transform:', getComputedStyle(pageWrap).transform);
+            
+            // Fallback: Reset transform directly if CSS isn't working
+            setTimeout(() => {
+                const computedTransform = getComputedStyle(pageWrap).transform;
+                if (computedTransform !== 'none' && computedTransform !== 'matrix(1, 0, 0, 1, 0, 0)') {
+                    console.log('⚠️ CSS reset not working, applying fallback');
+                    pageWrap.style.transform = 'translateY(0) scale(1)';
+                }
+            }, 100);
         }
 
         // Event listeners
