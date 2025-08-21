@@ -828,41 +828,61 @@
                 const modalGroup = document.querySelector('[data-modal-group-status]');
                 const modals = document.querySelectorAll('[data-modal-name]');
                 const modalTargets = document.querySelectorAll('[data-modal-target]');
-    
+
                 modalTargets.forEach((modalTarget) => {
                     modalTarget.addEventListener('click', function () {
                         const modalTargetName = this.getAttribute('data-modal-target');
-    
+
                         modalTargets.forEach((target) => target.setAttribute('data-modal-status', 'not-active'));
                         modals.forEach((modal) => modal.setAttribute('data-modal-status', 'not-active'));
-    
+
                         document.querySelector(`[data-modal-target="${modalTargetName}"]`).setAttribute('data-modal-status', 'active');
                         document.querySelector(`[data-modal-name="${modalTargetName}"]`).setAttribute('data-modal-status', 'active');
-    
+
                         if (modalGroup) {
                             modalGroup.setAttribute('data-modal-group-status', 'active');
                         }
-    
+
+                        // Prevent page scrolling when modal opens
+                        document.body.style.overflow = 'hidden';
+                        document.body.style.position = 'fixed';
+                        document.body.style.width = '100%';
+                        
+                        // Stop Lenis if it's running
                         if (window.lenis) window.lenis.stop();
                     });
                 });
-    
+
                 document.querySelectorAll('[data-modal-close]').forEach((closeBtn) => {
                     closeBtn.addEventListener('click', () => {
                         modalTargets.forEach((target) => target.setAttribute('data-modal-status', 'not-active'));
                         if (modalGroup) {
                             modalGroup.setAttribute('data-modal-group-status', 'not-active');
                         }
+                        
+                        // Restore page scrolling when modal closes
+                        document.body.style.overflow = '';
+                        document.body.style.position = '';
+                        document.body.style.width = '';
+                        
+                        // Restart Lenis
                         if (window.lenis) window.lenis.start();
                     });
                 });
-    
+
+                // Handle ESC key
                 document.addEventListener('keydown', function (event) {
                     if (event.key === 'Escape') {
                         modalTargets.forEach((target) => target.setAttribute('data-modal-status', 'not-active'));
                         if (modalGroup) {
                             modalGroup.setAttribute('data-modal-group-status', 'not-active');
                         }
+                        
+                        // Restore page scrolling
+                        document.body.style.overflow = '';
+                        document.body.style.position = '';
+                        document.body.style.width = '';
+                        
                         if (window.lenis) window.lenis.start();
                     }
                 });
