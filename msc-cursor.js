@@ -1394,6 +1394,32 @@
             }
         },
         
+        materials: {
+            beforeEnter() {
+                console.log('[Barba] materials.beforeEnter');
+                utils.theme.set('light', false);
+                console.log("Entering materials page...");
+            },
+            afterEnter() {
+                console.log('[Barba] materials.afterEnter');
+                components.initCustomCursor();
+                animations.initSplitTextAnimation();
+                components.initModalBasic();
+                initScrambleText();
+            },
+            afterLeave() {
+                console.log('[Barba] materials.afterLeave');
+                console.log("Leaving materials page...");
+                ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+                document.querySelectorAll('[data-split="heading"]').forEach(heading => {
+                    if (heading._splitText) {
+                        heading._splitText.revert();
+                        heading._splitText = null;
+                    }
+                });
+            }
+        },
+        
         // Collection List Pages (formerly static pages)
         work: {
             beforeEnter() {
@@ -1701,9 +1727,9 @@
             }
         }],
         views: [
-            // Static page views (home, about, contact, request-a-quote)
+            // Static page views (home, about, contact, request-a-quote, materials)
             ...Object.entries(pages).filter(([key]) => 
-                ['home', 'about', 'contact', 'request-a-quote'].includes(key)
+                ['home', 'about', 'contact', 'request-a-quote', 'materials'].includes(key)
             ).map(([namespace, handlers]) => ({
                 namespace,
                 beforeEnter() {
