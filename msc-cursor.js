@@ -280,7 +280,10 @@
                 'styles': 'dark',
                 'work-item': 'dark',
                 'style-item': 'dark',
-                'news-item': 'dark'
+                'news-item': 'dark',
+                'contact': 'dark',
+                'request-a-quote': 'dark',
+                'materials': 'light'
             },
 
             init() {
