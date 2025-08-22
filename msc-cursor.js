@@ -869,7 +869,7 @@
                         }
                         
                         // Stop Lenis if it's running
-                        // if (window.lenis) window.lenis.stop();
+                        if (window.lenis) window.lenis.stop();
                     });
                 });
 
@@ -881,7 +881,7 @@
                         }
                         
                         // Restart Lenis
-                        // if (window.lenis) window.lenis.start();
+                        if (window.lenis) window.lenis.start();
                     });
                 });
 
@@ -893,7 +893,7 @@
                             modalGroup.setAttribute('data-modal-group-status', 'not-active');
                         }
                         
-                        // if (window.lenis) window.lenis.start();
+                        if (window.lenis) window.lenis.start();
                     }
                 });
             } catch (error) {
