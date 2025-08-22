@@ -844,9 +844,9 @@
                         }
 
                         // Prevent page scrolling when modal opens
-                        document.body.style.overflow = 'hidden';
-                        document.body.style.position = 'fixed';
-                        document.body.style.width = '100%';
+                        //document.body.style.overflow = 'hidden';
+                        //document.body.style.position = 'fixed';
+                        //document.body.style.width = '100%';
                         
                         // Stop Lenis if it's running
                         if (window.lenis) window.lenis.stop();
@@ -861,9 +861,9 @@
                         }
                         
                         // Restore page scrolling when modal closes
-                        document.body.style.overflow = '';
-                        document.body.style.position = '';
-                        document.body.style.width = '';
+                        //document.body.style.overflow = '';
+                        //document.body.style.position = '';
+                        //document.body.style.width = '';
                         
                         // Restart Lenis
                         if (window.lenis) window.lenis.start();
@@ -879,9 +879,9 @@
                         }
                         
                         // Restore page scrolling
-                        document.body.style.overflow = '';
-                        document.body.style.position = '';
-                        document.body.style.width = '';
+                        //document.body.style.overflow = '';
+                        //document.body.style.position = '';
+                        //document.body.style.width = '';
                         
                         if (window.lenis) window.lenis.start();
                     }
