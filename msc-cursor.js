@@ -269,49 +269,108 @@
             console.error(`Error in ${component}:`, error);
         },
 
-        // Theme Manager
+        // Theme Manager - Simple, Elegant, Robust
         theme: {
             current: 'dark',
             isTransitioning: false,
-            defaultThemes: {
-                'home': 'dark',
-                'about': 'light',
-                'work': 'dark',
-                'styles': 'dark',
-                'work-item': 'dark',
-                'style-item': 'dark',
-                'news-item': 'dark',
-                'contact': 'dark',
-                'request-a-quote': 'dark',
-                'materials': 'light'
+            locked: false, // New: Theme locking capability
+            
+            // Page-specific theme configuration
+            pageConfigs: {
+                'home': { 
+                    default: 'dark', 
+                    lock: false, // Allow theme changes
+                    sections: ['hero', 'content', 'footer'] 
+                },
+                'about': { 
+                    default: 'light', 
+                    lock: false, // Allow theme changes
+                    sections: ['hero', 'content', 'footer'] 
+                },
+                'work': { 
+                    default: 'dark', 
+                    lock: false, 
+                    sections: ['hero', 'content', 'footer'] 
+                },
+                'styles': { 
+                    default: 'dark', 
+                    lock: false, 
+                    sections: ['hero', 'content', 'footer'] 
+                },
+                'work-item': { 
+                    default: 'dark', 
+                    lock: false, 
+                    sections: ['hero', 'content', 'footer'] 
+                },
+                'style-item': { 
+                    default: 'dark', 
+                    lock: false, 
+                    sections: ['hero', 'content', 'footer'] 
+                },
+                'news-item': { 
+                    default: 'dark', 
+                    lock: false, 
+                    sections: ['hero', 'content', 'footer'] 
+                },
+                'contact': { 
+                    default: 'dark', 
+                    lock: true, // Lock theme - no changes
+                    sections: ['hero', 'content', 'footer'] 
+                },
+                'request-a-quote': { 
+                    default: 'dark', 
+                    lock: true, // Lock theme - no changes
+                    sections: ['hero', 'content', 'footer'] 
+                },
+                'materials': { 
+                    default: 'light', 
+                    lock: true, // Lock theme - no changes
+                    sections: ['hero', 'content', 'footer'] 
+                }
             },
 
             init() {
                 // Set initial theme based on current namespace
                 const currentNamespace = barba.current?.namespace || 'home';
-                const initialTheme = this.defaultThemes[currentNamespace] || 'dark';
-                this.set(initialTheme, false); // Set without animation on init
+                const pageConfig = this.pageConfigs[currentNamespace] || this.pageConfigs['home'];
+                const initialTheme = pageConfig.default;
                 
-                // Initialize scroll-based theme changes
-                this.initScrollTriggers();
+                this.set(initialTheme, false); // Set without animation on init
+                this.locked = pageConfig.lock; // Set theme lock status
+                
+                console.log(`[Theme] Initialized for ${currentNamespace}:`, {
+                    theme: initialTheme,
+                    locked: this.locked
+                });
+                
+                // Only initialize scroll triggers if theme is not locked
+                if (!this.locked) {
+                    this.initScrollTriggers();
+                }
                 
                 // Add Barba hooks for theme management
                 barba.hooks.beforeLeave(() => {
                     this.isTransitioning = true;
-                    // Kill all theme-related ScrollTriggers
-                    ScrollTrigger.getAll().forEach(trigger => {
-                        if (trigger.vars.trigger?.hasAttribute('data-theme-section')) {
-                            trigger.kill();
-                        }
-                    });
+                    this.cleanupScrollTriggers();
                 });
                 
                 barba.hooks.afterEnter((data) => {
-                    const newTheme = this.defaultThemes[data.next.namespace] || 'dark';
+                    const pageConfig = this.pageConfigs[data.next.namespace] || this.pageConfigs['home'];
+                    const newTheme = pageConfig.default;
+                    
                     this.set(newTheme, true);
                     this.isTransitioning = false;
-                    // Reinitialize scroll triggers after transition
-                    this.initScrollTriggers();
+                    this.locked = pageConfig.lock;
+                    
+                    console.log(`[Theme] Entered ${data.next.namespace}:`, {
+                        theme: newTheme,
+                        locked: this.locked
+                    });
+                    
+                    // Only initialize scroll triggers if theme is not locked
+                    if (!this.locked) {
+                        this.initScrollTriggers();
+                    }
                 });
             },
 
@@ -347,13 +406,24 @@
                 });
             },
 
-            initScrollTriggers() {
-                // Kill any existing theme ScrollTriggers
+            cleanupScrollTriggers() {
+                // Kill all theme-related ScrollTriggers
                 ScrollTrigger.getAll().forEach(trigger => {
                     if (trigger.vars.trigger?.hasAttribute('data-theme-section')) {
                         trigger.kill();
                     }
                 });
+            },
+
+            initScrollTriggers() {
+                // Don't create triggers if theme is locked
+                if (this.locked) {
+                    console.log('[Theme] Theme is locked, skipping scroll triggers');
+                    return;
+                }
+                
+                // Clean up existing triggers first
+                this.cleanupScrollTriggers();
 
                 const navBar = document.querySelector('.nav_bar');
                 const navBarMidpoint = navBar ? navBar.offsetHeight / 2 : 0;
@@ -361,7 +431,8 @@
                 
                 console.log('[Theme] Initializing scroll triggers:', {
                     navBarMidpoint,
-                    sectionsFound: sections.length
+                    sectionsFound: sections.length,
+                    locked: this.locked
                 });
 
                 sections.forEach(section => {
@@ -376,17 +447,20 @@
                         start: `top ${navBarMidpoint}px`,
                         toggleActions: 'play none none reverse',
                         onEnter: (self) => {
-                            if (this.isTransitioning) return;
+                            if (this.isTransitioning || this.locked) return;
                             const theme = self.trigger.getAttribute('data-theme-section');
                             console.log('[Theme] Scroll trigger onEnter:', theme);
                             this.set(theme);
                         },
-                        onLeaveBack: (self) => {
-                            if (this.isTransitioning) return;
-                            const theme = self.trigger.getAttribute('data-theme-section');
-                            const oppositeTheme = theme === 'dark' ? 'light' : 'dark';
-                            console.log('[Theme] Scroll trigger onLeaveBack:', oppositeTheme);
-                            this.set(oppositeTheme);
+                        onLeave: (self) => {
+                            if (this.isTransitioning || this.locked) return;
+                            // Only change theme if explicitly defined in the section
+                            const nextSection = self.trigger.nextElementSibling;
+                            if (nextSection && nextSection.hasAttribute('data-theme-section')) {
+                                const nextTheme = nextSection.getAttribute('data-theme-section');
+                                console.log('[Theme] Scroll trigger onLeave, next theme:', nextTheme);
+                                this.set(nextTheme);
+                            }
                         }
                     });
                 });
