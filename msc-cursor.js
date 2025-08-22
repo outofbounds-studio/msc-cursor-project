@@ -843,13 +843,33 @@
                             modalGroup.setAttribute('data-modal-group-status', 'active');
                         }
 
-                        // Prevent page scrolling when modal opens
-                        //document.body.style.overflow = 'hidden';
-                        //document.body.style.position = 'fixed';
-                        //document.body.style.width = '100%';
+                        // Debug: Check what's happening with scrolling
+                        console.log('🔍 Modal opened, checking scroll behavior...');
+                        const activeModal = document.querySelector(`[data-modal-name="${modalTargetName}"]`);
+                        if (activeModal) {
+                            console.log('🔍 Active modal element:', activeModal);
+                            console.log('🔍 Modal computed styles:', {
+                                overflow: getComputedStyle(activeModal).overflow,
+                                overflowY: getComputedStyle(activeModal).overflowY,
+                                height: getComputedStyle(activeModal).height,
+                                maxHeight: getComputedStyle(activeModal).maxHeight
+                            });
+                            
+                            // Check if modal content is scrollable
+                            const modalContent = activeModal.querySelector('.modal__content');
+                            if (modalContent) {
+                                console.log('🔍 Modal content element:', modalContent);
+                                console.log('🔍 Modal content computed styles:', {
+                                    overflow: getComputedStyle(modalContent).overflow,
+                                    overflowY: getComputedStyle(modalContent).overflowY,
+                                    height: getComputedStyle(modalContent).height,
+                                    maxHeight: getComputedStyle(modalContent).maxHeight
+                                });
+                            }
+                        }
                         
                         // Stop Lenis if it's running
-                        if (window.lenis) window.lenis.stop();
+                        // if (window.lenis) window.lenis.stop();
                     });
                 });
 
@@ -860,13 +880,8 @@
                             modalGroup.setAttribute('data-modal-group-status', 'not-active');
                         }
                         
-                        // Restore page scrolling when modal closes
-                        //document.body.style.overflow = '';
-                        //document.body.style.position = '';
-                        //document.body.style.width = '';
-                        
                         // Restart Lenis
-                        if (window.lenis) window.lenis.start();
+                        // if (window.lenis) window.lenis.start();
                     });
                 });
 
@@ -878,12 +893,7 @@
                             modalGroup.setAttribute('data-modal-group-status', 'not-active');
                         }
                         
-                        // Restore page scrolling
-                        //document.body.style.overflow = '';
-                        //document.body.style.position = '';
-                        //document.body.style.width = '';
-                        
-                        if (window.lenis) window.lenis.start();
+                        // if (window.lenis) window.lenis.start();
                     }
                 });
             } catch (error) {
