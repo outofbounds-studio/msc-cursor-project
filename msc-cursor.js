@@ -454,12 +454,22 @@
                         },
                         onLeave: (self) => {
                             if (this.isTransitioning || this.locked) return;
-                            // Only change theme if explicitly defined in the section
+                            // Change theme when leaving section (scrolling down)
                             const nextSection = self.trigger.nextElementSibling;
                             if (nextSection && nextSection.hasAttribute('data-theme-section')) {
                                 const nextTheme = nextSection.getAttribute('data-theme-section');
                                 console.log('[Theme] Scroll trigger onLeave, next theme:', nextTheme);
                                 this.set(nextTheme);
+                            }
+                        },
+                        onLeaveBack: (self) => {
+                            if (this.isTransitioning || this.locked) return;
+                            // Change theme when leaving section backwards (scrolling up)
+                            const prevSection = self.trigger.previousElementSibling;
+                            if (prevSection && prevSection.hasAttribute('data-theme-section')) {
+                                const prevTheme = prevSection.getAttribute('data-theme-section');
+                                console.log('[Theme] Scroll trigger onLeaveBack, previous theme:', prevTheme);
+                                this.set(prevTheme);
                             }
                         }
                     });
