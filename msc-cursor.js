@@ -435,11 +435,15 @@
                     locked: this.locked
                 });
 
-                sections.forEach(section => {
+                // Convert NodeList to Array for easier manipulation
+                const sectionsArray = Array.from(sections);
+
+                sections.forEach((section, index) => {
                     const theme = section.getAttribute('data-theme-section');
                     console.log('[Theme] Creating trigger for section:', {
                         section,
-                        theme
+                        theme,
+                        index
                     });
 
                     ScrollTrigger.create({
@@ -455,8 +459,9 @@
                         onLeave: (self) => {
                             if (this.isTransitioning || this.locked) return;
                             // Change theme when leaving section (scrolling down)
-                            const nextSection = self.trigger.nextElementSibling;
-                            if (nextSection && nextSection.hasAttribute('data-theme-section')) {
+                            const currentIndex = sectionsArray.indexOf(self.trigger);
+                            const nextSection = sectionsArray[currentIndex + 1];
+                            if (nextSection) {
                                 const nextTheme = nextSection.getAttribute('data-theme-section');
                                 console.log('[Theme] Scroll trigger onLeave, next theme:', nextTheme);
                                 this.set(nextTheme);
@@ -465,11 +470,19 @@
                         onLeaveBack: (self) => {
                             if (this.isTransitioning || this.locked) return;
                             // Change theme when leaving section backwards (scrolling up)
-                            const prevSection = self.trigger.previousElementSibling;
-                            if (prevSection && prevSection.hasAttribute('data-theme-section')) {
+                            const currentIndex = sectionsArray.indexOf(self.trigger);
+                            const prevSection = sectionsArray[currentIndex - 1];
+                            if (prevSection) {
                                 const prevTheme = prevSection.getAttribute('data-theme-section');
                                 console.log('[Theme] Scroll trigger onLeaveBack, previous theme:', prevTheme);
                                 this.set(prevTheme);
+                            } else {
+                                // If we're at the first section and scrolling up, use the page default theme
+                                const currentNamespace = barba.current?.namespace || 'home';
+                                const pageConfig = this.pageConfigs[currentNamespace] || this.pageConfigs['home'];
+                                const defaultTheme = pageConfig.default;
+                                console.log('[Theme] Scroll trigger onLeaveBack, using page default theme:', defaultTheme);
+                                this.set(defaultTheme);
                             }
                         }
                     });
