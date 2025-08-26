@@ -925,47 +925,68 @@
     
         initModalBasic() {
             try {
-                const modalGroup = document.querySelector('[data-modal-group-status]');
+                const modalGroups = document.querySelectorAll('[data-modal-group-status]');
                 const modals = document.querySelectorAll('[data-modal-name]');
                 const modalTargets = document.querySelectorAll('[data-modal-target]');
 
                 modalTargets.forEach((modalTarget) => {
                     modalTarget.addEventListener('click', function () {
                         const modalTargetName = this.getAttribute('data-modal-target');
+                        const targetModal = document.querySelector(`[data-modal-name="${modalTargetName}"]`);
+                        
+                        if (!targetModal) {
+                            console.warn(`Modal with name "${modalTargetName}" not found`);
+                            return;
+                        }
 
-                        modalTargets.forEach((target) => target.setAttribute('data-modal-status', 'not-active'));
-                        modals.forEach((modal) => modal.setAttribute('data-modal-status', 'not-active'));
+                        // Find the modal group that contains this specific modal
+                        const modalGroup = targetModal.closest('[data-modal-group-status]') || 
+                                         targetModal.querySelector('[data-modal-group-status]') ||
+                                         document.querySelector('[data-modal-group-status]');
 
+                        // Deactivate all modals in the same group first
+                        if (modalGroup) {
+                            const groupModals = modalGroup.querySelectorAll('[data-modal-name]');
+                            const groupTargets = modalGroup.querySelectorAll('[data-modal-target]');
+                            
+                            groupModals.forEach((modal) => modal.setAttribute('data-modal-status', 'not-active'));
+                            groupTargets.forEach((target) => target.setAttribute('data-modal-status', 'not-active'));
+                        } else {
+                            // Fallback: deactivate all modals if no group found
+                            modals.forEach((modal) => modal.setAttribute('data-modal-status', 'not-active'));
+                            modalTargets.forEach((target) => target.setAttribute('data-modal-status', 'not-active'));
+                        }
+
+                        // Activate the specific modal and its target
                         document.querySelector(`[data-modal-target="${modalTargetName}"]`).setAttribute('data-modal-status', 'active');
-                        document.querySelector(`[data-modal-name="${modalTargetName}"]`).setAttribute('data-modal-status', 'active');
+                        targetModal.setAttribute('data-modal-status', 'active');
 
+                        // Activate the modal group
                         if (modalGroup) {
                             modalGroup.setAttribute('data-modal-group-status', 'active');
                         }
 
                         // Debug: Check what's happening with scrolling
                         console.log('🔍 Modal opened, checking scroll behavior...');
-                        const activeModal = document.querySelector(`[data-modal-name="${modalTargetName}"]`);
-                        if (activeModal) {
-                            console.log('🔍 Active modal element:', activeModal);
-                            console.log('🔍 Modal computed styles:', {
-                                overflow: getComputedStyle(activeModal).overflow,
-                                overflowY: getComputedStyle(activeModal).overflowY,
-                                height: getComputedStyle(activeModal).height,
-                                maxHeight: getComputedStyle(activeModal).maxHeight
+                        console.log('🔍 Active modal element:', targetModal);
+                        console.log('🔍 Modal group:', modalGroup);
+                        console.log('🔍 Modal computed styles:', {
+                            overflow: getComputedStyle(targetModal).overflow,
+                            overflowY: getComputedStyle(targetModal).overflowY,
+                            height: getComputedStyle(targetModal).height,
+                            maxHeight: getComputedStyle(targetModal).maxHeight
+                        });
+                        
+                        // Check if modal content is scrollable
+                        const modalContent = targetModal.querySelector('.modal__content');
+                        if (modalContent) {
+                            console.log('🔍 Modal content element:', modalContent);
+                            console.log('🔍 Modal content computed styles:', {
+                                overflow: getComputedStyle(modalContent).overflow,
+                                overflowY: getComputedStyle(modalContent).overflowY,
+                                height: getComputedStyle(modalContent).height,
+                                maxHeight: getComputedStyle(modalContent).maxHeight
                             });
-                            
-                            // Check if modal content is scrollable
-                            const modalContent = activeModal.querySelector('.modal__content');
-                            if (modalContent) {
-                                console.log('🔍 Modal content element:', modalContent);
-                                console.log('🔍 Modal content computed styles:', {
-                                    overflow: getComputedStyle(modalContent).overflow,
-                                    overflowY: getComputedStyle(modalContent).overflowY,
-                                    height: getComputedStyle(modalContent).height,
-                                    maxHeight: getComputedStyle(modalContent).maxHeight
-                                });
-                            }
                         }
                         
                         // Stop Lenis if it's running
@@ -975,9 +996,23 @@
 
                 document.querySelectorAll('[data-modal-close]').forEach((closeBtn) => {
                     closeBtn.addEventListener('click', () => {
-                        modalTargets.forEach((target) => target.setAttribute('data-modal-status', 'not-active'));
+                        // Find which modal group this close button belongs to
+                        const modalGroup = closeBtn.closest('[data-modal-group-status]') || 
+                                         closeBtn.closest('[data-modal-name]')?.closest('[data-modal-group-status]');
+                        
                         if (modalGroup) {
+                            // Close only modals in this specific group
+                            const groupModals = modalGroup.querySelectorAll('[data-modal-name]');
+                            const groupTargets = modalGroup.querySelectorAll('[data-modal-target]');
+                            
+                            groupModals.forEach((modal) => modal.setAttribute('data-modal-status', 'not-active'));
+                            groupTargets.forEach((target) => target.setAttribute('data-modal-status', 'not-active'));
                             modalGroup.setAttribute('data-modal-group-status', 'not-active');
+                        } else {
+                            // Fallback: close all modals
+                            modalTargets.forEach((target) => target.setAttribute('data-modal-status', 'not-active'));
+                            modals.forEach((modal) => modal.setAttribute('data-modal-status', 'not-active'));
+                            modalGroups.forEach((group) => group.setAttribute('data-modal-group-status', 'not-active'));
                         }
                         
                         // Restart Lenis
@@ -988,10 +1023,10 @@
                 // Handle ESC key
                 document.addEventListener('keydown', function (event) {
                     if (event.key === 'Escape') {
+                        // Close all active modals
                         modalTargets.forEach((target) => target.setAttribute('data-modal-status', 'not-active'));
-                        if (modalGroup) {
-                            modalGroup.setAttribute('data-modal-group-status', 'not-active');
-                        }
+                        modals.forEach((modal) => modal.setAttribute('data-modal-status', 'not-active'));
+                        modalGroups.forEach((group) => group.setAttribute('data-modal-group-status', 'not-active'));
                         
                         if (window.lenis) window.lenis.start();
                     }
