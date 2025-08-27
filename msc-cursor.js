@@ -1149,7 +1149,12 @@
                     
                     console.log('Filter group config:', { targetMatch, nameMatch });
                     
-                    const buttons = [...group.querySelectorAll('[data-filter-target]')];
+                    // Look for buttons in both standard and dropdown formats
+                    const buttons = [
+                        ...group.querySelectorAll('[data-filter-target]'),
+                        ...group.querySelectorAll('.dropdown_link[data-filter-target]'),
+                        ...group.querySelectorAll('.dropdown_link[data-filter-value]')
+                    ];
                     const items   = [...group.querySelectorAll('[data-filter-name]')];
                     
                     console.log('Filter group elements:', { buttons: buttons.length, items: items.length });
@@ -1267,7 +1272,7 @@
                         
                         // Update buttons
                         buttons.forEach(btn => {
-                            const t = (btn.getAttribute('data-filter-target') || '').trim().toLowerCase();
+                            const t = (btn.getAttribute('data-filter-target') || btn.getAttribute('data-filter-value') || '').trim().toLowerCase();
                             let on = false;
                             if (t === 'all') on = !hasRealActive();
                             else if (t === 'reset') on = hasRealActive();
@@ -1277,8 +1282,12 @@
                     };
                     
                     group.addEventListener('click', e => {
-                        const btn = e.target.closest('[data-filter-target]');
-                        if (btn && group.contains(btn)) paint(btn.getAttribute('data-filter-target'));
+                        // Handle both standard filter buttons and dropdown links
+                        const btn = e.target.closest('[data-filter-target]') || e.target.closest('.dropdown_link[data-filter-target]') || e.target.closest('.dropdown_link[data-filter-value]');
+                        if (btn && group.contains(btn)) {
+                            const target = btn.getAttribute('data-filter-target') || btn.getAttribute('data-filter-value');
+                            paint(target);
+                        }
                     });
                     
                     paint('all');

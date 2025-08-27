@@ -964,8 +964,20 @@ body {
 }
 
 .filter-btn[data-filter-status="active"] {
-  background-color: var(--color-ignore-dark);
-  color: var(--color-ignore-light);
+  background-color: rgba(255, 255, 255, 0.5);
+  color: var(--color-ignore-black);
+}
+
+/* Dropdown Filter Button */
+.dropdown_link[data-filter-status="active"] {
+  background-color: rgba(255, 255, 255, 0.5);
+  color: var(--color-ignore-black);
+}
+
+/* Any element with data-filter-target that becomes active */
+[data-filter-target][data-filter-status="active"] {
+  background-color: rgba(255, 255, 255, 0.5);
+  color: var(--color-ignore-black);
 }
 
 /* Reset Button */

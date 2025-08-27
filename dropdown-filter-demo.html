@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dropdown Filter System Demo</title>
+    <style>
+        /* Basic demo styles - you can customize these */
+        body {
+            font-family: Arial, sans-serif;
+            background: #131313;
+            color: white;
+            padding: 2rem;
+        }
+        
+        .filter-group {
+            margin: 2rem 0;
+            padding: 1rem;
+            border: 1px solid #333;
+            background: #1f1f1f;
+        }
+        
+        /* Dropdown styles - keeping your existing dropdown functionality */
+        .dropdown_wrap {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .dropdown_toggle {
+            background: #333;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .dropdown_arrow {
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 5px solid white;
+            transition: transform 0.3s ease;
+        }
+        
+        .dropdown_content {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: #333;
+            border-radius: 4px;
+            min-width: 200px;
+            z-index: 1000;
+            overflow: hidden;
+        }
+        
+        .dropdown_height {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.3s ease;
+        }
+        
+        .dropdown_wrap:focus-within .dropdown_height,
+        .dropdown_wrap:hover .dropdown_height {
+            grid-template-rows: 1fr;
+        }
+        
+        .dropdown_wrap:focus-within .dropdown_arrow,
+        .dropdown_wrap:hover .dropdown_arrow {
+            transform: rotate(-45deg);
+        }
+        
+        .dropdown_list {
+            padding: 0.5rem 0;
+            overflow: hidden;
+        }
+        
+        .dropdown_link {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .dropdown_link:hover {
+            background: #444;
+        }
+        
+        /* Filter button styles */
+        .filter-btn {
+            background: #333;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn:hover {
+            background: #444;
+        }
+        
+        /* Active filter button styles */
+        .filter-btn[data-filter-status="active"] {
+            background-color: rgba(255, 255, 255, 0.5);
+            color: var(--color-ignore-black, #000);
+        }
+        
+        .dropdown_link[data-filter-status="active"] {
+            background-color: rgba(255, 255, 255, 0.5);
+            color: var(--color-ignore-black, #000);
+        }
+        
+        [data-filter-target][data-filter-status="active"] {
+            background-color: rgba(255, 255, 255, 0.5);
+            color: var(--color-ignore-black, #000);
+        }
+        
+        /* Reset button */
+        .reset-btn {
+            background: #d32f2f;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-left: 0.5rem;
+            transition: all 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .reset-btn[data-filter-status="active"] {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Filter list */
+        .filter-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+            position: relative;
+        }
+        
+        .filter-list__item {
+            border: 1px solid #444;
+            padding: 1rem;
+            border-radius: 8px;
+            background: #2a2a2a;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-list__item[data-filter-status="active"] {
+            transform: scale(1) rotate(0.001deg);
+            opacity: 1;
+            visibility: visible;
+            position: relative;
+        }
+        
+        .filter-list__item[data-filter-status="transition-out"] {
+            transform: scale(0.9) rotate(0.001deg);
+            opacity: 0;
+            visibility: visible;
+        }
+        
+        .filter-list__item[data-filter-status="not-active"] {
+            transform: scale(0.9) rotate(0.001deg);
+            opacity: 0;
+            visibility: hidden; 
+            position: absolute;
+        }
+        
+        .demo-card {
+            text-align: center;
+        }
+        
+        .demo-card__visual {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .demo-card__tags-list {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .demo-card__tags-item {
+            background: #444;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+        }
+        
+        .demo-card__h3 {
+            margin: 0;
+            font-size: 1.25rem;
+        }
+        
+        .demo-card__category {
+            background: #666;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <h1>Dropdown Filter System Demo</h1>
+    
+    <!-- Example: Dropdown-based filter system -->
+    <div data-filter-group="" data-filter-target-match="multi" data-filter-name-match="multi" role="group" class="filter-group">
+        <h2>Projects Filter (Dropdown Style)</h2>
+        <p>This demonstrates the dropdown filter system that works with your existing dropdown structure</p>
+        
+        <!-- Standard filter buttons -->
+        <div class="filter-buttons">
+            <button data-filter-target="all" data-filter-status="active" aria-pressed="false" aria-controls="filter-list" class="filter-btn">ALL PROJECTS</button>
+            <button data-filter-target="reset" data-filter-status="not-active" aria-pressed="false" aria-controls="filter-list" class="reset-btn">RESET</button>
+        </div>
+        
+        <!-- Dropdown filter -->
+        <div class="dropdown_wrap">
+            <button class="dropdown_toggle">
+                Filter by Category
+                <div class="dropdown_arrow"></div>
+            </button>
+            <div class="dropdown_content">
+                <div class="dropdown_height">
+                    <div class="dropdown_list">
+                        <a href="#" class="dropdown_link" data-filter-target="bespoke">BESPOKE</a>
+                        <a href="#" class="dropdown_link" data-filter-target="cantilever">CANTILEVER</a>
+                        <a href="#" class="dropdown_link" data-filter-target="carbon">CARBON</a>
+                        <a href="#" class="dropdown_link" data-filter-target="seam">SEAM</a>
+                        <a href="#" class="dropdown_link" data-filter-target="etch">ETCH</a>
+                        <a href="#" class="dropdown_link" data-filter-target="flux-central-spine">FLUX - CENTRAL SPINE</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Filter Items -->
+        <div aria-live="polite" role="list" class="filter-list">
+            <div role="listitem" data-filter-name="bespoke" data-filter-status="active" class="filter-list__item">
+                <div class="demo-card">
+                    <div class="demo-card__category">BESPOKE</div>
+                    <div class="demo-card__top">
+                        <div class="demo-card__visual">
+                            <span class="demo-card__emoji">🏠</span>
+                        </div>
+                        <div class="demo-card__tags-collection">
+                            <div class="demo-card__tags-list">
+                                <div class="demo-card__tags-item">Interior Design</div>
+                                <div class="demo-card__tags-item">Custom Furniture</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="demo-card__bottom">
+                        <h3 class="demo-card__h3">Nest Showroom</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <div role="listitem" data-filter-name="bespoke" data-filter-status="active" class="filter-list__item">
+                <div class="demo-card">
+                    <div class="demo-card__category">BESPOKE</div>
+                    <div class="demo-card__top">
+                        <div class="demo-card__visual">
+                            <span class="demo-card__emoji">🪜</span>
+                        </div>
+                        <div class="demo-card__tags-collection">
+                            <div class="demo-card__tags-list">
+                                <div class="demo-card__tags-item">Staircase Design</div>
+                                <div class="demo-card__tags-item">Architecture</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="demo-card__bottom">
+                        <h3 class="demo-card__h3">Happy Electron</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <div role="listitem" data-filter-name="cantilever" data-filter-status="active" class="filter-list__item">
+                <div class="demo-card">
+                    <div class="demo-card__category">CANTILEVER</div>
+                    <div class="demo-card__top">
+                        <div class="demo-card__visual">
+                            <span class="demo-card__emoji">🎨</span>
+                        </div>
+                        <div class="demo-card__tags-collection">
+                            <div class="demo-card__tags-list">
+                                <div class="demo-card__tags-item">Modern Interior</div>
+                                <div class="demo-card__tags-item">Art Integration</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="demo-card__bottom">
+                        <h3 class="demo-card__h3">Floating Gallery</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <div role="listitem" data-filter-name="carbon" data-filter-status="active" class="filter-list__item">
+                <div class="demo-card">
+                    <div class="demo-card__category">CARBON</div>
+                    <div class="demo-card__top">
+                        <div class="demo-card__visual">
+                            <span class="demo-card__emoji">💡</span>
+                        </div>
+                        <div class="demo-card__tags-collection">
+                            <div class="demo-card__tags-list">
+                                <div class="demo-card__tags-item">Lighting Design</div>
+                                <div class="demo-card__tags-item">Minimalist</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="demo-card__bottom">
+                        <h3 class="demo-card__h3">Carbon Light Studio</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <div role="listitem" data-filter-name="seam" data-filter-status="active" class="filter-list__item">
+                <div class="demo-card">
+                    <div class="demo-card__category">SEAM</div>
+                    <div class="demo-card__top">
+                        <div class="demo-card__visual">
+                            <span class="demo-card__emoji">🔗</span>
+                        </div>
+                        <div class="demo-card__tags-collection">
+                            <div class="demo-card__tags-list">
+                                <div class="demo-card__tags-item">Seamless Design</div>
+                                <div class="demo-card__tags-item">Integration</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="demo-card__bottom">
+                        <h3 class="demo-card__h3">Seamless Office</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <div role="listitem" data-filter-name="etch" data-filter-status="active" class="filter-list__item">
+                <div class="demo-card">
+                    <div class="demo-card__category">ETCH</div>
+                    <div class="demo-card__top">
+                        <div class="demo-card__visual">
+                            <span class="demo-card__emoji">✏️</span>
+                        </div>
+                        <div class="demo-card__tags-collection">
+                            <div class="demo-card__tags-list">
+                                <div class="demo-card__tags-item">Detailed Design</div>
+                                <div class="demo-card__tags-item">Precision</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="demo-card__bottom">
+                        <h3 class="demo-card__h3">Etched Details</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <div role="listitem" data-filter-name="flux-central-spine" data-filter-status="active" class="filter-list__item">
+                <div class="demo-card">
+                    <div class="demo-card__category">FLUX - CENTRAL SPINE</div>
+                    <div class="demo-card__top">
+                        <div class="demo-card__visual">
+                            <span class="demo-card__emoji">🌪️</span>
+                        </div>
+                        <div class="demo-card__tags-collection">
+                            <div class="demo-card__tags-list">
+                                <div class="demo-card__tags-item">Dynamic Design</div>
+                                <div class="demo-card__tags-item">Central Focus</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="demo-card__bottom">
+                        <h3 class="demo-card__h3">Central Spine Hub</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // This is just for the demo - your actual implementation will use the integrated system
+        console.log('Dropdown filter demo page loaded. In your actual implementation, the filter system will be automatically initialized by your msc-cursor.js file.');
+        
+        // Demo dropdown functionality (your existing system will handle this)
+        document.querySelectorAll('.dropdown_link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('Dropdown link clicked:', link.textContent);
+            });
+        });
+    </script>
+</body>
+</html>
