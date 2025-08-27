@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi Filter System Demo</title>
+    <style>
+        /* Basic demo styles - you can customize these */
+        .filter-group {
+            margin: 2rem 0;
+            padding: 1rem;
+            border: 1px solid #ccc;
+        }
+        
+        .filter-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn, .reset-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #333;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn:hover, .reset-btn:hover {
+            background: #f0f0f0;
+        }
+        
+        .filter-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            position: relative;
+        }
+        
+        .filter-list__item {
+            border: 1px solid #ddd;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+        
+        .demo-card {
+            text-align: center;
+        }
+        
+        .demo-card__visual {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .demo-card__tags-list {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .demo-card__tags-item {
+            background: #f0f0f0;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+        }
+        
+        .demo-card__h3 {
+            margin: 0;
+            font-size: 1.25rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>Multi Filter System Demo</h1>
+    
+    <!-- Example 1: Multi-target, Multi-name match (default) -->
+    <div data-filter-group="" data-filter-target-match="multi" data-filter-name-match="multi" role="group" class="filter-group">
+        <h2>Example 1: Multi-target, Multi-name match (default)</h2>
+        <p>Click multiple buttons to show items that match ANY of the selected filters (OR logic)</p>
+        
+        <div class="filter-buttons">
+            <button data-filter-target="all" data-filter-status="active" aria-pressed="false" aria-controls="filter-list" class="filter-btn">All</button>
+            <button data-filter-target="orange" data-filter-status="not-active" aria-pressed="false" aria-controls="filter-list" class="filter-btn">Orange</button>
+            <button data-filter-target="blue" data-filter-status="not-active" aria-pressed="false" aria-controls="filter-list" class="filter-btn">Blue</button>
+            <button data-filter-target="green" data-filter-status="not-active" aria-pressed="false" aria-controls="filter-list" class="filter-btn">Green</button>
+            <button data-filter-target="brown" data-filter-status="not-active" aria-pressed="false" aria-controls="filter-list" class="filter-btn">Brown</button>
+            <button data-filter-target="reset" data-filter-status="not-active" aria-pressed="false" aria-controls="filter-list" class="reset-btn">Reset</button>
+        </div>
+        
+        <div aria-live="polite" role="list" class="filter-list">
+            <div role="listitem" data-filter-name="" data-filter-status="active" class="filter-list__item">
+                <div class="demo-card">
+                    <div class="demo-card__top">
+                        <div class="demo-card__visual">
+                            <span class="demo-card__emoji">🐸</span>
+                        </div>
+                        <div class="demo-card__tags-collection">
+                            <div class="demo-card__tags-list">
+                                <div data-filter-name-collect="green" class="demo-card__tags-item">
+                                    <p class="demo-card__tags-item-p">Green</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="demo-card__bottom">
+                        <h3 class="demo-card__h3">Frog</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <div role="listitem" data-filter-name="" data-filter-status="active" class="filter-list__item">
+                <div class="demo-card">
+                    <div class="demo-card__top">
+                        <div class="demo-card__visual">
+                            <span class="demo-card__emoji">🦜</span>
+                        </div>
+                        <div class="demo-card__tags-collection">
+                            <div class="demo-card__tags-list">
+                                <div data-filter-name-collect="green" class="demo-card__tags-item">
+                                    <p class="demo-card__tags-item-p">Green</p>
+                                </div>
+                                <div data-filter-name-collect="orange" class="demo-card__tags-item">
+                                    <p class="demo-card__tags-item-p">Orange</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="demo-card__bottom">
+                        <h3 class="demo-card__h3">Parrot</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <div role="listitem" data-filter-name="" data-filter-status="active" class="filter-list__item">
+                <div class="demo-card">
+                    <div class="demo-card__top">
+                        <div class="demo-card__visual">
+                            <span class="demo-card__emoji">🦎</span>
+                        </div>
+                        <div class="demo-card__tags-collection">
+                            <div class="demo-card__tags-list">
+                                <div data-filter-name-collect="green" class="demo-card__tags-item">
+                                    <p class="demo-card__tags-item-p">Green</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="demo-card__bottom">
+                        <h3 class="demo-card__h3">Gecko</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <div role="listitem" data-filter-name="" data-filter-status="active" class="filter-list__item">
+                <div class="demo-card">
+                    <div class="demo-card__top">
+                        <div class="demo-card__visual">
+                            <span class="demo-card__emoji">🦄</span>
+                        </div>
+                        <div class="demo-card__tags-collection">
+                            <div class="demo-card__tags-list">
+                                <div data-filter-name-collect="blue" class="demo-card__tags-item">
+                                    <p class="demo-card__tags-item-p">Blue</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="demo-card__bottom">
+                        <h3 class="demo-card__h3">Unicorn</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <div role="listitem" data-filter-name="" data-filter-status="active" class="filter-list__item">
+                <div class="demo-card">
+                    <div class="demo-card__top">
+                        <div class="demo-card__visual">
+                            <span class="demo-card__emoji">🐻</span>
+                        </div>
+                        <div class="demo-card__tags-collection">
+                            <div class="demo-card__tags-list">
+                                <div data-filter-name-collect="brown" class="demo-card__tags-item">
+                                    <p class="demo-card__tags-item-p">Brown</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="demo-card__bottom">
+                        <h3 class="demo-card__h3">Bear</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Example 2: Single-target, Multi-name match -->
+    <div data-filter-group="" data-filter-target-match="single" data-filter-name-match="multi" role="group" class="filter-group">
+        <h2>Example 2: Single-target, Multi-name match</h2>
+        <p>Click one button to show items that match that specific filter (single selection)</p>
+        
+        <div class="filter-buttons">
+            <button data-filter-target="all" data-filter-status="active" aria-pressed="false" aria-controls="filter-list" class="filter-btn">All</button>
+            <button data-filter-target="orange" data-filter-status="not-active" aria-pressed="false" aria-controls="filter-list" class="filter-btn">Orange</button>
+            <button data-filter-target="blue" data-filter-status="not-active" aria-pressed="false" aria-controls="filter-list" class="filter-btn">Blue</button>
+            <button data-filter-target="green" data-filter-status="not-active" aria-pressed="false" aria-controls="filter-list" class="filter-btn">Green</button>
+            <button data-filter-target="brown" data-filter-status="not-active" aria-pressed="false" aria-controls="filter-list" class="filter-btn">Brown</button>
+            <button data-filter-target="reset" data-filter-status="not-active" aria-pressed="false" aria-controls="filter-list" class="reset-btn">Reset</button>
+        </div>
+        
+        <div aria-live="polite" role="list" class="filter-list">
+            <div role="listitem" data-filter-name="green" data-filter-status="active" class="filter-list__item">
+                <div class="demo-card">
+                    <div class="demo-card__top">
+                        <div class="demo-card__visual">
+                            <span class="demo-card__emoji">🐸</span>
+                        </div>
+                        <div class="demo-card__tags-collection">
+                            <div class="demo-card__tags-list">
+                                <div class="demo-card__tags-item">
+                                    <p class="demo-card__tags-item-p">Green</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="demo-card__bottom">
+                        <h3 class="demo-card__h3">Frog</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <div role="listitem" data-filter-name="green orange" data-filter-status="active" class="filter-list__item">
+                <div class="demo-card">
+                    <div class="demo-card__top">
+                        <div class="demo-card__visual">
+                            <span class="demo-card__emoji">🦜</span>
+                        </div>
+                        <div class="demo-card__tags-collection">
+                            <div class="demo-card__tags-list">
+                                <div class="demo-card__tags-item">
+                                    <p class="demo-card__tags-item-p">Green</p>
+                                </div>
+                                <div class="demo-card__tags-item">
+                                    <p class="demo-card__tags-item-p">Orange</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="demo-card__bottom">
+                        <h3 class="demo-card__h3">Parrot</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <div role="listitem" data-filter-name="blue" data-filter-status="active" class="filter-list__item">
+                <div class="demo-card">
+                    <div class="demo-card__top">
+                        <div class="demo-card__visual">
+                            <span class="demo-card__emoji">🦄</span>
+                        </div>
+                        <div class="demo-card__tags-collection">
+                            <div class="demo-card__tags-list">
+                                <div class="demo-card__tags-item">
+                                    <p class="demo-card__tags-item-p">Blue</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="demo-card__bottom">
+                        <h3 class="demo-card__h3">Unicorn</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <div role="listitem" data-filter-name="brown" data-filter-status="active" class="filter-list__item">
+                <div class="demo-card">
+                    <div class="demo-card__top">
+                        <div class="demo-card__visual">
+                            <span class="demo-card__emoji">🐻</span>
+                        </div>
+                        <div class="demo-card__tags-collection">
+                            <div class="demo-card__tags-list">
+                                <div class="demo-card__tags-item">
+                                    <p class="demo-card__tags-item-p">Brown</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="demo-card__bottom">
+                        <h3 class="demo-card__h3">Bear</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // This is just for the demo - your actual implementation will use the integrated system
+        console.log('Filter demo page loaded. In your actual implementation, the filter system will be automatically initialized by your msc-cursor.js file.');
+    </script>
+</body>
+</html>
