@@ -458,9 +458,47 @@
                         toggleActions: 'play none none reverse',
                         onEnter: (self) => {
                             if (this.isTransitioning || this.locked) return;
-                            const theme = self.trigger.getAttribute('data-theme-section');
-                            console.log('[Theme] Scroll trigger onEnter:', theme);
-                            this.set(theme);
+                            
+                            // Check if this section has text reveal animations
+                            const hasTextReveal = self.trigger.querySelector('[data-split="heading"]');
+                            
+                            if (hasTextReveal) {
+                                // Check if this is a scrub animation (pinned section)
+                                const isScrubAnimation = self.trigger.querySelector('.split-text-scroll-trigger');
+                                
+                                if (isScrubAnimation) {
+                                    // For scrub animations, wait for the full scrub duration
+                                    // The animation scrubs over 250% of section height
+                                    // Use a longer delay to ensure animation completes
+                                    const delay = 2000; // 2 seconds to account for scrub duration
+                                    
+                                    console.log('[Theme] Delaying theme change for scrub animation, delay:', delay + 'ms');
+                                    
+                                    setTimeout(() => {
+                                        const theme = self.trigger.getAttribute('data-theme-section');
+                                        console.log('[Theme] Delayed theme change for scrub animation:', theme);
+                                        this.set(theme);
+                                    }, delay);
+                                } else {
+                                    // For regular text reveal animations
+                                    // Text reveal duration: 0.8s + stagger: 0.08s per line
+                                    const lineCount = self.trigger.querySelectorAll('[data-split="heading"]').length;
+                                    const delay = (0.8 + (lineCount * 0.08)) * 1000;
+                                    
+                                    console.log('[Theme] Delaying theme change for text reveal, delay:', delay + 'ms');
+                                    
+                                    setTimeout(() => {
+                                        const theme = self.trigger.getAttribute('data-theme-section');
+                                        console.log('[Theme] Delayed theme change for text reveal:', theme);
+                                        this.set(theme);
+                                    }, delay);
+                                }
+                            } else {
+                                // Immediate theme change for sections without text reveal
+                                const theme = self.trigger.getAttribute('data-theme-section');
+                                console.log('[Theme] Immediate theme change:', theme);
+                                this.set(theme);
+                            }
                         },
                         onLeave: (self) => {
                             if (this.isTransitioning || this.locked) return;
