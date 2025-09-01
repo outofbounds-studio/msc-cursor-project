@@ -467,18 +467,29 @@
                                 const isScrubAnimation = self.trigger.querySelector('.split-text-scroll-trigger');
                                 
                                 if (isScrubAnimation) {
-                                    // For scrub animations, wait for the full scrub duration
-                                    // The animation scrubs over 250% of section height
-                                    // Use a longer delay to ensure animation completes
-                                    const delay = 2000; // 2 seconds to account for scrub duration
+                                    // For scrub animations, we need to coordinate with the pinned ScrollTrigger
+                                    // Instead of a fixed delay, let's check if the section is currently pinned
+                                    const checkPinnedStatus = () => {
+                                        // Look for the ScrollTrigger instance that's pinning this section
+                                        const scrollTriggers = ScrollTrigger.getAll();
+                                        const pinnedTrigger = scrollTriggers.find(st => 
+                                            st.trigger === self.trigger.querySelector('.split-text-scroll-trigger') && 
+                                            st.vars.pin === true
+                                        );
+                                        
+                                        if (pinnedTrigger && pinnedTrigger.progress < 1) {
+                                            // Still pinned and animating, check again in 100ms
+                                            setTimeout(checkPinnedStatus, 100);
+                                        } else {
+                                            // Animation complete or not pinned, safe to change theme
+                                            const theme = self.trigger.getAttribute('data-theme-section');
+                                            console.log('[Theme] Theme change after scrub animation complete:', theme);
+                                            this.set(theme);
+                                        }
+                                    };
                                     
-                                    console.log('[Theme] Delaying theme change for scrub animation, delay:', delay + 'ms');
-                                    
-                                    setTimeout(() => {
-                                        const theme = self.trigger.getAttribute('data-theme-section');
-                                        console.log('[Theme] Delayed theme change for scrub animation:', theme);
-                                        this.set(theme);
-                                    }, delay);
+                                    // Start checking pinned status
+                                    checkPinnedStatus();
                                 } else {
                                     // For regular text reveal animations
                                     // Text reveal duration: 0.8s + stagger: 0.08s per line
