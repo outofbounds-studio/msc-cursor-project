@@ -280,6 +280,8 @@
             current: 'dark',
             isTransitioning: false,
             locked: false, // New: Theme locking capability
+            pendingChange: null, // Track pending theme changes
+            changeTimeout: null, // Debounce timeout
             
             // Page-specific theme configuration
             pageConfigs: {
@@ -388,7 +390,32 @@
             set(theme, animate = true) {
                 if (this.current === theme || !theme) return;
                 
-                console.log(`[Theme] Changing theme to: ${theme}`);
+                // Clear any pending change
+                if (this.changeTimeout) {
+                    clearTimeout(this.changeTimeout);
+                }
+                
+                // Store the pending change
+                this.pendingChange = { theme, animate };
+                
+                // Debounce theme changes to prevent rapid switching
+                this.changeTimeout = setTimeout(() => {
+                    this.executeThemeChange(this.pendingChange.theme, this.pendingChange.animate);
+                    this.pendingChange = null;
+                    this.changeTimeout = null;
+                }, 100); // 100ms debounce
+            },
+            
+            executeThemeChange(theme, animate = true) {
+                if (this.current === theme || !theme) return;
+                
+                // Prevent multiple theme changes from happening simultaneously
+                if (this.isTransitioning) {
+                    console.log(`[Theme] Theme change blocked - already transitioning to: ${this.current}`);
+                    return;
+                }
+                
+                console.log(`[Theme] Executing theme change to: ${theme}`);
                 this.current = theme;
                 
                 if (animate && !this.isTransitioning) {
