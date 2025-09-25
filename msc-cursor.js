@@ -484,12 +484,20 @@
                                     // For scrub animations, we need to coordinate with the pinned ScrollTrigger
                                     // Instead of a fixed delay, let's check if the section is currently pinned
                                     const checkPinnedStatus = () => {
-                                        // Look for the ScrollTrigger instance that's pinning this section
+                                        // Look for ANY ScrollTrigger instance that's pinning this section
                                         const scrollTriggers = ScrollTrigger.getAll();
                                         const pinnedTrigger = scrollTriggers.find(st => 
-                                            st.trigger === self.trigger.querySelector('.split-text-scroll-trigger') && 
+                                            (st.trigger === self.trigger || 
+                                             st.trigger === self.trigger.querySelector('.split-text-scroll-trigger') ||
+                                             self.trigger.contains(st.trigger)) && 
                                             st.vars.pin === true
                                         );
+                                        
+                                        console.log('[Theme] Checking pinned status:', {
+                                            pinnedTrigger: !!pinnedTrigger,
+                                            progress: pinnedTrigger?.progress,
+                                            trigger: pinnedTrigger?.trigger
+                                        });
                                         
                                         if (pinnedTrigger && pinnedTrigger.progress < 1) {
                                             // Still pinned and animating, check again in 100ms
@@ -506,6 +514,13 @@
                                     
                                     // Start checking pinned status
                                     checkPinnedStatus();
+                                    
+                                    // Fallback: force theme change after 3 seconds if still not detected
+                                    setTimeout(() => {
+                                        const theme = self.trigger.getAttribute('data-theme-section');
+                                        console.log('[Theme] Fallback theme change after 3s:', theme);
+                                        this.set(theme);
+                                    }, 3000);
                                 } else {
                                     // For regular text reveal animations
                                     // Text reveal duration: 0.8s + stagger: 0.08s per line
