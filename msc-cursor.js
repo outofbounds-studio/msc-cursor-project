@@ -396,7 +396,11 @@
                 } else {
                     // Direct set without animation
                     document.body.setAttribute('element-theme', theme);
-                    document.body.style.backgroundColor = `var(--color--background-${theme})`;
+                    // Force CSS variable update
+                    document.body.style.setProperty('--color--background', `var(--${theme}--background)`);
+                    document.body.style.setProperty('--color--text', `var(--${theme}--text)`);
+                    document.body.style.setProperty('--color--button-background', `var(--${theme}--button-background)`);
+                    document.body.style.setProperty('--color--button-text', `var(--${theme}--button-text)`);
                 }
             },
 
@@ -404,6 +408,11 @@
                 const tl = gsap.timeline({
                     onStart: () => {
                         document.body.setAttribute('element-theme', theme);
+                        // Force CSS variable update
+                        document.body.style.setProperty('--color--background', `var(--${theme}--background)`);
+                        document.body.style.setProperty('--color--text', `var(--${theme}--text)`);
+                        document.body.style.setProperty('--color--button-background', `var(--${theme}--button-background)`);
+                        document.body.style.setProperty('--color--button-text', `var(--${theme}--button-text)`);
                     },
                     onComplete: () => {
                         console.log(`[Theme] Theme change complete: ${theme}`);
@@ -411,7 +420,7 @@
                 });
 
                 tl.to('body', {
-                    backgroundColor: `var(--color--background-${theme})`,
+                    backgroundColor: `var(--color--background)`,
                     duration: 0.5,
                     ease: 'power2.out'
                 });
@@ -489,7 +498,9 @@
                                             // Animation complete or not pinned, safe to change theme
                                             const theme = self.trigger.getAttribute('data-theme-section');
                                             console.log('[Theme] Theme change after scrub animation complete:', theme);
+                                            console.log('[Theme] Current theme before change:', this.current);
                                             this.set(theme);
+                                            console.log('[Theme] Theme after change:', this.current);
                                         }
                                     };
                                     
@@ -513,7 +524,9 @@
                                 // Immediate theme change for sections without text reveal
                                 const theme = self.trigger.getAttribute('data-theme-section');
                                 console.log('[Theme] Immediate theme change:', theme);
+                                console.log('[Theme] Current theme before change:', this.current);
                                 this.set(theme);
+                                console.log('[Theme] Theme after change:', this.current);
                             }
                         },
                         onLeave: (self) => {

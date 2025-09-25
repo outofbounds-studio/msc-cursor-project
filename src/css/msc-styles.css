@@ -1,8 +1,3 @@
-/* 
-  Website designed and built by OUT OF BOUNDS
-*/
-
-
 
   /* ------------------------- Osmo [https://osmo.supply/] ------------------------- */
 	/* ------------------------- Variables -------------------------------------------------- */
@@ -81,9 +76,9 @@
   
   /* ------------------------- Hide Scrollbar -------------------------------------------------- */
 
-  body ::-webkit-scrollbar{display: none;} /* Chrome, Safari, Opera */
-  body {-ms-overflow-style: none;} /* IE & Edge */
-  html {scrollbar-width: none;} /* Firefox */
+  /* body ::-webkit-scrollbar{display: none;} /* Chrome, Safari, Opera */
+  /* body {-ms-overflow-style: none;} /* IE & Edge */
+  /* html {scrollbar-width: none;} /* Firefox */
   
   /* ------------------------- body -------------------------------------------------- */
 
@@ -475,19 +470,7 @@ body:has([data-cursor]:hover) .cursor {
     transform: rotate(0.001deg);
   } 
   
-/* Modal */
-[data-modal-group-status] {
-  transition: all 0.2s linear;
-}
 
-[data-modal-group-status="active"] {
-  opacity: 1;
-  visibility: visible;
-}
-
-[data-modal-name][data-modal-status="active"] {
-  display: flex;
-}  
   
 /* Work Item Hover Effects */
 .work-item-wrap {
@@ -563,31 +546,6 @@ body:has([data-cursor]:hover) .cursor {
   transition: opacity 0.3s cubic-bezier(.4,0,.2,1);
 }
   
-body, html {
-    overflow-x: hidden;
-  }  
-  
-/* Active Classes */
-.lightbox-wrap.is-active {
-  display: flex;
-}
-.lightbox-img__item.is-active {
-  visibility: visible;
-}
-
-
-/* Force containment of image */
-.lightbox-img__item img { 
-  object-fit: contain !important;
-  min-width: auto;
-  width: auto;
-  max-height: 100%;
-}
-
-
-/* Simple Hover on Lightbox Buttons */
-.lightbox-nav__button:hover .lightbox-nav__dot{ transform: translate(-100%, 0px) }
-.lightbox-nav__button:nth-of-type(2):hover .lightbox-nav__dot{ transform: translate(100%, 0px) }  
   
 /* Text button line animation */ 
 .underline-link::before,
@@ -679,108 +637,36 @@ html, body {
   background: #161413; /* fallback for very first paint */
 }
 body[element-theme="dark"] {
-  background-color: var(--color--background-dark, #161413);
+  --color--background: var(--dark--background);
+  --color--text: var(--dark--text);
+  --color--button-background: var(--dark--button-background);
+  --color--button-text: var(--dark--button-text);
+  background-color: var(--color--background);
 }
 body[element-theme="light"] {
-  background-color: var(--color--background-light, #faf9f6);
-} 
+  --color--background: var(--light--background);
+  --color--text: var(--light--text);
+  --color--button-background: var(--light--button-background);
+  --color--button-text: var(--light--button-text);
+  background-color: var(--color--background);
+}
+
+[data-theme-section="dark"] {
+  --color--background: var(--dark--background);
+  --color--text: var(--dark--text);
+  --color--button-background: var(--dark--button-background);
+  --color--button-text: var(--dark--button-text);
+}
+
+[data-theme-section="light"] {
+  --color--background: var(--light--background);
+  --color--text: var(--light--text);
+  --color--button-background: var(--light--button-background);
+  --color--button-text: var(--light--button-text);
+}
   
-/* Filter Button */
-.filter-btn {
-  opacity: 0.5;
-  transition: 
-    color 0.6s cubic-bezier(0.625, 0.05, 0, 1), 
-    background-color 0.6s cubic-bezier(0.625, 0.05, 0, 1),
-    opacity 0.3s cubic-bezier(0.625, 0.05, 0, 1);
-}
 
-.filter-btn[data-filter-status="active"] {
-  opacity: 1;
-  position: relative;
-}
 
-/* Bottom left corner */
-.filter-btn[data-filter-status="active"] .filter-btn-corner-bl {
-  display: block;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 15px;
-  height: 25px; /* Make this a small square */
-  border-bottom: 1px solid var(--color--button-background);
-  border-left: 1px solid var(--color--button-background);
-  pointer-events: none;
-}
-
-/* Bottom right corner */
-.filter-btn[data-filter-status="active"] .filter-btn-corner-br {
-  display: block;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 15px;
-  height: 25px; /* Make this a small square */
-  border-bottom: 1px solid var(--color--button-background);
-  border-right: 1px solid var(--color--button-background);
-  pointer-events: none;
-}
-
-/* Top left corner */
-.filter-btn[data-filter-status="active"]::before {
-  content: "";
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 15px;
-  height: 25px;
-  border-top: 1px solid var(--color--button-background);
-  border-left: 1px solid var(--color--button-background);
-  pointer-events: none;
-}
-
-/* Top right corner */
-.filter-btn[data-filter-status="active"]::after {
-  content: "";
-  display: block;
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 15px;
-  height: 25px;
-  border-top: 1px solid var(--color--button-background);
-  border-right: 1px solid var(--color--button-background);
-  pointer-events: none;
-}
-
-/* Filter List Item */
-.filter-list__item[data-filter-status="active"] {
-  transition: 
-    opacity 0.6s cubic-bezier(0.625, 0.05, 0, 1), 
-    transform 0.6s cubic-bezier(0.625, 0.05, 0, 1);
-  transform: scale(1) rotate(0.001deg);
-  opacity: 1;
-  visibility: visible;
-  position: relative;
-}
-
-.filter-list__item[data-filter-status="transition-out"] {
-  transition: 
-    opacity 0.45s cubic-bezier(0.625, 0.05, 0, 1), 
-    transform 0.45s cubic-bezier(0.625, 0.05, 0, 1);
-  transform: scale(0.9) rotate(0.001deg);
-  opacity: 0;
-  visibility: visible;
-}
-
-.filter-list__item[data-filter-status="not-active"] {
-  transform: scale(0.9) rotate(0.001deg);
-  opacity: 0;
-  visibility: hidden; 
-  position: absolute;
-}
-
-  
 uc-file-uploader-regular {
     --uc-primary-oklch-dark: 69% 0.1768 258.4;
     --uc-primary-oklch-light: 59% 0.22 264;
@@ -834,14 +720,42 @@ uc-file-uploader-regular {
 }
   
   
-/* MENU */  
+/* LIGHTBOX */  
+ body, html {
+    overflow-x: hidden;
+  }  
+  
+/* Active Classes */
+.lightbox-wrap.is-active {
+  display: flex;
+}
+.lightbox-img__item.is-active {
+  visibility: visible;
+}
+
+/* Force containment of image */
+.lightbox-img__item img { 
+  object-fit: contain !important;
+  min-width: auto;
+  width: auto;
+  max-height: 100%;
+}
+
+/* Simple Hover on Lightbox Buttons */
+.lightbox-nav__button:hover .lightbox-nav__dot{ transform: translate(-100%, 0px) }
+.lightbox-nav__button:nth-of-type(2):hover .lightbox-nav__dot{ transform: translate(100%, 0px) }  
+
+
+/* MENU - Simplified Aker Style (No Page Transforms) */
 body {
   overflow-x: hidden;
 }
 
 .nav_bar {
   position: fixed;
-  top: 0; left: 0; right: 0;
+  top: 0;
+  left: 0;
+  right: 0;
   z-index: 1000;
   transition: opacity 0.4s;
 }
@@ -853,18 +767,19 @@ body {
 
 .menu-overlay {
   position: fixed;
-  top: 0; left: 0; right: 0;
+  top: 0;
+  left: 0;
+  right: 0;
   width: 100vw;
+  height: 350;
   z-index: 999;
   background: #181716;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  /* GSAP handles everything - no CSS transforms or transitions */
 }
 
-/* Menu content positioning - GSAP handles animations */
+/* Menu content positioning */
 .menu-overlay .menu_content {
-  /* GSAP will handle all transforms */
   will-change: transform;
 }
 
@@ -874,40 +789,16 @@ body {
   z-index: 2;
 }
 
-/* Lightbox */
-/* Lightbox positioning fixes - these override any conflicts */
+/* Lightbox overrides to ensure it works with menu */
 .lightbox-wrap {
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
   width: 100vw !important;
   height: 100vh !important;
-  z-index: 10001 !important; /* Higher than nav (1000) and menu (999) */
-  transform: none !important; /* Override any inherited transforms */
-  background-color: rgba(0, 0, 0, 0.9) !important; /* Dark overlay */
-}
-
-.lightbox-wrap.is-active {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-
-.lightbox-img__wrap {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 90vw !important;
-  height: calc(100svh - 10em) !important;
-  transform: none !important; /* Ensure no transforms interfere */
-}
-
-.lightbox-img_list {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 100% !important;
-  height: 100% !important;
+  z-index: 10001 !important;
+  transform: none !important;
+  background-color: rgba(0, 0, 0, 0.9) !important;
 }
 
 /* Ensure lightbox works even when menu is open */
@@ -921,63 +812,76 @@ body {
   height: 100vh !important;
 }
 
-/* Lightbox navigation */
-.lightbox-nav {
-  position: absolute !important;
-  bottom: 2em !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-  z-index: 10002 !important;
+  
+
+/* MODAL */
+[data-modal-group-status] {
+  transition: all 0.2s linear;
 }
 
-/* Lightbox close button */
-.lightbox-close {
-  position: absolute !important;
-  top: 2em !important;
-  right: 2em !important;
-  z-index: 10002 !important;
-  cursor: pointer !important;
+[data-modal-group-status="active"] {
+  opacity: 1;
+  visibility: visible;
 }
 
-/* Lightbox navigation arrows */
-.lightbox-nav__button {
-  position: absolute !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
-  z-index: 10002 !important;
-  cursor: pointer !important;
+[data-modal-name][data-modal-status="active"] {
+  display: flex;
 }
 
-.lightbox-nav__button:first-child {
-  left: 2em !important;
+/* Prevent page scrolling when modal is active */
+/*body:has([data-modal-group-status="active"]) {
+  overflow: hidden !important;
 }
 
-.lightbox-nav__button:last-child {
-  right: 2em !important;
+/* Modal content scrolling - OVERRIDE global scrollbar hiding */
+.modal__scroll {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
 }
-   
-/* ------------------------- Multi Filter System -------------------------------------------------- */
 
+/* Force scrollbars to show in modal */
+.modal__scroll::-webkit-scrollbar {
+  display: block !important;
+  width: 8px !important;
+}
+
+.modal__scroll::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1) !important;
+  border-radius: 4px !important;
+}
+
+.modal__scroll::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3) !important;
+  border-radius: 4px !important;
+}
+
+.modal__content {
+  overflow: visible !important;
+}
+  
+/* Ultra-specific with multiple selectors */
+html body[data-modal-group-status="active"] [data-modal-name][data-modal-status="active"] .modal__scroll {
+  overflow: auto !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  max-height: 80vh !important;
+}
+
+html body[data-modal-group-status="active"] [data-modal-name][data-modal-status="active"] {
+  max-height: 80vh !important;
+} 
+  
+/* FILTERING SYSYEM */  
 /* Filter Button */
 .filter-btn {
   transition: color 0.6s cubic-bezier(0.625, 0.05, 0, 1), background-color 0.6s cubic-bezier(0.625, 0.05, 0, 1);
 }
 
 .filter-btn[data-filter-status="active"] {
-  background-color: rgba(255, 255, 255, 0.5);
-  color: var(--color-ignore-black);
-}
-
-/* Dropdown Filter Button */
-.dropdown_link[data-filter-status="active"] {
-  background-color: rgba(255, 255, 255, 0.5);
-  color: var(--color-ignore-black);
-}
-
-/* Any element with data-filter-target that becomes active */
-[data-filter-target][data-filter-status="active"] {
-  background-color: rgba(255, 255, 255, 0.5);
-  color: var(--color-ignore-black);
+  background-color: #131313;
+  color: #EFEEEC;
 }
 
 /* Reset Button */
@@ -1013,4 +917,176 @@ body {
   opacity: 0;
   visibility: hidden; 
   position: absolute;
+}  
+  
+  
+/* ------------------------- Multi Filter System -------------------------------------------------- */
+
+/* Main Filter Buttons (ALL PROJECTS, RESET) - EXCLUDE dropdown buttons */
+.filter-btn:not(.work) {
+  opacity: 0.5;
+  transition: 
+    color 0.6s cubic-bezier(0.625, 0.05, 0, 1), 
+    background-color 0.6s cubic-bezier(0.625, 0.05, 0, 1),
+    opacity 0.3s cubic-bezier(0.625, 0.05, 0, 1);
 }
+
+.filter-btn:not(.work)[data-filter-status="active"] {
+  opacity: 1;
+  position: relative;
+}
+
+/* Bottom left corner for main filter buttons ONLY */
+.filter-btn:not(.work)[data-filter-status="active"] .filter-btn-corner-bl {
+  display: block;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 15px;
+  height: 25px;
+  border-bottom: 1px solid var(--color--button-background);
+  border-left: 1px solid var(--color--button-background);
+  pointer-events: none;
+}
+
+/* Bottom right corner for main filter buttons ONLY */
+.filter-btn:not(.work)[data-filter-status="active"] .filter-btn-corner-br {
+  display: block;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 15px;
+  height: 25px;
+  border-bottom: 1px solid var(--color--button-background);
+  border-right: 1px solid var(--color--button-background);
+  pointer-events: none;
+}
+
+/* Top left corner for main filter buttons ONLY */
+.filter-btn:not(.work)[data-filter-status="active"]::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 15px;
+  height: 25px;
+  border-top: 1px solid var(--color--button-background);
+  border-left: 1px solid var(--color--button-background);
+  pointer-events: none;
+}
+
+/* Top right corner for main filter buttons ONLY */
+.filter-btn:not(.work)[data-filter-status="active"]::after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 15px;
+  height: 25px;
+  border-top: 1px solid var(--color--button-background);
+  border-right: 1px solid var(--color--button-background);
+  pointer-events: none;
+}
+
+/* Dropdown Filter Buttons (BESPOKE, CANTILEVER, etc.) - UPDATED OPACITY VALUES */
+.filter-btn.work {
+  transition: 
+    color 0.6s cubic-bezier(0.625, 0.05, 0, 1), 
+    background-color 0.6s cubic-bezier(0.625, 0.05, 0, 1);
+  color: rgba(255, 255, 255, 0.6) !important; /* White text at 60% opacity when inactive */
+}
+
+.filter-btn.work[data-filter-status="active"] {
+  background-color: rgba(255, 255, 255, 0.2) !important; /* White background at 20% opacity when active */
+  color: rgba(255, 255, 255, 1) !important; /* White text at 100% opacity when active */
+}
+
+/* EXPLICITLY REMOVE corners from dropdown buttons */
+.filter-btn.work[data-filter-status="active"]::before,
+.filter-btn.work[data-filter-status="active"]::after {
+  display: none !important;
+}
+
+.filter-btn.work[data-filter-status="active"] .filter-btn-corner-bl,
+.filter-btn.work[data-filter-status="active"] .filter-btn-corner-br {
+  display: none !important;
+}
+
+/* Reset Button */
+.reset-btn {
+  transition: all 0.6s cubic-bezier(0.625, 0.05, 0, 1);
+  opacity: 0;
+  visibility: hidden;
+}
+
+.reset-btn[data-filter-status="active"] {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Filter List Item */
+.filter-list__item[data-filter-status="active"] {
+  transition: 
+    opacity 0.6s cubic-bezier(0.625, 0.05, 0, 1), 
+    transform 0.6s cubic-bezier(0.625, 0.05, 0, 1);
+  transform: scale(1) rotate(0.001deg);
+  opacity: 1;
+  visibility: visible;
+  position: relative;
+}
+
+.filter-list__item[data-filter-status="transition-out"] {
+  transition: 
+    opacity 0.45s cubic-bezier(0.625, 0.05, 0, 1), 
+    transform 0.45s cubic-bezier(0.625, 0.05, 0, 1);
+  transform: scale(0.9) rotate(0.001deg);
+  opacity: 0;
+  visibility: visible;
+}
+
+.filter-list__item[data-filter-status="not-active"] {
+  transform: scale(0.9) rotate(0.001deg);
+  opacity: 0;
+  visibility: hidden; 
+  position: absolute;
+}
+
+/* ------------------------- Dropdown Functionality - FORCE DROPDOWN CLOSED -------------------------------------------------- */
+
+/* CRITICAL: Force dropdown to be closed by default */
+.dropdown_height {
+  grid-template-rows: 0fr !important;
+  transition: grid-template-rows 0.3s ease !important;
+}
+
+/* Only open dropdown on hover/focus */
+.dropdown_wrap:hover .dropdown_height,
+.dropdown_wrap:focus-within .dropdown_height {
+  grid-template-rows: 1fr !important;
+}
+
+/* Arrow rotation */
+.dropdown_wrap:hover .dropdown_arrow,
+.dropdown_wrap:focus-within .dropdown_arrow {
+  transform: rotate(-45deg) !important;
+}
+
+/* Ensure dropdown content is hidden by default */
+.dropdown_list {
+  overflow: hidden;
+}
+  
+/* Multi-line text truncation - 3 lines */
+.truncate-3-lines {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2; /* Adjust this to control line height */
+  max-height: calc(1.2em * 4); /* Fallback for older browsers */
+}  
+
+
