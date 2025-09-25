@@ -470,15 +470,21 @@
                         trigger: section,
                         start: `top ${navBarMidpoint}px`,
                         toggleActions: 'play none none reverse',
+                        markers: true, // Enable markers for debugging
                         onEnter: (self) => {
                             if (this.isTransitioning || this.locked) return;
                             
+                            console.log('[Theme] ScrollTrigger onEnter fired for section:', self.trigger);
+                            console.log('[Theme] Section theme attribute:', self.trigger.getAttribute('data-theme-section'));
+                            
                             // Check if this section has text reveal animations
                             const hasTextReveal = self.trigger.querySelector('[data-split="heading"]');
+                            console.log('[Theme] Has text reveal:', !!hasTextReveal);
                             
                             if (hasTextReveal) {
                                 // Check if this is a scrub animation (pinned section)
                                 const isScrubAnimation = self.trigger.querySelector('.split-text-scroll-trigger');
+                                console.log('[Theme] Is scrub animation:', !!isScrubAnimation);
                                 
                                 if (isScrubAnimation) {
                                     // For scrub animations, we need to coordinate with the pinned ScrollTrigger
@@ -654,7 +660,7 @@
                         end: "+=250%",
                         pin: true,
                         scrub: 1,
-                        markers: false
+                        markers: true // Enable markers for debugging
                     }
                 })
                 .set(split.chars, { color: "#bab9b9" })
