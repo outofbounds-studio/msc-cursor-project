@@ -332,6 +332,11 @@
                     default: 'light', 
                     lock: true, // Lock theme - no changes
                     sections: ['hero', 'content', 'footer'] 
+                },
+                'commercial': { 
+                    default: 'dark', 
+                    lock: false, // Allow theme changes
+                    sections: ['hero', 'content', 'footer'] 
                 }
             },
 
@@ -1801,6 +1806,37 @@
             }
         },
         
+        commercial: {
+            beforeEnter() {
+                console.log('[Barba] commercial.beforeEnter');
+                utils.theme.set('dark', false);
+                console.log("Entering commercial page...");
+            },
+            afterEnter() {
+                console.log('[Barba] commercial.afterEnter');
+                animations.stylesScrub();
+                components.initVimeoBGVideo();
+                components.initSliders();
+                components.initTestimonial();
+                components.initTabSystem();
+                components.initCustomCursor();
+                animations.initSplitTextAnimation();
+                initScrambleText();
+                initHeroParallax();
+            },
+            afterLeave() {
+                console.log('[Barba] commercial.afterLeave');
+                console.log("Leaving commercial page...");
+                ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+                document.querySelectorAll('[data-split="heading"]').forEach(heading => {
+                    if (heading._splitText) {
+                        heading._splitText.revert();
+                        heading._splitText = null;
+                    }
+                });
+            }
+        },
+        
         // Collection List Pages (formerly static pages)
         work: {
             beforeEnter() {
@@ -2115,9 +2151,9 @@
             }
         }],
         views: [
-            // Static page views (home, about, contact, request-a-quote, materials)
+            // Static page views (home, about, contact, request-a-quote, materials, commercial)
             ...Object.entries(pages).filter(([key]) => 
-                ['home', 'about', 'contact', 'request-a-quote', 'materials'].includes(key)
+                ['home', 'about', 'contact', 'request-a-quote', 'materials', 'commercial'].includes(key)
             ).map(([namespace, handlers]) => ({
                 namespace,
                 beforeEnter() {
