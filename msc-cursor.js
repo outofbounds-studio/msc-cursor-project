@@ -493,8 +493,18 @@
                         index
                     });
 
+                    // Special handling for footer-contain - trigger on the actual footer section
+                    let triggerElement = section;
+                    if (section.classList.contains('footer-contain')) {
+                        const footerSection = section.querySelector('.footer');
+                        if (footerSection) {
+                            triggerElement = footerSection;
+                            console.log('[Theme] Using footer section as trigger instead of footer-contain');
+                        }
+                    }
+
                     ScrollTrigger.create({
-                        trigger: section,
+                        trigger: triggerElement,
                         start: `top 80%`, // Fire when section is 80% visible
                         toggleActions: 'play none none reverse',
                         markers: true, // Enable markers for debugging
@@ -502,7 +512,7 @@
                             if (this.isTransitioning || this.locked) return;
                             
                             console.log('[Theme] ScrollTrigger onEnter fired for section:', self.trigger);
-                            console.log('[Theme] Section theme attribute:', self.trigger.getAttribute('data-theme-section'));
+                            console.log('[Theme] Section theme attribute:', section.getAttribute('data-theme-section'));
                             
                             // Check if this section has text reveal animations
                             const hasTextReveal = self.trigger.querySelector('[data-split="heading"]');
@@ -537,7 +547,7 @@
                                             setTimeout(checkPinnedStatus, 100);
                                         } else {
                                             // Animation complete or not pinned, safe to change theme
-                                            const theme = self.trigger.getAttribute('data-theme-section');
+                                            const theme = section.getAttribute('data-theme-section');
                                             console.log('[Theme] Theme change after scrub animation complete:', theme);
                                             console.log('[Theme] Current theme before change:', this.current);
                                             this.set(theme);
@@ -550,7 +560,7 @@
                                     
                                     // Fallback: force theme change after 3 seconds if still not detected
                                     setTimeout(() => {
-                                        const theme = self.trigger.getAttribute('data-theme-section');
+                                        const theme = section.getAttribute('data-theme-section');
                                         console.log('[Theme] Fallback theme change after 3s:', theme);
                                         this.set(theme);
                                     }, 3000);
@@ -563,14 +573,14 @@
                                     console.log('[Theme] Delaying theme change for text reveal, delay:', delay + 'ms');
                                     
                                     setTimeout(() => {
-                                        const theme = self.trigger.getAttribute('data-theme-section');
+                                        const theme = section.getAttribute('data-theme-section');
                                         console.log('[Theme] Delayed theme change for text reveal:', theme);
                                         this.set(theme);
                                     }, delay);
                                 }
                             } else {
                                 // Immediate theme change for sections without text reveal
-                                const theme = self.trigger.getAttribute('data-theme-section');
+                                const theme = section.getAttribute('data-theme-section');
                                 console.log('[Theme] Immediate theme change:', theme);
                                 console.log('[Theme] Current theme before change:', this.current);
                                 this.set(theme);
