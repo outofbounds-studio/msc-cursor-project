@@ -495,7 +495,7 @@
 
                     ScrollTrigger.create({
                         trigger: section,
-                        start: `top ${navBarMidpoint}px`,
+                        start: `top 80%`, // Fire when section is 80% visible
                         toggleActions: 'play none none reverse',
                         markers: true, // Enable markers for debugging
                         onEnter: (self) => {
