@@ -343,13 +343,13 @@
                 this.current = theme;
                 
                 // Apply theme immediately
-                document.body.setAttribute('element-theme', theme);
+                    document.body.setAttribute('element-theme', theme);
                 
                 // Update CSS custom properties
-                document.body.style.setProperty('--color--background', `var(--${theme}--background)`);
-                document.body.style.setProperty('--color--text', `var(--${theme}--text)`);
-                document.body.style.setProperty('--color--button-background', `var(--${theme}--button-background)`);
-                document.body.style.setProperty('--color--button-text', `var(--${theme}--button-text)`);
+                        document.body.style.setProperty('--color--background', `var(--${theme}--background)`);
+                        document.body.style.setProperty('--color--text', `var(--${theme}--text)`);
+                        document.body.style.setProperty('--color--button-background', `var(--${theme}--button-background)`);
+                        document.body.style.setProperty('--color--button-text', `var(--${theme}--button-text)`);
                 
                 // Add smooth transition if requested
                 if (animate) {
@@ -372,13 +372,13 @@
                 }
                 
                 this.cleanupScrollTriggers();
-                
+
                 const sections = document.querySelectorAll('[data-theme-section]');
                 console.log(`[Theme] Creating ${sections.length} scroll triggers`);
-                
+
                 sections.forEach((section, index) => {
                     const theme = section.getAttribute('data-theme-section');
-                    
+
                     // Use the section itself as trigger, or footer if it's a footer-contain
                     let triggerElement = section;
                     if (section.classList.contains('footer-contain')) {
@@ -387,7 +387,7 @@
                             triggerElement = footerSection;
                         }
                     }
-                    
+
                     const trigger = ScrollTrigger.create({
                         trigger: triggerElement,
                         start: 'top 20%', // Simple trigger point
@@ -396,6 +396,34 @@
                             if (!this.isTransitioning && !this.locked) {
                                 console.log(`[Theme] Section ${index} entered, changing to ${theme}`);
                                 this.set(theme, true);
+                            }
+                        },
+                        onLeave: () => {
+                            if (!this.isTransitioning && !this.locked) {
+                                // When leaving this section, find the next section's theme
+                                const nextSection = sections[index + 1];
+                            if (nextSection) {
+                                const nextTheme = nextSection.getAttribute('data-theme-section');
+                                    console.log(`[Theme] Section ${index} left, changing to next theme: ${nextTheme}`);
+                                    this.set(nextTheme, true);
+                                }
+                            }
+                        },
+                        onLeaveBack: () => {
+                            if (!this.isTransitioning && !this.locked) {
+                                // When leaving this section backwards, find the previous section's theme
+                                const prevSection = sections[index - 1];
+                            if (prevSection) {
+                                const prevTheme = prevSection.getAttribute('data-theme-section');
+                                    console.log(`[Theme] Section ${index} left backwards, changing to previous theme: ${prevTheme}`);
+                                    this.set(prevTheme, true);
+                            } else {
+                                    // If we're at the first section, use the page default theme
+                                const currentNamespace = barba.current?.namespace || 'home';
+                                const pageConfig = this.pageConfigs[currentNamespace] || this.pageConfigs['home'];
+                                    console.log(`[Theme] Section ${index} left backwards (first section), using page default: ${pageConfig.default}`);
+                                    this.set(pageConfig.default, true);
+                                }
                             }
                         }
                     });
