@@ -511,7 +511,7 @@
 
                     ScrollTrigger.create({
                         trigger: triggerElement,
-                        start: `top 20%`, // Fire when section is 20% visible (later trigger)
+                        start: `top calc(100% - 3.5em)`, // Fire when footer is 100% visible minus nav height
                         toggleActions: 'play none none reverse',
                         markers: true, // Enable markers for debugging
                         onEnter: (self) => {
