@@ -511,7 +511,7 @@
 
                     ScrollTrigger.create({
                         trigger: triggerElement,
-                        start: `top 80%`, // Fire when section is 80% visible
+                        start: `top 20%`, // Fire when section is 20% visible (later trigger)
                         toggleActions: 'play none none reverse',
                         markers: true, // Enable markers for debugging
                         onEnter: (self) => {
