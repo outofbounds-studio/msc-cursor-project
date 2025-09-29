@@ -388,9 +388,13 @@
                         }
                     }
 
+                    // Use different trigger points for footer vs regular sections
+                    const isFooter = section.classList.contains('footer-contain') || triggerElement.classList.contains('footer');
+                    const triggerStart = isFooter ? 'top 80%' : 'top 20%';
+                    
                     const trigger = ScrollTrigger.create({
                         trigger: triggerElement,
-                        start: 'top 20%', // Simple trigger point
+                        start: triggerStart, // Later trigger for footer, earlier for regular sections
                         markers: false, // Disable markers for production
                         onEnter: () => {
                             if (!this.isTransitioning && !this.locked) {
@@ -402,8 +406,8 @@
                             if (!this.isTransitioning && !this.locked) {
                                 // When leaving this section, use the next section's theme
                                 const nextSection = sections[index + 1];
-                                if (nextSection) {
-                                    const nextTheme = nextSection.getAttribute('data-theme-section');
+                            if (nextSection) {
+                                const nextTheme = nextSection.getAttribute('data-theme-section');
                                     console.log(`[Theme] Section ${index} left, changing to next section theme: ${nextTheme}`);
                                     this.set(nextTheme, true);
                                 }
@@ -413,14 +417,14 @@
                             if (!this.isTransitioning && !this.locked) {
                                 // When leaving this section backwards, use the previous section's theme
                                 const prevSection = sections[index - 1];
-                                if (prevSection) {
-                                    const prevTheme = prevSection.getAttribute('data-theme-section');
+                            if (prevSection) {
+                                const prevTheme = prevSection.getAttribute('data-theme-section');
                                     console.log(`[Theme] Section ${index} left backwards, changing to previous section theme: ${prevTheme}`);
                                     this.set(prevTheme, true);
-                                } else {
+                            } else {
                                     // If we're at the first section, use the page default theme
-                                    const currentNamespace = barba.current?.namespace || 'home';
-                                    const pageConfig = this.pageConfigs[currentNamespace] || this.pageConfigs['home'];
+                                const currentNamespace = barba.current?.namespace || 'home';
+                                const pageConfig = this.pageConfigs[currentNamespace] || this.pageConfigs['home'];
                                     console.log(`[Theme] Section ${index} left backwards (first section), using page default: ${pageConfig.default}`);
                                     this.set(pageConfig.default, true);
                                 }
