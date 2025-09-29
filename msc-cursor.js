@@ -513,8 +513,8 @@
                                 scrollTrigger: {
                                     scrub: true,
                                     trigger: targetText, 
-                                    start: "top 90%",
-                                    end: "center 40%",
+                                    start: "top 60%",
+                                    end: "center 20%",
                                 }
                             })
                             tl.from(self.chars, {
