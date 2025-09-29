@@ -275,93 +275,45 @@
             console.error(`Error in ${component}:`, error);
         },
 
-        // Theme Manager - Simple, Elegant, Robust
+        // Theme Manager - Simple, Robust, Reliable
         theme: {
             current: 'dark',
             isTransitioning: false,
-            locked: false, // New: Theme locking capability
-            pendingChange: null, // Track pending theme changes
-            changeTimeout: null, // Debounce timeout
+            locked: false,
+            scrollTriggers: [], // Track our scroll triggers for cleanup
             
             // Page-specific theme configuration
             pageConfigs: {
-                'home': { 
-                    default: 'dark', 
-                    lock: false, // Allow theme changes
-                    sections: ['hero', 'content', 'footer'] 
-                },
-                'about': { 
-                    default: 'light', 
-                    lock: false, // Allow theme changes
-                    sections: ['hero', 'content', 'footer'] 
-                },
-                'work': { 
-                    default: 'dark', 
-                    lock: false, 
-                    sections: ['hero', 'content', 'footer'] 
-                },
-                'styles': { 
-                    default: 'dark', 
-                    lock: false, 
-                    sections: ['hero', 'content', 'footer'] 
-                },
-                'work-item': { 
-                    default: 'dark', 
-                    lock: false, 
-                    sections: ['hero', 'content', 'footer'] 
-                },
-                'style-item': { 
-                    default: 'dark', 
-                    lock: false, 
-                    sections: ['hero', 'content', 'footer'] 
-                },
-                'news-item': { 
-                    default: 'dark', 
-                    lock: false, 
-                    sections: ['hero', 'content', 'footer'] 
-                },
-                'contact': { 
-                    default: 'dark', 
-                    lock: true, // Lock theme - no changes
-                    sections: ['hero', 'content', 'footer'] 
-                },
-                'request-a-quote': { 
-                    default: 'dark', 
-                    lock: true, // Lock theme - no changes
-                    sections: ['hero', 'content', 'footer'] 
-                },
-                'materials': { 
-                    default: 'light', 
-                    lock: true, // Lock theme - no changes
-                    sections: ['hero', 'content', 'footer'] 
-                },
-                'commercial': { 
-                    default: 'dark', 
-                    lock: false, // Allow theme changes
-                    sections: ['hero', 'content', 'footer'] 
-                }
+                'home': { default: 'dark', lock: false },
+                'about': { default: 'light', lock: false },
+                'work': { default: 'dark', lock: false },
+                'styles': { default: 'dark', lock: false },
+                'work-item': { default: 'dark', lock: false },
+                'style-item': { default: 'dark', lock: false },
+                'news-item': { default: 'dark', lock: false },
+                'contact': { default: 'dark', lock: true },
+                'request-a-quote': { default: 'dark', lock: true },
+                'materials': { default: 'light', lock: true },
+                'commercial': { default: 'dark', lock: false }
             },
 
             init() {
-                // Set initial theme based on current namespace
                 const currentNamespace = barba.current?.namespace || 'home';
                 const pageConfig = this.pageConfigs[currentNamespace] || this.pageConfigs['home'];
-                const initialTheme = pageConfig.default;
                 
-                this.set(initialTheme, false); // Set without animation on init
-                this.locked = pageConfig.lock; // Set theme lock status
+                this.set(pageConfig.default, false);
+                this.locked = pageConfig.lock;
                 
                 console.log(`[Theme] Initialized for ${currentNamespace}:`, {
-                    theme: initialTheme,
+                    theme: pageConfig.default,
                     locked: this.locked
                 });
                 
-                // Only initialize scroll triggers if theme is not locked
                 if (!this.locked) {
                     this.initScrollTriggers();
                 }
                 
-                // Add Barba hooks for theme management
+                // Barba hooks
                 barba.hooks.beforeLeave(() => {
                     this.isTransitioning = true;
                     this.cleanupScrollTriggers();
@@ -369,18 +321,15 @@
                 
                 barba.hooks.afterEnter((data) => {
                     const pageConfig = this.pageConfigs[data.next.namespace] || this.pageConfigs['home'];
-                    const newTheme = pageConfig.default;
-                    
-                    this.set(newTheme, true);
+                    this.set(pageConfig.default, true);
                     this.isTransitioning = false;
                     this.locked = pageConfig.lock;
                     
                     console.log(`[Theme] Entered ${data.next.namespace}:`, {
-                        theme: newTheme,
+                        theme: pageConfig.default,
                         locked: this.locked
                     });
                     
-                    // Only initialize scroll triggers if theme is not locked
                     if (!this.locked) {
                         this.initScrollTriggers();
                     }
@@ -390,253 +339,68 @@
             set(theme, animate = true) {
                 if (this.current === theme || !theme) return;
                 
-                // Clear any pending change
-                if (this.changeTimeout) {
-                    clearTimeout(this.changeTimeout);
-                }
-                
-                // Clear any delayed theme callbacks
-                if (this.delayedThemeTimeout) {
-                    clearTimeout(this.delayedThemeTimeout);
-                    this.delayedThemeTimeout = null;
-                }
-                
-                // Store the pending change
-                this.pendingChange = { theme, animate };
-                
-                // Debounce theme changes to prevent rapid switching
-                this.changeTimeout = setTimeout(() => {
-                    this.executeThemeChange(this.pendingChange.theme, this.pendingChange.animate);
-                    this.pendingChange = null;
-                    this.changeTimeout = null;
-                }, 100); // 100ms debounce
-            },
-            
-            executeThemeChange(theme, animate = true) {
-                if (this.current === theme || !theme) return;
-                
-                // Prevent multiple theme changes from happening simultaneously
-                if (this.isTransitioning) {
-                    console.log(`[Theme] Theme change blocked - already transitioning to: ${this.current}`);
-                    return;
-                }
-                
-                console.log(`[Theme] Executing theme change to: ${theme}`);
+                console.log(`[Theme] Changing theme from ${this.current} to ${theme}`);
                 this.current = theme;
                 
-                if (animate && !this.isTransitioning) {
-                    this.animateThemeChange(theme);
-                } else {
-                    // Direct set without animation
-                    document.body.setAttribute('element-theme', theme);
-                    // Force CSS variable update
-                    document.body.style.setProperty('--color--background', `var(--${theme}--background)`);
-                    document.body.style.setProperty('--color--text', `var(--${theme}--text)`);
-                    document.body.style.setProperty('--color--button-background', `var(--${theme}--button-background)`);
-                    document.body.style.setProperty('--color--button-text', `var(--${theme}--button-text)`);
+                // Apply theme immediately
+                document.body.setAttribute('element-theme', theme);
+                
+                // Update CSS custom properties
+                document.body.style.setProperty('--color--background', `var(--${theme}--background)`);
+                document.body.style.setProperty('--color--text', `var(--${theme}--text)`);
+                document.body.style.setProperty('--color--button-background', `var(--${theme}--button-background)`);
+                document.body.style.setProperty('--color--button-text', `var(--${theme}--button-text)`);
+                
+                // Add smooth transition if requested
+                if (animate) {
+                    document.body.style.transition = 'background-color 0.3s ease, color 0.3s ease';
+                    setTimeout(() => {
+                        document.body.style.transition = '';
+                    }, 300);
                 }
-            },
-
-            animateThemeChange(theme) {
-                const tl = gsap.timeline({
-                    onStart: () => {
-                        document.body.setAttribute('element-theme', theme);
-                        // Force CSS variable update
-                        document.body.style.setProperty('--color--background', `var(--${theme}--background)`);
-                        document.body.style.setProperty('--color--text', `var(--${theme}--text)`);
-                        document.body.style.setProperty('--color--button-background', `var(--${theme}--button-background)`);
-                        document.body.style.setProperty('--color--button-text', `var(--${theme}--button-text)`);
-                    },
-                    onComplete: () => {
-                        console.log(`[Theme] Theme change complete: ${theme}`);
-                    }
-                });
-
-                tl.to('body', {
-                    backgroundColor: `var(--color--background)`,
-                    duration: 0.5,
-                    ease: 'power2.out'
-                });
             },
 
             cleanupScrollTriggers() {
-                // Kill all theme-related ScrollTriggers
-                ScrollTrigger.getAll().forEach(trigger => {
-                    if (trigger.vars.trigger?.hasAttribute('data-theme-section')) {
-                        trigger.kill();
-                    }
-                });
+                this.scrollTriggers.forEach(trigger => trigger.kill());
+                this.scrollTriggers = [];
             },
 
             initScrollTriggers() {
-                // Don't create triggers if theme is locked
                 if (this.locked) {
                     console.log('[Theme] Theme is locked, skipping scroll triggers');
                     return;
                 }
                 
-                // Clean up existing triggers first
                 this.cleanupScrollTriggers();
-
-                const navBar = document.querySelector('.nav_bar');
-                const navBarMidpoint = navBar ? navBar.offsetHeight / 2 : 0;
-                const sections = document.querySelectorAll('[data-theme-section]');
                 
-                console.log('[Theme] Initializing scroll triggers:', {
-                    navBarMidpoint,
-                    sectionsFound: sections.length,
-                    locked: this.locked
-                });
-
-                // Convert NodeList to Array for easier manipulation
-                const sectionsArray = Array.from(sections);
-
+                const sections = document.querySelectorAll('[data-theme-section]');
+                console.log(`[Theme] Creating ${sections.length} scroll triggers`);
+                
                 sections.forEach((section, index) => {
                     const theme = section.getAttribute('data-theme-section');
-                    console.log('[Theme] Creating trigger for section:', {
-                        section,
-                        theme,
-                        index
-                    });
-
-                    // Special handling for footer-contain - trigger on the actual footer section
+                    
+                    // Use the section itself as trigger, or footer if it's a footer-contain
                     let triggerElement = section;
                     if (section.classList.contains('footer-contain')) {
                         const footerSection = section.querySelector('.footer');
                         if (footerSection) {
                             triggerElement = footerSection;
-                            console.log('[Theme] Using footer section as trigger instead of footer-contain');
                         }
                     }
-
-                    ScrollTrigger.create({
+                    
+                    const trigger = ScrollTrigger.create({
                         trigger: triggerElement,
-                        start: `top calc(100% - 3.5em)`, // Fire when footer is 100% visible minus nav height
-                        toggleActions: 'play none none reverse',
-                        markers: true, // Enable markers for debugging
-                        onEnter: (self) => {
-                            if (this.isTransitioning || this.locked) return;
-                            
-                            console.log('[Theme] ScrollTrigger onEnter fired for section:', self.trigger);
-                            console.log('[Theme] Section theme attribute:', section.getAttribute('data-theme-section'));
-                            
-                            // Check if this section has text reveal animations
-                            const hasTextReveal = self.trigger.querySelector('[data-split="heading"]');
-                            console.log('[Theme] Has text reveal:', !!hasTextReveal);
-                            
-                            if (hasTextReveal) {
-                                // Check if this is a scrub animation (pinned section)
-                                const isScrubAnimation = self.trigger.querySelector('.split-text-scroll-trigger');
-                                console.log('[Theme] Is scrub animation:', !!isScrubAnimation);
-                                
-                                if (isScrubAnimation) {
-                                    // For scrub animations, we need to coordinate with the pinned ScrollTrigger
-                                    // Instead of a fixed delay, let's check if the section is currently pinned
-                                    const checkPinnedStatus = () => {
-                                        // Look for ANY ScrollTrigger instance that's pinning this section
-                                        const scrollTriggers = ScrollTrigger.getAll();
-                                        const pinnedTrigger = scrollTriggers.find(st => 
-                                            (st.trigger === self.trigger || 
-                                             st.trigger === self.trigger.querySelector('.split-text-scroll-trigger') ||
-                                             self.trigger.contains(st.trigger)) && 
-                                            st.vars.pin === true
-                                        );
-                                        
-                                        console.log('[Theme] Checking pinned status:', {
-                                            pinnedTrigger: !!pinnedTrigger,
-                                            progress: pinnedTrigger?.progress,
-                                            trigger: pinnedTrigger?.trigger
-                                        });
-                                        
-                                        if (pinnedTrigger && pinnedTrigger.progress < 1) {
-                                            // Still pinned and animating, check again in 100ms
-                                            setTimeout(checkPinnedStatus, 100);
-                                        } else {
-                                            // Animation complete or not pinned, safe to change theme
-                                            const theme = section.getAttribute('data-theme-section');
-                                            console.log('[Theme] Theme change after scrub animation complete:', theme);
-                                            console.log('[Theme] Current theme before change:', this.current);
-                                            this.set(theme);
-                                            console.log('[Theme] Theme after change:', this.current);
-                                        }
-                                    };
-                                    
-                                    // Start checking pinned status
-                                    checkPinnedStatus();
-                                    
-                                    // Fallback: force theme change after 3 seconds if still not detected
-                                    this.delayedThemeTimeout = setTimeout(() => {
-                                        // Check if this section is still the active one before applying theme
-                                        const currentSection = document.querySelector('[data-theme-section]:not(.u--hide)');
-                                        if (currentSection === section) {
-                                            const theme = section.getAttribute('data-theme-section');
-                                            console.log('[Theme] Fallback theme change after 3s:', theme);
-                                            this.set(theme);
-                                        } else {
-                                            console.log('[Theme] Fallback theme change cancelled - section no longer active');
-                                        }
-                                        this.delayedThemeTimeout = null;
-                                    }, 3000);
-                                } else {
-                                    // For regular text reveal animations
-                                    // Text reveal duration: 0.8s + stagger: 0.08s per line
-                                    const lineCount = self.trigger.querySelectorAll('[data-split="heading"]').length;
-                                    const delay = (0.8 + (lineCount * 0.08)) * 1000;
-                                    
-                                    console.log('[Theme] Delaying theme change for text reveal, delay:', delay + 'ms');
-                                    
-                                    this.delayedThemeTimeout = setTimeout(() => {
-                                        // Check if this section is still the active one before applying theme
-                                        const currentSection = document.querySelector('[data-theme-section]:not(.u--hide)');
-                                        if (currentSection === section) {
-                                            const theme = section.getAttribute('data-theme-section');
-                                            console.log('[Theme] Delayed theme change for text reveal:', theme);
-                                            this.set(theme);
-                                        } else {
-                                            console.log('[Theme] Delayed theme change cancelled - section no longer active');
-                                        }
-                                        this.delayedThemeTimeout = null;
-                                    }, delay);
-                                }
-                            } else {
-                                // Immediate theme change for sections without text reveal
-                                const theme = section.getAttribute('data-theme-section');
-                                console.log('[Theme] Immediate theme change:', theme);
-                                console.log('[Theme] Current theme before change:', this.current);
-                                this.set(theme);
-                                console.log('[Theme] Theme after change:', this.current);
-                            }
-                        },
-                        onLeave: (self) => {
-                            if (this.isTransitioning || this.locked) return;
-                            // Change theme when leaving section (scrolling down)
-                            const currentIndex = sectionsArray.indexOf(self.trigger);
-                            const nextSection = sectionsArray[currentIndex + 1];
-                            if (nextSection) {
-                                const nextTheme = nextSection.getAttribute('data-theme-section');
-                                console.log('[Theme] Scroll trigger onLeave, next theme:', nextTheme);
-                                this.set(nextTheme);
-                            }
-                        },
-                        onLeaveBack: (self) => {
-                            if (this.isTransitioning || this.locked) return;
-                            // Change theme when leaving section backwards (scrolling up)
-                            const currentIndex = sectionsArray.indexOf(self.trigger);
-                            const prevSection = sectionsArray[currentIndex - 1];
-                            if (prevSection) {
-                                const prevTheme = prevSection.getAttribute('data-theme-section');
-                                console.log('[Theme] Scroll trigger onLeaveBack, previous theme:', prevTheme);
-                                this.set(prevTheme);
-                            } else {
-                                // If we're at the first section and scrolling up, use the page default theme
-                                const currentNamespace = barba.current?.namespace || 'home';
-                                const pageConfig = this.pageConfigs[currentNamespace] || this.pageConfigs['home'];
-                                const defaultTheme = pageConfig.default;
-                                console.log('[Theme] Scroll trigger onLeaveBack, using page default theme:', defaultTheme);
-                                this.set(defaultTheme);
+                        start: 'top 20%', // Simple trigger point
+                        markers: false, // Disable markers for production
+                        onEnter: () => {
+                            if (!this.isTransitioning && !this.locked) {
+                                console.log(`[Theme] Section ${index} entered, changing to ${theme}`);
+                                this.set(theme, true);
                             }
                         }
                     });
+                    
+                    this.scrollTriggers.push(trigger);
                 });
             }
         },
