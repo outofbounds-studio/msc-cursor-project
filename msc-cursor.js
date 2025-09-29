@@ -510,10 +510,10 @@
                     scrollTrigger: {
                         trigger: ".split-text-scroll-trigger",
                         start: "top 15%",
-                        end: "+=250%",
+                        end: "+=100%", // Reduced from 250% to 100% for better timing
                         pin: true,
                         scrub: 1,
-                        markers: true // Enable markers for debugging
+                        markers: false // Disable markers for production
                     }
                 })
                 .set(split.chars, { color: "#bab9b9" })
