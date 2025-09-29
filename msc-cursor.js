@@ -395,6 +395,12 @@
                     clearTimeout(this.changeTimeout);
                 }
                 
+                // Clear any delayed theme callbacks
+                if (this.delayedThemeTimeout) {
+                    clearTimeout(this.delayedThemeTimeout);
+                    this.delayedThemeTimeout = null;
+                }
+                
                 // Store the pending change
                 this.pendingChange = { theme, animate };
                 
@@ -559,10 +565,17 @@
                                     checkPinnedStatus();
                                     
                                     // Fallback: force theme change after 3 seconds if still not detected
-                                    setTimeout(() => {
-                                        const theme = section.getAttribute('data-theme-section');
-                                        console.log('[Theme] Fallback theme change after 3s:', theme);
-                                        this.set(theme);
+                                    this.delayedThemeTimeout = setTimeout(() => {
+                                        // Check if this section is still the active one before applying theme
+                                        const currentSection = document.querySelector('[data-theme-section]:not(.u--hide)');
+                                        if (currentSection === section) {
+                                            const theme = section.getAttribute('data-theme-section');
+                                            console.log('[Theme] Fallback theme change after 3s:', theme);
+                                            this.set(theme);
+                                        } else {
+                                            console.log('[Theme] Fallback theme change cancelled - section no longer active');
+                                        }
+                                        this.delayedThemeTimeout = null;
                                     }, 3000);
                                 } else {
                                     // For regular text reveal animations
@@ -572,10 +585,17 @@
                                     
                                     console.log('[Theme] Delaying theme change for text reveal, delay:', delay + 'ms');
                                     
-                                    setTimeout(() => {
-                                        const theme = section.getAttribute('data-theme-section');
-                                        console.log('[Theme] Delayed theme change for text reveal:', theme);
-                                        this.set(theme);
+                                    this.delayedThemeTimeout = setTimeout(() => {
+                                        // Check if this section is still the active one before applying theme
+                                        const currentSection = document.querySelector('[data-theme-section]:not(.u--hide)');
+                                        if (currentSection === section) {
+                                            const theme = section.getAttribute('data-theme-section');
+                                            console.log('[Theme] Delayed theme change for text reveal:', theme);
+                                            this.set(theme);
+                                        } else {
+                                            console.log('[Theme] Delayed theme change cancelled - section no longer active');
+                                        }
+                                        this.delayedThemeTimeout = null;
                                     }, delay);
                                 }
                             } else {
