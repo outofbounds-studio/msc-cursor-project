@@ -496,7 +496,6 @@
     
         initSplitTextAnimation() {
             try {
-                const splitTextPluginUrl = "https://slater.app/13164/35586.js";
                 const targetText = document.querySelector("h2.h-display");
     
                 if (!targetText) {
@@ -504,24 +503,29 @@
                     return;
                 }
     
-                const split = new SplitText(targetText, { type: "chars" });
-    
-                const tl = gsap.timeline({
-                    scrollTrigger: {
-                        trigger: ".split-text-scroll-trigger",
-                        start: "top 15%",
-                        end: "+=100%", // Reduced from 250% to 100% for better timing
-                        pin: true,
-                        scrub: 1,
-                        markers: false // Disable markers for production
+                // Use Osmo's approach - simpler and more reliable
+                new SplitText(targetText, {
+                    type: "words, chars",
+                    autoSplit: true,
+                    onSplit(self) {
+                        let ctx = gsap.context(() => {
+                            let tl = gsap.timeline({
+                                scrollTrigger: {
+                                    scrub: true,
+                                    trigger: targetText, 
+                                    start: "top 90%",
+                                    end: "center 40%",
+                                }
+                            })
+                            tl.from(self.chars, {
+                                autoAlpha: 0.2,
+                                stagger: 0.1,
+                                ease: "linear"
+                            })
+                        });
+                        return ctx; // return our animations so GSAP can clean them up
                     }
-                })
-                .set(split.chars, { color: "#bab9b9" })
-                .to(split.chars, {
-                    color: "#161413",
-                    duration: 1,
-                    stagger: 0.1
-                });
+                });    
             } catch (error) {
                 utils.handleError('initSplitTextAnimation', error);
             }
