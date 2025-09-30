@@ -390,7 +390,7 @@
 
                     // Use different trigger points for footer vs regular sections
                     const isFooter = section.classList.contains('footer-contain') || triggerElement.classList.contains('footer');
-                    const triggerStart = isFooter ? 'top top' : 'top 50%';
+                    const triggerStart = isFooter ? 'top top' : 'top top';
                     
                     const trigger = ScrollTrigger.create({
                         trigger: triggerElement,
