@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scroll Sequence Animation Example</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #000;
+            color: #fff;
+        }
+        
+        .section {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+        
+        .section-1 {
+            background: #1a1a1a;
+        }
+        
+        .section-2 {
+            background: #2a2a2a;
+        }
+        
+        .scroll-sequence-section {
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .sequence-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        
+        .sequence-images {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        
+        .sequence-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 2rem;
+            border-radius: 10px;
+        }
+        
+        .section-4 {
+            background: #3a3a3a;
+        }
+    </style>
+</head>
+<body>
+    <!-- Regular section before sequence -->
+    <div class="section section-1">
+        <h1>Scroll down to see the animation</h1>
+    </div>
+    
+    <!-- Another regular section -->
+    <div class="section section-2">
+        <h2>Keep scrolling...</h2>
+    </div>
+    
+    <!-- Scroll sequence section -->
+    <div class="scroll-sequence-section" 
+         data-scroll-sequence
+         data-total-frames="341"
+         data-image-prefix="frame"
+         data-image-extension="png"
+         data-image-path="/images/sequence/">
+        
+        <div class="sequence-container">
+            <div class="sequence-images" data-sequence-images>
+                <!-- Images will be dynamically inserted here -->
+            </div>
+            
+            <div class="sequence-overlay">
+                <h3>Scroll to animate</h3>
+                <p>This section will pin and play through 341 frames as you scroll</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Regular section after sequence -->
+    <div class="section section-4">
+        <h2>Animation complete!</h2>
+    </div>
+
+    <!-- Include your existing scripts -->
+    <script src="msc-cursor.js"></script>
+</body>
+</html>

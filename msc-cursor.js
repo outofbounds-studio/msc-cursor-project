@@ -497,12 +497,12 @@
         initSplitTextAnimation() {
             try {
                 const targetText = document.querySelector("h2.h-display");
-    
+
                 if (!targetText) {
                     console.error("Target text elements not found");
                     return;
                 }
-    
+
                 // Use Osmo's approach - simpler and more reliable
                 new SplitText(targetText, {
                     type: "words, chars",
@@ -528,6 +528,132 @@
                 });    
             } catch (error) {
                 utils.handleError('initSplitTextAnimation', error);
+            }
+        },
+
+        initScrollSequenceAnimation() {
+            try {
+                const sequenceContainer = document.querySelector('[data-scroll-sequence]');
+                if (!sequenceContainer) {
+                    console.log('No scroll sequence container found');
+                    return;
+                }
+
+                const imageContainer = sequenceContainer.querySelector('[data-sequence-images]');
+                const totalFrames = parseInt(sequenceContainer.getAttribute('data-total-frames')) || 341;
+                const imagePrefix = sequenceContainer.getAttribute('data-image-prefix') || 'frame';
+                const imageExtension = sequenceContainer.getAttribute('data-image-extension') || 'png';
+                const imagePath = sequenceContainer.getAttribute('data-image-path') || '/images/sequence/';
+
+                if (!imageContainer) {
+                    console.error('Image container not found for scroll sequence');
+                    return;
+                }
+
+                console.log(`Initializing scroll sequence with ${totalFrames} frames`);
+
+                // Preload images for smooth playback with performance optimization
+                const preloadImages = () => {
+                    const images = [];
+                    const batchSize = 20; // Load images in batches to avoid blocking
+                    let currentBatch = 0;
+                    
+                    const loadBatch = () => {
+                        const startIndex = currentBatch * batchSize;
+                        const endIndex = Math.min(startIndex + batchSize, totalFrames);
+                        
+                        for (let i = startIndex; i < endIndex; i++) {
+                            const img = new Image();
+                            const frameNumber = String(i).padStart(4, '0');
+                            img.src = `${imagePath}${imagePrefix}_${frameNumber}.${imageExtension}`;
+                            img.loading = 'lazy'; // Use lazy loading for better performance
+                            images.push(img);
+                        }
+                        
+                        currentBatch++;
+                        if (endIndex < totalFrames) {
+                            // Load next batch after a short delay
+                            setTimeout(loadBatch, 50);
+                        }
+                    };
+                    
+                    loadBatch();
+                    return images;
+                };
+
+                // Create the main image element
+                const mainImage = document.createElement('img');
+                mainImage.style.width = '100%';
+                mainImage.style.height = '100%';
+                mainImage.style.objectFit = 'cover';
+                mainImage.style.display = 'block';
+                imageContainer.appendChild(mainImage);
+
+                // Preload images
+                const images = preloadImages();
+
+                // Set initial frame
+                const frameNumber = String(0).padStart(4, '0');
+                mainImage.src = `${imagePath}${imagePrefix}_${frameNumber}.${imageExtension}`;
+
+                // Create scroll trigger animation with performance optimization
+                const scrollTrigger = ScrollTrigger.create({
+                    trigger: sequenceContainer,
+                    start: "top top",
+                    end: `+=${totalFrames * 10}px`, // Adjust multiplier for scroll distance
+                    pin: true,
+                    scrub: 1,
+                    anticipatePin: 1, // Improve pin performance
+                    onUpdate: (self) => {
+                        const progress = self.progress;
+                        const frameIndex = Math.min(Math.floor(progress * totalFrames), totalFrames - 1);
+                        const frameNumber = String(frameIndex).padStart(4, '0');
+                        const newSrc = `${imagePath}${imagePrefix}_${frameNumber}.${imageExtension}`;
+                        
+                        // Only update if the frame has actually changed
+                        if (mainImage.src !== newSrc) {
+                            mainImage.src = newSrc;
+                        }
+                    },
+                    onComplete: () => {
+                        console.log('Scroll sequence animation completed');
+                    },
+                    onRefresh: () => {
+                        console.log('Scroll sequence trigger refreshed');
+                    }
+                });
+
+                // Store reference for cleanup
+                sequenceContainer._scrollSequenceTrigger = scrollTrigger;
+                sequenceContainer._scrollSequenceImages = images;
+
+                console.log('Scroll sequence animation initialized successfully');
+
+            } catch (error) {
+                utils.handleError('initScrollSequenceAnimation', error);
+            }
+        },
+
+        cleanupScrollSequence() {
+            try {
+                const sequenceContainers = document.querySelectorAll('[data-scroll-sequence]');
+                sequenceContainers.forEach(container => {
+                    if (container._scrollSequenceTrigger) {
+                        container._scrollSequenceTrigger.kill();
+                        container._scrollSequenceTrigger = null;
+                    }
+                    if (container._scrollSequenceImages) {
+                        container._scrollSequenceImages = null;
+                    }
+                    // Remove the dynamically created image
+                    const imageContainer = container.querySelector('[data-sequence-images]');
+                    if (imageContainer) {
+                        imageContainer.innerHTML = '';
+                    }
+                });
+                console.log('Scroll sequence cleanup completed');
+            } catch (error) {
+                utils.handleError('cleanupScrollSequence', error);
             }
         }
     };
@@ -1579,6 +1705,7 @@
                 components.initTabSystem();
                 components.initCustomCursor();
                 animations.initSplitTextAnimation();
+                animations.initScrollSequenceAnimation();
                 initScrambleText();
                 initHeroParallax();
             },
@@ -1592,6 +1719,8 @@
                         heading._splitText = null;
                     }
                 });
+                // Clean up scroll sequence
+                animations.cleanupScrollSequence();
             }
         },
         about: {
