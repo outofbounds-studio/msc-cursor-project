@@ -1743,6 +1743,7 @@
                 console.log('[Barba] next namespace:', nextNamespace);
                 components.initCustomCursor();
                 animations.initSplitTextAnimation();
+                components.initTestimonial();
                 initScrambleText();
                 
                 // Initialize Multi Filter System
