@@ -280,6 +280,13 @@
         // Scaling Hamburger Navigation (data-attribute based)
         initScalingHamburgerNavigation() {
             try {
+                const closeMenu = () => {
+                    const navStatusEl = document.querySelector('[data-navigation-status]');
+                    if (!navStatusEl) return;
+                    navStatusEl.setAttribute('data-navigation-status', 'not-active');
+                    if (window.lenis) window.lenis.start();
+                };
+
                 // Toggle Navigation
                 document.querySelectorAll('[data-navigation-toggle="toggle"]').forEach(toggleBtn => {
                     toggleBtn.addEventListener('click', () => {
@@ -296,10 +303,7 @@
                 // Close Navigation
                 document.querySelectorAll('[data-navigation-toggle="close"]').forEach(closeBtn => {
                     closeBtn.addEventListener('click', () => {
-                        const navStatusEl = document.querySelector('[data-navigation-status]');
-                        if (!navStatusEl) return;
-                        navStatusEl.setAttribute('data-navigation-status', 'not-active');
-                        if (window.lenis) window.lenis.start();
+                        closeMenu();
                     });
                 });
 
@@ -308,12 +312,25 @@
                     if (e.keyCode === 27) {
                         const navStatusEl = document.querySelector('[data-navigation-status]');
                         if (!navStatusEl) return;
-                        if (navStatusEl.getAttribute('data-navigation-status') === 'active') {
-                            navStatusEl.setAttribute('data-navigation-status', 'not-active');
-                            if (window.lenis) window.lenis.start();
-                        }
+                        if (navStatusEl.getAttribute('data-navigation-status') === 'active') closeMenu();
                     }
                 });
+
+                // Close on any menu link click (works with Barba)
+                const navRoot = document.querySelector('[data-navigation-status]');
+                if (navRoot) {
+                    navRoot.addEventListener('click', (e) => {
+                        const link = e.target.closest('a');
+                        if (!link) return;
+                        // Only close if clicking inside the nav
+                        if (navRoot.contains(link)) closeMenu();
+                    });
+                }
+
+                // Also close before Barba transition begins
+                if (window.barba && window.barba.hooks) {
+                    barba.hooks.before(() => closeMenu());
+                }
             } catch (error) {
                 this.handleError('initScalingHamburgerNavigation', error);
             }
