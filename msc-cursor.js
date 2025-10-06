@@ -395,7 +395,7 @@
                     const trigger = ScrollTrigger.create({
                         trigger: triggerElement,
                         start: triggerStart, // Trigger when section top reaches offset
-                        end: 'bottom top', // Keep active until section bottom hits top (accounts for pinning)
+                        end: isFooter ? 'top top' : 'bottom top', // Footer will switch only when its top reaches top
                         anticipatePin: 1,
                         markers: false, // Disable markers for production
                         onEnter: () => {
@@ -640,30 +640,14 @@
                         }
                     },
                     onLeave: () => {
-                        // Exiting pinned section scrolling down: set next section theme immediately
-                        const parentSection = sequenceContainer.closest('[data-theme-section]');
-                        if (!parentSection) return;
-                        const sections = Array.from(document.querySelectorAll('[data-theme-section]'));
-                        const idx = sections.indexOf(parentSection);
-                        const next = sections[idx + 1];
-                        if (next) {
-                            const t = next.getAttribute('data-theme-section');
-                            try { utils.theme.locked = false; } catch (e) {}
-                            try { utils.theme.set(t, true); } catch (e) {}
-                        }
+                        // Exiting pinned section scrolling down: just unlock and refresh triggers; let next section trigger decide timing
+                        try { utils.theme.locked = false; } catch (e) {}
+                        try { ScrollTrigger.refresh(); } catch (e) {}
                     },
                     onLeaveBack: () => {
-                        // Exiting pinned section scrolling up: set previous section theme immediately
-                        const parentSection = sequenceContainer.closest('[data-theme-section]');
-                        if (!parentSection) return;
-                        const sections = Array.from(document.querySelectorAll('[data-theme-section]'));
-                        const idx = sections.indexOf(parentSection);
-                        const prev = sections[idx - 1];
-                        if (prev) {
-                            const t = prev.getAttribute('data-theme-section');
-                            try { utils.theme.locked = false; } catch (e) {}
-                            try { utils.theme.set(t, true); } catch (e) {}
-                        }
+                        // Exiting pinned section scrolling up: just unlock and refresh triggers
+                        try { utils.theme.locked = false; } catch (e) {}
+                        try { ScrollTrigger.refresh(); } catch (e) {}
                     }
                 });
 
