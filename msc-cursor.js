@@ -394,7 +394,9 @@
                     
                     const trigger = ScrollTrigger.create({
                         trigger: triggerElement,
-                        start: triggerStart, // Later trigger for footer, earlier for regular sections
+                        start: triggerStart, // Trigger when section top reaches offset
+                        end: 'bottom top', // Keep active until section bottom hits top (accounts for pinning)
+                        anticipatePin: 1,
                         markers: false, // Disable markers for production
                         onEnter: () => {
                             if (!this.isTransitioning && !this.locked) {
