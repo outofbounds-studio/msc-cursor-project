@@ -624,6 +624,20 @@
                     },
                     onRefresh: () => {
                         console.log('Scroll sequence trigger refreshed');
+                    },
+                    onToggle: (self) => {
+                        // While the pinned sequence is active, lock the theme to the parent section's theme
+                        const parentSection = sequenceContainer.closest('[data-theme-section]');
+                        if (!parentSection) return;
+                        const sectionTheme = parentSection.getAttribute('data-theme-section');
+                        if (self.isActive) {
+                            // Entered pinned region: force and lock theme
+                            try { utils.theme.set(sectionTheme, true); } catch (e) {}
+                            try { utils.theme.locked = true; } catch (e) {}
+                        } else {
+                            // Exited pinned region: unlock to allow next triggers
+                            try { utils.theme.locked = false; } catch (e) {}
+                        }
                     }
                 });
 
