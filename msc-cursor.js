@@ -638,6 +638,32 @@
                             // Exited pinned region: unlock to allow next triggers
                             try { utils.theme.locked = false; } catch (e) {}
                         }
+                    },
+                    onLeave: () => {
+                        // Exiting pinned section scrolling down: set next section theme immediately
+                        const parentSection = sequenceContainer.closest('[data-theme-section]');
+                        if (!parentSection) return;
+                        const sections = Array.from(document.querySelectorAll('[data-theme-section]'));
+                        const idx = sections.indexOf(parentSection);
+                        const next = sections[idx + 1];
+                        if (next) {
+                            const t = next.getAttribute('data-theme-section');
+                            try { utils.theme.locked = false; } catch (e) {}
+                            try { utils.theme.set(t, true); } catch (e) {}
+                        }
+                    },
+                    onLeaveBack: () => {
+                        // Exiting pinned section scrolling up: set previous section theme immediately
+                        const parentSection = sequenceContainer.closest('[data-theme-section]');
+                        if (!parentSection) return;
+                        const sections = Array.from(document.querySelectorAll('[data-theme-section]'));
+                        const idx = sections.indexOf(parentSection);
+                        const prev = sections[idx - 1];
+                        if (prev) {
+                            const t = prev.getAttribute('data-theme-section');
+                            try { utils.theme.locked = false; } catch (e) {}
+                            try { utils.theme.set(t, true); } catch (e) {}
+                        }
                     }
                 });
 
