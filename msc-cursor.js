@@ -497,12 +497,12 @@
         initSplitTextAnimation() {
             try {
                 const targetText = document.querySelector("h2.h-display");
-
+    
                 if (!targetText) {
                     console.error("Target text elements not found");
                     return;
                 }
-
+    
                 // Use Osmo's approach - simpler and more reliable
                 new SplitText(targetText, {
                     type: "words, chars",
@@ -510,7 +510,7 @@
                     onSplit(self) {
                         let ctx = gsap.context(() => {
                             let tl = gsap.timeline({
-                                scrollTrigger: {
+                    scrollTrigger: {
                                     scrub: true,
                                     trigger: targetText, 
                                     start: "top 60%",
@@ -525,7 +525,7 @@
                         });
                         return ctx; // return our animations so GSAP can clean them up
                     }
-                });    
+                });
             } catch (error) {
                 utils.handleError('initSplitTextAnimation', error);
             }
@@ -587,6 +587,8 @@
                 mainImage.style.height = '100%';
                 mainImage.style.objectFit = 'cover';
                 mainImage.style.display = 'block';
+                mainImage.style.imageRendering = 'crisp-edges'; // Prevent blur during frame changes
+                mainImage.style.willChange = 'contents'; // Optimize for frequent updates
                 imageContainer.appendChild(mainImage);
 
                 // Preload images
@@ -600,9 +602,9 @@
                 const scrollTrigger = ScrollTrigger.create({
                     trigger: sequenceContainer,
                     start: "top top",
-                    end: `+=${totalFrames * 10}px`, // Adjust multiplier for scroll distance
+                    end: `+=${totalFrames * 15}px`, // Increased multiplier for smoother scrolling
                     pin: true,
-                    scrub: 1,
+                    scrub: 0.5, // Smoother scrub (was 1)
                     anticipatePin: 1, // Improve pin performance
                     onUpdate: (self) => {
                         const progress = self.progress;
