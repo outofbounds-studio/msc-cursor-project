@@ -94,6 +94,8 @@
         
         // Initialize Aker-style menu system now that GSAP is available
         initAkerMenuBasic(); // Basic menu without GSAP animations
+        // Initialize scaling hamburger navigation (data-attribute driven)
+        utils.initScalingHamburgerNavigation();
         
         console.log('Initializing Lenis...');
         utils.lenis.init();
@@ -273,6 +275,48 @@
         // Error Handler
         handleError(component, error) {
             console.error(`Error in ${component}:`, error);
+        },
+
+        // Scaling Hamburger Navigation (data-attribute based)
+        initScalingHamburgerNavigation() {
+            try {
+                // Toggle Navigation
+                document.querySelectorAll('[data-navigation-toggle="toggle"]').forEach(toggleBtn => {
+                    toggleBtn.addEventListener('click', () => {
+                        const navStatusEl = document.querySelector('[data-navigation-status]');
+                        if (!navStatusEl) return;
+                        const isActive = navStatusEl.getAttribute('data-navigation-status') === 'active';
+                        navStatusEl.setAttribute('data-navigation-status', isActive ? 'not-active' : 'active');
+                        if (window.lenis) {
+                            isActive ? window.lenis.start() : window.lenis.stop();
+                        }
+                    });
+                });
+
+                // Close Navigation
+                document.querySelectorAll('[data-navigation-toggle="close"]').forEach(closeBtn => {
+                    closeBtn.addEventListener('click', () => {
+                        const navStatusEl = document.querySelector('[data-navigation-status]');
+                        if (!navStatusEl) return;
+                        navStatusEl.setAttribute('data-navigation-status', 'not-active');
+                        if (window.lenis) window.lenis.start();
+                    });
+                });
+
+                // Key ESC - Close Navigation
+                document.addEventListener('keydown', e => {
+                    if (e.keyCode === 27) {
+                        const navStatusEl = document.querySelector('[data-navigation-status]');
+                        if (!navStatusEl) return;
+                        if (navStatusEl.getAttribute('data-navigation-status') === 'active') {
+                            navStatusEl.setAttribute('data-navigation-status', 'not-active');
+                            if (window.lenis) window.lenis.start();
+                        }
+                    }
+                });
+            } catch (error) {
+                this.handleError('initScalingHamburgerNavigation', error);
+            }
         },
 
         // Theme Manager - Simple, Robust, Reliable
