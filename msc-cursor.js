@@ -395,7 +395,7 @@
                     const trigger = ScrollTrigger.create({
                         trigger: triggerElement,
                         start: triggerStart, // Trigger when section top reaches offset
-                        end: isFooter ? 'top top' : 'bottom top', // Footer will switch only when its top reaches top
+                        end: 'bottom top', // Keep active until section bottom hits top (works consistently across pages)
                         anticipatePin: 1,
                         markers: false, // Disable markers for production
                         onEnter: () => {
