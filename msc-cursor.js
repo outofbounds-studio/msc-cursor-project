@@ -661,6 +661,23 @@
                 const frameNumber = String(0).padStart(4, '0');
                 mainImage.src = `${imagePath}${imagePrefix}_${frameNumber}.${imageExtension}`;
 
+                // === Annotations setup (optional) ===
+                const annotations = Array.from(sequenceContainer.querySelectorAll('.annotation'));
+                annotations.forEach((annotation) => {
+                    const line = annotation.querySelector('.annotation-line');
+                    const label = annotation.querySelector('.annotation-label');
+                    const description = annotation.querySelector('.annotation-description');
+                    // Initial states
+                    if (line) gsap.set(line, { width: 0 });
+                    if (label) gsap.set(label, { yPercent: 100 });
+                    if (description) gsap.set(description, { yPercent: 100 });
+                    gsap.set(annotation, { autoAlpha: 0 });
+                    const tl = gsap.timeline({ paused: true });
+                    if (line) tl.to(line, { width: '100%', duration: 0.3, ease: 'power2.out' });
+                    tl.to([label, description].filter(Boolean), { yPercent: 0, duration: 0.4, stagger: 0.12, ease: 'power2.out' }, '-=0.15');
+                    annotation._annotationTimeline = tl;
+                });
+
                 // Create scroll trigger animation with performance optimization
                 const scrollTrigger = ScrollTrigger.create({
                     trigger: sequenceContainer,
@@ -678,6 +695,26 @@
                         // Only update if the frame has actually changed
                         if (mainImage.src !== newSrc) {
                             mainImage.src = newSrc;
+                        }
+
+                        // Drive annotations by frame window
+                        if (annotations.length) {
+                            annotations.forEach((annotation) => {
+                                const startFrame = parseInt(annotation.getAttribute('data-annotation-start')) || 0;
+                                const endFrame = parseInt(annotation.getAttribute('data-annotation-end')) || totalFrames;
+                                // Map frameIndex into 0..1 between start and end
+                                const annProgress = gsap.utils.clamp(0, 1, gsap.utils.normalize(startFrame, endFrame, frameIndex));
+                                if (frameIndex >= startFrame && frameIndex <= endFrame) {
+                                    gsap.set(annotation, { autoAlpha: 1 });
+                                    if (annotation._annotationTimeline) annotation._annotationTimeline.progress(annProgress);
+                                } else if (frameIndex < startFrame) {
+                                    gsap.set(annotation, { autoAlpha: 0 });
+                                    if (annotation._annotationTimeline) annotation._annotationTimeline.progress(0);
+                                } else if (frameIndex > endFrame) {
+                                    gsap.set(annotation, { autoAlpha: 1 });
+                                    if (annotation._annotationTimeline) annotation._annotationTimeline.progress(1);
+                                }
+                            });
                         }
                     },
                     onComplete: () => {
