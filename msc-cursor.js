@@ -738,7 +738,21 @@
                     ensureMaskFor(label, 'annotation-mask-label');
                     descriptionEls.forEach(el => ensureMaskFor(el, 'annotation-mask-desc'));
 
-                    // Determine mask height: from data-annotation-mask or measured content
+                    // Set individual mask heights if specified
+                    const labelMaskHeight = annotation.getAttribute('data-annotation-mask-label');
+                    const descMaskHeight = annotation.getAttribute('data-annotation-mask-desc');
+                    
+                    if (labelMaskHeight && /^\d+$/.test(labelMaskHeight)) {
+                        const labelMask = textWrap.querySelector('.annotation-mask-label');
+                        if (labelMask) labelMask.style.height = `${labelMaskHeight}px`;
+                    }
+                    
+                    if (descMaskHeight && /^\d+$/.test(descMaskHeight)) {
+                        const descMasks = textWrap.querySelectorAll('.annotation-mask-desc');
+                        descMasks.forEach(mask => mask.style.height = `${descMaskHeight}px`);
+                    }
+
+                    // Determine overall textWrap height: from data-annotation-mask or measured content
                     let maskHeightAttr = annotation.getAttribute('data-annotation-mask');
                     if (maskHeightAttr && /^\d+$/.test(maskHeightAttr)) maskHeightAttr = `${maskHeightAttr}px`;
                     if (maskHeightAttr) {
