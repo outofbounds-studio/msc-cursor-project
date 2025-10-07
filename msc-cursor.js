@@ -759,33 +759,35 @@
                     anticipatePin: 1, // Improve pin performance
                     onUpdate: (self) => {
                         const progress = self.progress; // continuous 0..1
-                        // Map scroll progress to frame index with optional pause plateau
-                        let frameIndex = Math.min(Math.floor(progress * totalFrames), totalFrames - 1);
-                        const pauseStartAttr = sequenceContainer.getAttribute('data-sequence-hold-start'); // frame to begin pause mapping
-                        const pauseFrameAttr = sequenceContainer.getAttribute('data-sequence-hold-frame'); // frame to display during pause
-                        const pauseLenAttr = sequenceContainer.getAttribute('data-sequence-pause');        // 0..0.5 portion of section
-                        if (pauseStartAttr !== null && (pauseFrameAttr !== null || pauseLenAttr !== null)) {
-                            const startFrame = Math.max(0, parseInt(pauseStartAttr));
-                            const holdFrame = pauseFrameAttr !== null ? Math.max(0, parseInt(pauseFrameAttr)) : startFrame;
-                            const pauseLen = Math.min(Math.max(parseFloat(pauseLenAttr ?? '0.12'), 0), 0.6); // default 12%
-                            if (!Number.isNaN(startFrame) && !Number.isNaN(holdFrame) && pauseLen > 0) {
-                                const pStart = startFrame / totalFrames;
-                                const pPauseEnd = Math.min(1, pStart + pauseLen);
-                                if (progress < pStart) {
-                                    // Segment A: 0..pStart maps to frames 0..startFrame
-                                    const local = pStart > 0 ? progress / pStart : 0;
-                                    frameIndex = Math.min(Math.floor(local * startFrame), totalFrames - 1);
-                                } else if (progress <= pPauseEnd) {
-                                    // Segment B: plateau; hold on a specific frame
-                                    frameIndex = Math.min(holdFrame, totalFrames - 1);
-                                } else {
-                                    // Segment C: remaining progress maps to remaining frames smoothly
-                                    const remainingFrames = totalFrames - startFrame - 1;
-                                    const denom = 1 - pPauseEnd;
-                                    const local = denom > 0 ? (progress - pPauseEnd) / denom : 1;
-                                    frameIndex = startFrame + Math.min(Math.floor(local * remainingFrames), remainingFrames);
-                                }
+                        // Map scroll progress to frame index with optional one or more pause plateaus
+                        // Supports suffixless and -2, -3 variants for multiple holds
+                        const readHold = (suffix) => {
+                            const s = sequenceContainer.getAttribute(`data-sequence-hold-start${suffix}`);
+                            if (s === null) return null;
+                            const f = sequenceContainer.getAttribute(`data-sequence-hold-frame${suffix}`);
+                            const l = sequenceContainer.getAttribute(`data-sequence-pause${suffix}`);
+                            const startFrame = Math.max(0, parseInt(s));
+                            const holdFrame = f !== null ? Math.max(0, parseInt(f)) : startFrame;
+                            const len = l !== null ? Math.min(Math.max(parseFloat(l), 0), 0.6) : 0.12; // default 12%
+                            if (Number.isNaN(startFrame) || Number.isNaN(holdFrame) || len <= 0) return null;
+                            return { startFrame, holdFrame, len, pStart: startFrame / totalFrames };
+                        };
+                        const holds = [readHold(''), readHold('-2'), readHold('-3')].filter(Boolean).sort((a,b)=>a.startFrame-b.startFrame);
+                        let frameIndex;
+                        if (holds.length) {
+                            const totalPauseAll = holds.reduce((s,h)=> s + h.len, 0);
+                            const inHold = holds.find(h => progress >= h.pStart && progress <= Math.min(1, h.pStart + h.len));
+                            if (inHold) {
+                                frameIndex = Math.min(inHold.holdFrame, totalFrames - 1);
+                            } else {
+                                const totalPauseBefore = holds.reduce((s,h)=> s + (progress > Math.min(1, h.pStart + h.len) ? h.len : 0), 0);
+                                const denom = Math.max(0.0001, 1 - totalPauseAll);
+                                const pCompressed = Math.min(Math.max(progress - totalPauseBefore, 0), denom);
+                                const norm = pCompressed / denom;
+                                frameIndex = Math.min(Math.floor(norm * totalFrames), totalFrames - 1);
                             }
+                        } else {
+                            frameIndex = Math.min(Math.floor(progress * totalFrames), totalFrames - 1);
                         }
                         const frameNumber = String(frameIndex).padStart(4, '0');
                         const newSrc = `${imagePath}${imagePrefix}_${frameNumber}.${imageExtension}`;
