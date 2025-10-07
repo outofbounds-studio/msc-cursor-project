@@ -765,7 +765,7 @@
                         // Allow layout to update then read height
                         const naturalHeight = textWrap.scrollHeight || measureTargets.reduce((h, el) => h + (el.offsetHeight || 0), 0);
                         gsap.set(textWrap, { height: naturalHeight });
-                        gsap.set(measureTargets, { yPercent: 100, visibility: 'inherit' });
+                        gsap.set(measureTargets, { yPercent: 120, visibility: 'inherit' });
                     }
 
                     // Initial states
