@@ -809,7 +809,10 @@
                                 const fadeStartP = fadeFrame !== null ? (Math.max(0, fadeFrame - fadeWin) / totalFrames) : null;
                                 const fadeEndP = fadeFrame !== null ? (Math.max(0, fadeFrame) / totalFrames) : null;
 
-                                if (progress >= startP && progress <= endP) {
+                                // Keep visible until fadeEnd if provided (even if endP < fadeEndP)
+                                const showEndP = fadeEndP !== null ? Math.max(endP, fadeEndP) : endP;
+
+                                if (progress >= startP && progress <= showEndP) {
                                     if (annotation._annotationTimeline) annotation._annotationTimeline.progress(annProgress);
                                     // Opacity calculation
                                     let opacity = 1;
@@ -823,7 +826,7 @@
                                 } else if (progress < startP) {
                                     gsap.set(annotation, { autoAlpha: 0 });
                                     if (annotation._annotationTimeline) annotation._annotationTimeline.progress(0);
-                                } else if (progress > endP) {
+                                } else if (progress > showEndP) {
                                     gsap.set(annotation, { autoAlpha: 0 });
                                     if (annotation._annotationTimeline) annotation._annotationTimeline.progress(1);
                                 }
