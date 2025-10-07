@@ -731,7 +731,8 @@
                         mask.appendChild(el);
                         const h = el.offsetHeight || 0;
                         mask.style.height = `${h}px`;
-                        gsap.set(el, { yPercent: prevYP ?? 120, visibility: 'inherit' });
+                        // Always set to 120 for proper reveal animation, regardless of previous value
+                        gsap.set(el, { yPercent: 120, visibility: 'inherit' });
                         return mask;
                     };
 
