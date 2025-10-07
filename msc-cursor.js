@@ -664,17 +664,53 @@
                 // === Annotations setup (optional) ===
                 const annotations = Array.from(sequenceContainer.querySelectorAll('.annotation'));
                 annotations.forEach((annotation) => {
-                    const line = annotation.querySelector('.annotation-line');
+                    // Ensure absolute positioning so they can overlay the sequence
+                    gsap.set(annotation, { position: 'absolute', pointerEvents: 'none' });
+                    // Authoring position via data attributes (px, %, etc.)
+                    const posX = annotation.getAttribute('data-annotation-x');
+                    const posY = annotation.getAttribute('data-annotation-y');
+                    if (posX !== null) gsap.set(annotation, { left: posX });
+                    if (posY !== null) gsap.set(annotation, { top: posY });
+
+                    // Line element (create if missing)
+                    let line = annotation.querySelector('.annotation-line');
+                    if (!line) {
+                        line = document.createElement('div');
+                        line.className = 'annotation-line';
+                        annotation.prepend(line);
+                    }
+                    // Default line styling if not provided via CSS
+                    gsap.set(line, {
+                        position: 'absolute',
+                        height: 1,
+                        backgroundColor: 'currentColor',
+                        transformOrigin: 'left center',
+                        top: 0,
+                        left: 0
+                    });
+
+                    // Text elements
                     const label = annotation.querySelector('.annotation-label');
-                    const description = annotation.querySelector('.annotation-description');
+                    let descriptionEls = [];
+                    const textWrap = annotation.querySelector('.annotation-text');
+                    if (textWrap) {
+                        descriptionEls = Array.from(textWrap.children).filter(el => el !== label);
+                    }
+                    if (!descriptionEls.length) {
+                        const desc = annotation.querySelector('.annotation-description');
+                        if (desc) descriptionEls = [desc];
+                    }
+
                     // Initial states
-                    if (line) gsap.set(line, { width: 0 });
+                    gsap.set(line, { width: 0 });
                     if (label) gsap.set(label, { yPercent: 100 });
-                    if (description) gsap.set(description, { yPercent: 100 });
+                    if (descriptionEls.length) gsap.set(descriptionEls, { yPercent: 100 });
                     gsap.set(annotation, { autoAlpha: 0 });
                     const tl = gsap.timeline({ paused: true });
-                    if (line) tl.to(line, { width: '100%', duration: 0.3, ease: 'power2.out' });
-                    tl.to([label, description].filter(Boolean), { yPercent: 0, duration: 0.4, stagger: 0.12, ease: 'power2.out' }, '-=0.15');
+                    // Line length: data-annotation-line sets target width (px or %), default 180px
+                    const targetLine = annotation.getAttribute('data-annotation-line') || '180px';
+                    tl.to(line, { width: targetLine, duration: 0.3, ease: 'power2.out' });
+                    tl.to([label, ...descriptionEls].filter(Boolean), { yPercent: 0, duration: 0.4, stagger: 0.12, ease: 'power2.out' }, '-=0.15');
                     annotation._annotationTimeline = tl;
                 });
 
