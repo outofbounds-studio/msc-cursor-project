@@ -755,18 +755,31 @@
                     anticipatePin: 1, // Improve pin performance
                     onUpdate: (self) => {
                         const progress = self.progress; // continuous 0..1
+                        // Map scroll progress to frame index with optional pause plateau
                         let frameIndex = Math.min(Math.floor(progress * totalFrames), totalFrames - 1);
-                        // Optional HOLD window (pause sequence between frame A and B)
-                        const holdStartAttr = sequenceContainer.getAttribute('data-sequence-hold-start');
-                        const holdEndAttr = sequenceContainer.getAttribute('data-sequence-hold-end');
-                        const holdFrameAttr = sequenceContainer.getAttribute('data-sequence-hold-frame');
-                        if (holdStartAttr !== null && holdEndAttr !== null) {
-                            const holdStart = parseInt(holdStartAttr);
-                            const holdEnd = parseInt(holdEndAttr);
-                            const holdFrame = holdFrameAttr !== null ? parseInt(holdFrameAttr) : holdStart;
-                            if (!Number.isNaN(holdStart) && !Number.isNaN(holdEnd) && holdEnd >= holdStart) {
-                                if (frameIndex >= holdStart && frameIndex <= holdEnd) {
-                                    frameIndex = Math.min(Math.max(holdFrame, 0), totalFrames - 1);
+                        const pauseStartAttr = sequenceContainer.getAttribute('data-sequence-hold-start'); // frame to begin pause mapping
+                        const pauseFrameAttr = sequenceContainer.getAttribute('data-sequence-hold-frame'); // frame to display during pause
+                        const pauseLenAttr = sequenceContainer.getAttribute('data-sequence-pause');        // 0..0.5 portion of section
+                        if (pauseStartAttr !== null && (pauseFrameAttr !== null || pauseLenAttr !== null)) {
+                            const startFrame = Math.max(0, parseInt(pauseStartAttr));
+                            const holdFrame = pauseFrameAttr !== null ? Math.max(0, parseInt(pauseFrameAttr)) : startFrame;
+                            const pauseLen = Math.min(Math.max(parseFloat(pauseLenAttr ?? '0.12'), 0), 0.6); // default 12%
+                            if (!Number.isNaN(startFrame) && !Number.isNaN(holdFrame) && pauseLen > 0) {
+                                const pStart = startFrame / totalFrames;
+                                const pPauseEnd = Math.min(1, pStart + pauseLen);
+                                if (progress < pStart) {
+                                    // Segment A: 0..pStart maps to frames 0..startFrame
+                                    const local = pStart > 0 ? progress / pStart : 0;
+                                    frameIndex = Math.min(Math.floor(local * startFrame), totalFrames - 1);
+                                } else if (progress <= pPauseEnd) {
+                                    // Segment B: plateau; hold on a specific frame
+                                    frameIndex = Math.min(holdFrame, totalFrames - 1);
+                                } else {
+                                    // Segment C: remaining progress maps to remaining frames smoothly
+                                    const remainingFrames = totalFrames - startFrame - 1;
+                                    const denom = 1 - pPauseEnd;
+                                    const local = denom > 0 ? (progress - pPauseEnd) / denom : 1;
+                                    frameIndex = startFrame + Math.min(Math.floor(local * remainingFrames), remainingFrames);
                                 }
                             }
                         }
