@@ -689,7 +689,7 @@
                         left: 0
                     });
 
-                    // Text elements - clean approach
+                    // Text elements - clean approach with proper spacing
                     const label = annotation.querySelector('.annotation-label');
                     const descriptionEls = Array.from(annotation.querySelectorAll('.annotation-description'));
                     
@@ -703,14 +703,31 @@
                         mask.remove();
                     });
                     
-                    // Remove any existing text wrapper and restore original structure
-                    const existingTextWrap = annotation.querySelector('.annotation-text');
-                    if (existingTextWrap) {
-                        const children = Array.from(existingTextWrap.children);
-                        children.forEach(child => {
-                            existingTextWrap.parentNode.insertBefore(child, existingTextWrap);
-                        });
-                        existingTextWrap.remove();
+                    // Ensure we have a text wrapper for proper spacing (but keep it simple)
+                    let textWrap = annotation.querySelector('.annotation-text');
+                    if (!textWrap) {
+                        textWrap = document.createElement('div');
+                        textWrap.className = 'annotation-text';
+                        annotation.appendChild(textWrap);
+                    }
+                    
+                    // Move text elements into the wrapper if they're not already there
+                    [label, ...descriptionEls].filter(Boolean).forEach(el => {
+                        if (el && el.parentElement !== textWrap) {
+                            textWrap.appendChild(el);
+                        }
+                    });
+                    
+                    // Set up the text wrapper for proper spacing (no complex masking)
+                    gsap.set(textWrap, { 
+                        position: 'relative', 
+                        display: 'block',
+                        marginTop: '10px' // Add spacing between line and text
+                    });
+                    
+                    // Add spacing between label and description
+                    if (label && descriptionEls.length) {
+                        gsap.set(descriptionEls[0], { marginTop: '4px' });
                     }
 
                     // Initial states - simple approach
