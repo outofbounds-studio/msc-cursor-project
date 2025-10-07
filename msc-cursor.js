@@ -703,29 +703,18 @@
                         if (desc) descriptionEls = [desc];
                     }
 
-                    // Ensure a top-level container exists (for layout), then wrap EACH line in its own mask
+                    // Ensure a masking wrapper exists and acts as the mask (simple approach)
                     if (!textWrap) {
                         textWrap = document.createElement('div');
                         textWrap.className = 'annotation-text';
                         annotation.appendChild(textWrap);
                     }
-                    gsap.set(textWrap, { position: 'relative' });
-
-                    const ensureMaskedLine = (el) => {
-                        if (!el) return null;
-                        // if already wrapped with .annotation-mask, keep it
-                        if (el.parentElement && el.parentElement.classList.contains('annotation-mask')) return el;
-                        const mask = document.createElement('div');
-                        mask.className = 'annotation-mask';
-                        mask.style.overflow = 'hidden';
-                        mask.style.display = 'block';
-                        textWrap.appendChild(mask);
-                        mask.appendChild(el);
-                        return el;
-                    };
-
-                    ensureMaskedLine(label);
-                    descriptionEls.forEach(el => ensureMaskedLine(el));
+                    // Move elements into the mask wrapper
+                    [label, ...descriptionEls].filter(Boolean).forEach(el => {
+                        if (el && el.parentElement !== textWrap) textWrap.appendChild(el);
+                    });
+                    // Apply mask behavior to wrapper
+                    gsap.set(textWrap, { overflow: 'hidden', position: 'relative', display: 'block' });
 
                     // Initial states
                     gsap.set(line, { width: 0 });
