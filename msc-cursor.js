@@ -755,7 +755,21 @@
                     anticipatePin: 1, // Improve pin performance
                     onUpdate: (self) => {
                         const progress = self.progress; // continuous 0..1
-                        const frameIndex = Math.min(Math.floor(progress * totalFrames), totalFrames - 1);
+                        let frameIndex = Math.min(Math.floor(progress * totalFrames), totalFrames - 1);
+                        // Optional HOLD window (pause sequence between frame A and B)
+                        const holdStartAttr = sequenceContainer.getAttribute('data-sequence-hold-start');
+                        const holdEndAttr = sequenceContainer.getAttribute('data-sequence-hold-end');
+                        const holdFrameAttr = sequenceContainer.getAttribute('data-sequence-hold-frame');
+                        if (holdStartAttr !== null && holdEndAttr !== null) {
+                            const holdStart = parseInt(holdStartAttr);
+                            const holdEnd = parseInt(holdEndAttr);
+                            const holdFrame = holdFrameAttr !== null ? parseInt(holdFrameAttr) : holdStart;
+                            if (!Number.isNaN(holdStart) && !Number.isNaN(holdEnd) && holdEnd >= holdStart) {
+                                if (frameIndex >= holdStart && frameIndex <= holdEnd) {
+                                    frameIndex = Math.min(Math.max(holdFrame, 0), totalFrames - 1);
+                                }
+                            }
+                        }
                         const frameNumber = String(frameIndex).padStart(4, '0');
                         const newSrc = `${imagePath}${imagePrefix}_${frameNumber}.${imageExtension}`;
                         
