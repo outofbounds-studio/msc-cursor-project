@@ -692,7 +692,7 @@
                     // Text elements
                     const label = annotation.querySelector('.annotation-label');
                     let descriptionEls = [];
-                    const textWrap = annotation.querySelector('.annotation-text');
+                    let textWrap = annotation.querySelector('.annotation-text');
                     if (textWrap) {
                         descriptionEls = Array.from(textWrap.children).filter(el => el !== label);
                     }
@@ -701,10 +701,22 @@
                         if (desc) descriptionEls = [desc];
                     }
 
+                    // Ensure a masking wrapper exists for label/description
+                    if (!textWrap) {
+                        textWrap = document.createElement('div');
+                        textWrap.className = 'annotation-text';
+                        // Move label/description into wrapper if present
+                        const moveTargets = [label, ...descriptionEls].filter(Boolean);
+                        moveTargets.forEach(el => textWrap.appendChild(el));
+                        annotation.appendChild(textWrap);
+                    }
+                    // Apply mask behavior to wrapper
+                    gsap.set(textWrap, { overflow: 'hidden', position: 'relative' });
+
                     // Initial states
                     gsap.set(line, { width: 0 });
-                    if (label) gsap.set(label, { yPercent: 100 });
-                    if (descriptionEls.length) gsap.set(descriptionEls, { yPercent: 100 });
+                    if (label) gsap.set(label, { yPercent: 100, display: 'block' });
+                    if (descriptionEls.length) gsap.set(descriptionEls, { yPercent: 100, display: 'block' });
                     gsap.set(annotation, { autoAlpha: 0 });
                     const tl = gsap.timeline({ paused: true });
                     // Line length: data-annotation-line sets target width (px or %), default 180px
