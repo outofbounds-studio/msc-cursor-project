@@ -696,6 +696,8 @@
                     if (textWrap) {
                         descriptionEls = Array.from(textWrap.children).filter(el => el !== label);
                     }
+                    // If no descriptions found inside wrapper, look for standalone .annotation-description
+                    // and move it into the wrapper so it can be masked.
                     if (!descriptionEls.length) {
                         const desc = annotation.querySelector('.annotation-description');
                         if (desc) descriptionEls = [desc];
@@ -709,6 +711,13 @@
                         const moveTargets = [label, ...descriptionEls].filter(Boolean);
                         moveTargets.forEach(el => textWrap.appendChild(el));
                         annotation.appendChild(textWrap);
+                    }
+                    else {
+                        // Ensure any description element is wrapped
+                        const moveTargets = [label, ...descriptionEls].filter(Boolean);
+                        moveTargets.forEach(el => {
+                            if (el && el.parentElement !== textWrap) textWrap.appendChild(el);
+                        });
                     }
                     // Apply mask behavior to wrapper
                     gsap.set(textWrap, { overflow: 'hidden', position: 'relative' });
