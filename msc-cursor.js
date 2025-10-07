@@ -719,8 +719,9 @@
                     if (descriptionEls.length) gsap.set(descriptionEls, { yPercent: 100, display: 'block' });
                     gsap.set(annotation, { autoAlpha: 0 });
                     const tl = gsap.timeline({ paused: true });
-                    // Line length: data-annotation-line sets target width (px or %), default 180px
-                    const targetLine = annotation.getAttribute('data-annotation-line') || '180px';
+                    // Line length: data-annotation-line can be on annotation OR line (px or %). Default 180px
+                    let targetLine = annotation.getAttribute('data-annotation-line') || line.getAttribute('data-annotation-line') || '180px';
+                    if (/^\d+$/.test(String(targetLine))) targetLine = `${targetLine}px`;
                     tl.to(line, { width: targetLine, duration: 0.3, ease: 'power2.out' });
                     tl.to([label, ...descriptionEls].filter(Boolean), { yPercent: 0, duration: 0.4, stagger: 0.12, ease: 'power2.out' }, '-=0.15');
                     annotation._annotationTimeline = tl;
