@@ -735,7 +735,7 @@
                     gsap.set(line, { width: 0 });
                     if (label) gsap.set(label, { yPercent: 100, display: 'block' });
                     if (descriptionEls.length) gsap.set(descriptionEls, { yPercent: 100, display: 'block' });
-                    gsap.set(annotation, { autoAlpha: 0 });
+                    gsap.set(annotation, { autoAlpha: 0, opacity: 0 });
                     const tl = gsap.timeline({ paused: true });
                     // Line length: data-annotation-line can be on annotation OR line (px or %). Default 180px
                     let targetLine = annotation.getAttribute('data-annotation-line') || line.getAttribute('data-annotation-line') || '180px';
@@ -819,12 +819,12 @@
                                             opacity = 1 - gsap.utils.clamp(0, 1, gsap.utils.normalize(fadeStartP, fadeEndP, progress));
                                         }
                                     }
-                                    gsap.set(annotation, { opacity });
+                                    gsap.set(annotation, { autoAlpha: opacity });
                                 } else if (progress < startP) {
-                                    gsap.set(annotation, { opacity: 0 });
+                                    gsap.set(annotation, { autoAlpha: 0 });
                                     if (annotation._annotationTimeline) annotation._annotationTimeline.progress(0);
                                 } else if (progress > endP) {
-                                    gsap.set(annotation, { opacity: 0 });
+                                    gsap.set(annotation, { autoAlpha: 0 });
                                     if (annotation._annotationTimeline) annotation._annotationTimeline.progress(1);
                                 }
                             });
