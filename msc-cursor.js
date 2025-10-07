@@ -770,16 +770,22 @@
 
                     // Initial states
                     gsap.set(line, { width: 0 });
-                    if (label) gsap.set(label, { yPercent: 120, display: 'block', willChange: 'transform' });
-                    if (descriptionEls.length) gsap.set(descriptionEls, { yPercent: 120, display: 'block', willChange: 'transform' });
                     gsap.set(annotation, { autoAlpha: 0, opacity: 0 });
                     const tl = gsap.timeline({ paused: true });
+                    
+                    // Set text elements to starting position AFTER timeline creation
+                    if (label) gsap.set(label, { yPercent: 120, display: 'block', willChange: 'transform' });
+                    if (descriptionEls.length) gsap.set(descriptionEls, { yPercent: 120, display: 'block', willChange: 'transform' });
                     // Line length: data-annotation-line can be on annotation OR line (px or %). Default 180px
                     let targetLine = annotation.getAttribute('data-annotation-line') || line.getAttribute('data-annotation-line') || '180px';
                     if (/^\d+$/.test(String(targetLine))) targetLine = `${targetLine}px`;
                     tl.to(line, { width: targetLine, duration: 0.3, ease: 'power2.out' });
                     tl.to([label, ...descriptionEls].filter(Boolean), { yPercent: 0, duration: 0.4, stagger: 0.12, ease: 'power2.out' }, '-=0.15');
                     annotation._annotationTimeline = tl;
+                    
+                    // Force reset to starting position after timeline creation
+                    if (label) gsap.set(label, { yPercent: 120 });
+                    if (descriptionEls.length) gsap.set(descriptionEls, { yPercent: 120 });
                 });
 
                 // Create scroll trigger animation with performance optimization
