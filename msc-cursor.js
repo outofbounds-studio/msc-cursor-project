@@ -801,14 +801,30 @@
                                 const endP = endFrame / totalFrames;
                                 const annProgress = gsap.utils.clamp(0, 1, gsap.utils.normalize(startP, endP, progress));
 
+                                // Smooth fade-out support
+                                const fadeAtAttr = annotation.getAttribute('data-annotation-fade');
+                                const fadeWinAttr = annotation.getAttribute('data-annotation-fade-window');
+                                const fadeFrame = fadeAtAttr !== null ? parseInt(fadeAtAttr) : null; // specific frame to be fully faded
+                                const fadeWin = fadeWinAttr !== null ? Math.max(1, parseInt(fadeWinAttr)) : 10; // frames window to fade over
+                                const fadeStartP = fadeFrame !== null ? (Math.max(0, fadeFrame - fadeWin) / totalFrames) : null;
+                                const fadeEndP = fadeFrame !== null ? (Math.max(0, fadeFrame) / totalFrames) : null;
+
                                 if (progress >= startP && progress <= endP) {
-                                    gsap.set(annotation, { autoAlpha: 1 });
                                     if (annotation._annotationTimeline) annotation._annotationTimeline.progress(annProgress);
+                                    // Opacity calculation
+                                    let opacity = 1;
+                                    if (fadeStartP !== null && fadeEndP !== null) {
+                                        if (progress >= fadeEndP) opacity = 0;
+                                        else if (progress >= fadeStartP) {
+                                            opacity = 1 - gsap.utils.clamp(0, 1, gsap.utils.normalize(fadeStartP, fadeEndP, progress));
+                                        }
+                                    }
+                                    gsap.set(annotation, { opacity });
                                 } else if (progress < startP) {
-                                    gsap.set(annotation, { autoAlpha: 0 });
+                                    gsap.set(annotation, { opacity: 0 });
                                     if (annotation._annotationTimeline) annotation._annotationTimeline.progress(0);
                                 } else if (progress > endP) {
-                                    gsap.set(annotation, { autoAlpha: 1 });
+                                    gsap.set(annotation, { opacity: 0 });
                                     if (annotation._annotationTimeline) annotation._annotationTimeline.progress(1);
                                 }
                             });
