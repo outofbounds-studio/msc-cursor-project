@@ -714,7 +714,29 @@
                         if (el && el.parentElement !== textWrap) textWrap.appendChild(el);
                     });
                     // Apply mask behavior to wrapper
-                    gsap.set(textWrap, { overflow: 'hidden', position: 'relative', display: 'block' });
+                    gsap.set(textWrap, { position: 'relative', display: 'block' });
+
+                    // Ensure each line has its OWN mask wrapper so it can reveal from below cleanly
+                    const ensureMaskFor = (el, cls) => {
+                        if (!el) return null;
+                        if (el.parentElement && el.parentElement.classList.contains(cls)) return el.parentElement; // already wrapped
+                        const mask = document.createElement('div');
+                        mask.className = cls;
+                        mask.style.overflow = 'hidden';
+                        mask.style.display = 'block';
+                        // measure natural height
+                        const prevYP = gsap.getProperty(el, 'yPercent');
+                        gsap.set(el, { yPercent: 0, visibility: 'hidden' });
+                        textWrap.appendChild(mask);
+                        mask.appendChild(el);
+                        const h = el.offsetHeight || 0;
+                        mask.style.height = `${h}px`;
+                        gsap.set(el, { yPercent: prevYP ?? 120, visibility: 'inherit' });
+                        return mask;
+                    };
+
+                    ensureMaskFor(label, 'annotation-mask-label');
+                    descriptionEls.forEach(el => ensureMaskFor(el, 'annotation-mask-desc'));
 
                     // Determine mask height: from data-annotation-mask or measured content
                     let maskHeightAttr = annotation.getAttribute('data-annotation-mask');
@@ -733,8 +755,8 @@
 
                     // Initial states
                     gsap.set(line, { width: 0 });
-                    if (label) gsap.set(label, { yPercent: 110, display: 'block', willChange: 'transform' });
-                    if (descriptionEls.length) gsap.set(descriptionEls, { yPercent: 110, display: 'block', willChange: 'transform' });
+                    if (label) gsap.set(label, { yPercent: 120, display: 'block', willChange: 'transform' });
+                    if (descriptionEls.length) gsap.set(descriptionEls, { yPercent: 120, display: 'block', willChange: 'transform' });
                     gsap.set(annotation, { autoAlpha: 0, opacity: 0 });
                     const tl = gsap.timeline({ paused: true });
                     // Line length: data-annotation-line can be on annotation OR line (px or %). Default 180px
