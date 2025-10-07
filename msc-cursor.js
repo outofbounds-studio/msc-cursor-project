@@ -716,6 +716,21 @@
                     // Apply mask behavior to wrapper
                     gsap.set(textWrap, { overflow: 'hidden', position: 'relative', display: 'block' });
 
+                    // Determine mask height: from data-annotation-mask or measured content
+                    let maskHeightAttr = annotation.getAttribute('data-annotation-mask');
+                    if (maskHeightAttr && /^\d+$/.test(maskHeightAttr)) maskHeightAttr = `${maskHeightAttr}px`;
+                    if (maskHeightAttr) {
+                        gsap.set(textWrap, { height: maskHeightAttr });
+                    } else {
+                        // Temporarily reveal to measure full natural height
+                        const measureTargets = [label, ...descriptionEls].filter(Boolean);
+                        gsap.set(measureTargets, { yPercent: 0, visibility: 'hidden' });
+                        // Allow layout to update then read height
+                        const naturalHeight = textWrap.scrollHeight || measureTargets.reduce((h, el) => h + (el.offsetHeight || 0), 0);
+                        gsap.set(textWrap, { height: naturalHeight });
+                        gsap.set(measureTargets, { yPercent: 100, visibility: 'inherit' });
+                    }
+
                     // Initial states
                     gsap.set(line, { width: 0 });
                     if (label) gsap.set(label, { yPercent: 100, display: 'block' });
