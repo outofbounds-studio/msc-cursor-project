@@ -733,8 +733,8 @@
 
                     // Initial states
                     gsap.set(line, { width: 0 });
-                    if (label) gsap.set(label, { yPercent: 100, display: 'block' });
-                    if (descriptionEls.length) gsap.set(descriptionEls, { yPercent: 100, display: 'block' });
+                    if (label) gsap.set(label, { yPercent: 110, display: 'block', willChange: 'transform' });
+                    if (descriptionEls.length) gsap.set(descriptionEls, { yPercent: 110, display: 'block', willChange: 'transform' });
                     gsap.set(annotation, { autoAlpha: 0, opacity: 0 });
                     const tl = gsap.timeline({ paused: true });
                     // Line length: data-annotation-line can be on annotation OR line (px or %). Default 180px
@@ -806,6 +806,7 @@
                                 const startP = startFrame / totalFrames;
                                 const endP = endFrame / totalFrames;
                                 const annProgress = gsap.utils.clamp(0, 1, gsap.utils.normalize(startP, endP, progress));
+                                const easedAnn = gsap.parseEase('power2.out')(annProgress);
 
                                 // Smooth fade-out support
                                 const fadeAtAttr = annotation.getAttribute('data-annotation-fade');
@@ -819,7 +820,7 @@
                                 const showEndP = fadeEndP !== null ? Math.max(endP, fadeEndP) : endP;
 
                                 if (progress >= startP && progress <= showEndP) {
-                                    if (annotation._annotationTimeline) annotation._annotationTimeline.progress(annProgress);
+                                    if (annotation._annotationTimeline) annotation._annotationTimeline.progress(easedAnn);
                                     // Opacity calculation
                                     let opacity = 1;
                                     if (fadeStartP !== null && fadeEndP !== null) {
