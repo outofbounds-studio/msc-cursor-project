@@ -792,6 +792,7 @@
                                 const startP = startFrame / totalFrames;
                                 const endP = endFrame / totalFrames;
                                 const annProgress = gsap.utils.clamp(0, 1, gsap.utils.normalize(startP, endP, progress));
+                                const easedAnn = gsap.parseEase('power2.out')(annProgress);
 
                                 // Smooth fade-out support
                                 const fadeAtAttr = annotation.getAttribute('data-annotation-fade');
