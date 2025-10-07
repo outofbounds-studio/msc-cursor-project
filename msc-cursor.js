@@ -1,5 +1,5 @@
 // msc.js - Metal Staircase Co. Website Scripts
-// Version: 1.0.2 updated 21/08/2025 11.02
+// Version: 1.0.2 updated 07/10/2025 21.31
 
 (function() {
     console.log('msc-cursor.js script loaded and executing!');
