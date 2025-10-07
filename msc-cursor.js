@@ -689,59 +689,45 @@
                         left: 0
                     });
 
-                    // Text elements
+                    // Text elements - clean approach
                     const label = annotation.querySelector('.annotation-label');
-                    let descriptionEls = [];
-                    let textWrap = annotation.querySelector('.annotation-text');
-                    if (textWrap) {
-                        descriptionEls = Array.from(textWrap.children).filter(el => el !== label);
-                    }
-                    // If no descriptions found inside wrapper, look for standalone .annotation-description
-                    // and move it into the wrapper so it can be masked.
-                    if (!descriptionEls.length) {
-                        const desc = annotation.querySelector('.annotation-description');
-                        if (desc) descriptionEls = [desc];
-                    }
-
-                    // Ensure a masking wrapper exists and acts as the mask (simple approach)
-                    if (!textWrap) {
-                        textWrap = document.createElement('div');
-                        textWrap.className = 'annotation-text';
-                        annotation.appendChild(textWrap);
-                    }
-                    // Move elements into the mask wrapper
-                    [label, ...descriptionEls].filter(Boolean).forEach(el => {
-                        if (el && el.parentElement !== textWrap) textWrap.appendChild(el);
+                    const descriptionEls = Array.from(annotation.querySelectorAll('.annotation-description'));
+                    
+                    // Remove any existing complex mask wrappers and restore original structure
+                    const existingMasks = annotation.querySelectorAll('.annotation-mask-label, .annotation-mask-desc');
+                    existingMasks.forEach(mask => {
+                        const child = mask.firstElementChild;
+                        if (child) {
+                            mask.parentNode.insertBefore(child, mask);
+                        }
+                        mask.remove();
                     });
-                    // Apply mask behavior to wrapper
-                    gsap.set(textWrap, { overflow: 'hidden', position: 'relative', display: 'block' });
-
-                    // Determine mask height: from data-annotation-mask or measured content
-                    let maskHeightAttr = annotation.getAttribute('data-annotation-mask');
-                    if (maskHeightAttr && /^\d+$/.test(maskHeightAttr)) maskHeightAttr = `${maskHeightAttr}px`;
-                    if (maskHeightAttr) {
-                        gsap.set(textWrap, { height: maskHeightAttr });
-                    } else {
-                        // Temporarily reveal to measure full natural height
-                        const measureTargets = [label, ...descriptionEls].filter(Boolean);
-                        gsap.set(measureTargets, { yPercent: 0, visibility: 'hidden' });
-                        // Allow layout to update then read height
-                        const naturalHeight = textWrap.scrollHeight || measureTargets.reduce((h, el) => h + (el.offsetHeight || 0), 0);
-                        gsap.set(textWrap, { height: naturalHeight });
-                        gsap.set(measureTargets, { yPercent: 100, visibility: 'inherit' });
+                    
+                    // Remove any existing text wrapper and restore original structure
+                    const existingTextWrap = annotation.querySelector('.annotation-text');
+                    if (existingTextWrap) {
+                        const children = Array.from(existingTextWrap.children);
+                        children.forEach(child => {
+                            existingTextWrap.parentNode.insertBefore(child, existingTextWrap);
+                        });
+                        existingTextWrap.remove();
                     }
 
-                    // Initial states
+                    // Initial states - simple approach
                     gsap.set(line, { width: 0 });
-                    if (label) gsap.set(label, { yPercent: 100, display: 'block' });
-                    if (descriptionEls.length) gsap.set(descriptionEls, { yPercent: 100, display: 'block' });
-                    gsap.set(annotation, { autoAlpha: 0, opacity: 0 });
+                    gsap.set(annotation, { autoAlpha: 0 });
+                    
+                    // Set text elements to starting position (below their natural position)
+                    if (label) gsap.set(label, { y: 20, opacity: 0 });
+                    descriptionEls.forEach(desc => gsap.set(desc, { y: 20, opacity: 0 }));
+                    
+                    // Create simple timeline
                     const tl = gsap.timeline({ paused: true });
                     // Line length: data-annotation-line can be on annotation OR line (px or %). Default 180px
                     let targetLine = annotation.getAttribute('data-annotation-line') || line.getAttribute('data-annotation-line') || '180px';
                     if (/^\d+$/.test(String(targetLine))) targetLine = `${targetLine}px`;
                     tl.to(line, { width: targetLine, duration: 0.3, ease: 'power2.out' });
-                    tl.to([label, ...descriptionEls].filter(Boolean), { yPercent: 0, duration: 0.4, stagger: 0.12, ease: 'power2.out' }, '-=0.15');
+                    tl.to([label, ...descriptionEls].filter(Boolean), { y: 0, opacity: 1, duration: 0.4, stagger: 0.12, ease: 'power2.out' }, '-=0.15');
                     annotation._annotationTimeline = tl;
                 });
 
@@ -819,22 +805,25 @@
                                 const showEndP = fadeEndP !== null ? Math.max(endP, fadeEndP) : endP;
 
                                 if (progress >= startP && progress <= showEndP) {
+                                    // Show annotation and drive timeline
+                                    gsap.set(annotation, { autoAlpha: 1 });
                                     if (annotation._annotationTimeline) annotation._annotationTimeline.progress(annProgress);
-                                    // Opacity calculation
-                                    let opacity = 1;
+                                    
+                                    // Handle fade-out
                                     if (fadeStartP !== null && fadeEndP !== null) {
-                                        if (progress >= fadeEndP) opacity = 0;
-                                        else if (progress >= fadeStartP) {
-                                            opacity = 1 - gsap.utils.clamp(0, 1, gsap.utils.normalize(fadeStartP, fadeEndP, progress));
+                                        if (progress >= fadeEndP) {
+                                            gsap.set(annotation, { autoAlpha: 0 });
+                                        } else if (progress >= fadeStartP) {
+                                            const fadeOpacity = 1 - gsap.utils.clamp(0, 1, gsap.utils.normalize(fadeStartP, fadeEndP, progress));
+                                            gsap.set(annotation, { autoAlpha: fadeOpacity });
                                         }
                                     }
-                                    gsap.set(annotation, { autoAlpha: opacity });
-                                } else if (progress < startP) {
+                                } else {
+                                    // Hide annotation and reset timeline
                                     gsap.set(annotation, { autoAlpha: 0 });
-                                    if (annotation._annotationTimeline) annotation._annotationTimeline.progress(0);
-                                } else if (progress > showEndP) {
-                                    gsap.set(annotation, { autoAlpha: 0 });
-                                    if (annotation._annotationTimeline) annotation._annotationTimeline.progress(1);
+                                    if (annotation._annotationTimeline) {
+                                        annotation._annotationTimeline.progress(progress < startP ? 0 : 1);
+                                    }
                                 }
                             });
                         }
