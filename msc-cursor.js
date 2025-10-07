@@ -745,7 +745,7 @@
                     scrub: 0.5, // Smoother scrub (was 1)
                     anticipatePin: 1, // Improve pin performance
                     onUpdate: (self) => {
-                        const progress = self.progress;
+                        const progress = self.progress; // continuous 0..1
                         const frameIndex = Math.min(Math.floor(progress * totalFrames), totalFrames - 1);
                         const frameNumber = String(frameIndex).padStart(4, '0');
                         const newSrc = `${imagePath}${imagePrefix}_${frameNumber}.${imageExtension}`;
@@ -760,15 +760,18 @@
                             annotations.forEach((annotation) => {
                                 const startFrame = parseInt(annotation.getAttribute('data-annotation-start')) || 0;
                                 const endFrame = parseInt(annotation.getAttribute('data-annotation-end')) || totalFrames;
-                                // Map frameIndex into 0..1 between start and end
-                                const annProgress = gsap.utils.clamp(0, 1, gsap.utils.normalize(startFrame, endFrame, frameIndex));
-                                if (frameIndex >= startFrame && frameIndex <= endFrame) {
+                                // Convert frame windows to continuous progress windows
+                                const startP = startFrame / totalFrames;
+                                const endP = endFrame / totalFrames;
+                                const annProgress = gsap.utils.clamp(0, 1, gsap.utils.normalize(startP, endP, progress));
+
+                                if (progress >= startP && progress <= endP) {
                                     gsap.set(annotation, { autoAlpha: 1 });
                                     if (annotation._annotationTimeline) annotation._annotationTimeline.progress(annProgress);
-                                } else if (frameIndex < startFrame) {
+                                } else if (progress < startP) {
                                     gsap.set(annotation, { autoAlpha: 0 });
                                     if (annotation._annotationTimeline) annotation._annotationTimeline.progress(0);
-                                } else if (frameIndex > endFrame) {
+                                } else if (progress > endP) {
                                     gsap.set(annotation, { autoAlpha: 1 });
                                     if (annotation._annotationTimeline) annotation._annotationTimeline.progress(1);
                                 }
