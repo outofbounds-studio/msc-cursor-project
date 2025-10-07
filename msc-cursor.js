@@ -749,7 +749,11 @@
                 const scrollTrigger = ScrollTrigger.create({
                     trigger: sequenceContainer,
                     start: "top top",
-                    end: `+=${totalFrames * 15}px`, // Increased multiplier for smoother scrolling
+                    end: (() => {
+                        const multAttr = sequenceContainer.getAttribute('data-sequence-length-multiplier');
+                        const mult = multAttr ? Math.max(1, parseFloat(multAttr)) : 15; // default 15
+                        return `+=${totalFrames * mult}px`;
+                    })(),
                     pin: true,
                     scrub: 0.5, // Smoother scrub (was 1)
                     anticipatePin: 1, // Improve pin performance
