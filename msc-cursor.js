@@ -99,11 +99,10 @@
             .set(wrap, { display: "block" })
             // Ensure bottom-to-top reveal start state
             .set(logo, { clipPath: "inset(100% 0% 0% 0%)" })
-            .set(progressBar, { scaleY: 0, transformOrigin: "center bottom" })
-            .to(progressBar, { scaleY: 1 })
+            .to(progressBar, { scaleX: 1 })
             .to(logo, { clipPath: "inset(0% 0% 0% 0%)" }, "<")
             .to(container, { autoAlpha: 0, duration: 0.5 })
-            .to(progressBar, { scaleY: 0, transformOrigin: "center top", duration: 0.5 }, "<")
+            .to(progressBar, { scaleX: 0, transformOrigin: "right center", duration: 0.5 }, "<")
             .add("hideContent", "<")
             .to(bg, { yPercent: -101, duration: 1 }, "hideContent")
             .set(wrap, { display: "none" });
