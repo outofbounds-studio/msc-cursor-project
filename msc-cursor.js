@@ -467,8 +467,8 @@
                 'request-a-quote': { default: 'dark', lock: true },
                 'materials': { default: 'light', lock: true },
                 'commercial': { default: 'dark', lock: false },
-                'privacy': { default: 'dark', lock: true },
-                'terms': { default: 'dark', lock: true }
+                'privacy': { default: 'light', lock: true },
+                'terms': { default: 'light', lock: true }
             },
 
             init() {
@@ -2508,7 +2508,7 @@
         privacy: {
             beforeEnter() {
                 console.log('[Barba] privacy.beforeEnter');
-                utils.theme.set('dark', false);
+                utils.theme.set('light', false);
                 console.log("Entering privacy page...");
             },
             afterEnter() {
@@ -2533,7 +2533,7 @@
         terms: {
             beforeEnter() {
                 console.log('[Barba] terms.beforeEnter');
-                utils.theme.set('dark', false);
+                utils.theme.set('light', false);
                 console.log("Entering terms page...");
             },
             afterEnter() {
