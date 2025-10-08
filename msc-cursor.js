@@ -97,6 +97,8 @@
                 }
             })
             .set(wrap, { display: "block" })
+            // Ensure bottom-to-top reveal start state
+            .set(logo, { clipPath: "inset(100% 0% 0% 0%)" })
             .to(progressBar, { scaleX: 1 })
             .to(logo, { clipPath: "inset(0% 0% 0% 0%)" }, "<")
             .to(container, { autoAlpha: 0, duration: 0.5 })
