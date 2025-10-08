@@ -448,7 +448,9 @@
                 'contact': { default: 'dark', lock: true },
                 'request-a-quote': { default: 'dark', lock: true },
                 'materials': { default: 'light', lock: true },
-                'commercial': { default: 'dark', lock: false }
+                'commercial': { default: 'dark', lock: false },
+                'privacy': { default: 'dark', lock: true },
+                'terms': { default: 'dark', lock: true }
             },
 
             init() {
@@ -2483,6 +2485,56 @@
                     }
                 });
             }
+        },
+        
+        privacy: {
+            beforeEnter() {
+                console.log('[Barba] privacy.beforeEnter');
+                utils.theme.set('dark', false);
+                console.log("Entering privacy page...");
+            },
+            afterEnter() {
+                console.log('[Barba] privacy.afterEnter');
+                components.initCustomCursor();
+                animations.initSplitTextAnimation();
+                initScrambleText();
+            },
+            afterLeave() {
+                console.log('[Barba] privacy.afterLeave');
+                console.log("Leaving privacy page...");
+                ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+                document.querySelectorAll('[data-split="heading"]').forEach(heading => {
+                    if (heading._splitText) {
+                        heading._splitText.revert();
+                        heading._splitText = null;
+                    }
+                });
+            }
+        },
+        
+        terms: {
+            beforeEnter() {
+                console.log('[Barba] terms.beforeEnter');
+                utils.theme.set('dark', false);
+                console.log("Entering terms page...");
+            },
+            afterEnter() {
+                console.log('[Barba] terms.afterEnter');
+                components.initCustomCursor();
+                animations.initSplitTextAnimation();
+                initScrambleText();
+            },
+            afterLeave() {
+                console.log('[Barba] terms.afterLeave');
+                console.log("Leaving terms page...");
+                ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+                document.querySelectorAll('[data-split="heading"]').forEach(heading => {
+                    if (heading._splitText) {
+                        heading._splitText.revert();
+                        heading._splitText = null;
+                    }
+                });
+            }
         }
     };
     
@@ -2522,9 +2574,9 @@
             }
         }],
         views: [
-            // Static page views (home, about, contact, request-a-quote, materials, commercial)
+            // Static page views (home, about, contact, request-a-quote, materials, commercial, privacy, terms)
             ...Object.entries(pages).filter(([key]) => 
-                ['home', 'about', 'contact', 'request-a-quote', 'materials', 'commercial'].includes(key)
+                ['home', 'about', 'contact', 'request-a-quote', 'materials', 'commercial', 'privacy', 'terms'].includes(key)
             ).map(([namespace, handlers]) => ({
                 namespace,
                 beforeEnter() {
