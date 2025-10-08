@@ -72,6 +72,20 @@
         ]);
     }
 
+    // Dynamic Current Year
+    function initDynamicCurrentYear() {
+        try {
+            const currentYear = new Date().getFullYear();
+            const currentYearElements = document.querySelectorAll('[data-current-year]');
+            currentYearElements.forEach(currentYearElement => {
+                currentYearElement.textContent = currentYear;
+            });
+            console.log(`Dynamic current year initialized: ${currentYear}`);
+        } catch (error) {
+            utils.handleError('initDynamicCurrentYear', error);
+        }
+    }
+
     // Logo Reveal Loader (Osmo-style)
     function initLogoRevealLoader() {
         try {
@@ -179,6 +193,9 @@
         console.log('Initializing GSAP defaults...');
         utils.initGSAPDefaults();
         
+        // Initialize dynamic current year
+        initDynamicCurrentYear();
+        
         // Initialize logo reveal loader (only on homepage)
         const currentNamespace = barba.current?.namespace || 'home';
         if (currentNamespace === 'home') {
@@ -208,6 +225,7 @@
             console.log('Barba afterEnter hook triggered', data);
             console.log('Barba namespace:', data.next && data.next.namespace);
             console.log('Initializing animations...');
+            initDynamicCurrentYear();
             initMaskTextScrollReveal();
             initScrambleText();
             initSpecLineReveal();
