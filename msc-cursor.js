@@ -465,10 +465,10 @@
                 'news-item': { default: 'dark', lock: false },
                 'contact': { default: 'dark', lock: true },
                 'request-a-quote': { default: 'dark', lock: true },
-                'materials': { default: 'light', lock: true },
+                'materials': { default: 'light', lock: false },
                 'commercial': { default: 'dark', lock: false },
-                'privacy': { default: 'light', lock: true },
-                'terms': { default: 'light', lock: true }
+                'privacy': { default: 'light', lock: false },
+                'terms': { default: 'light', lock: false }
             },
 
             init() {
