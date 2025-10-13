@@ -176,6 +176,25 @@
     // Main initialization function
     async function init() {
         console.log('Starting initialization...');
+
+        // Ensure Webflow components (including forms) are initialized on first load
+        try {
+            if (typeof Webflow !== 'undefined') {
+                if (typeof Webflow.destroy === 'function') Webflow.destroy();
+                if (typeof Webflow.ready === 'function') Webflow.ready();
+                if (Webflow.require) {
+                    const formsModule = Webflow.require('forms');
+                    if (formsModule && typeof formsModule.ready === 'function') {
+                        formsModule.ready();
+                        console.log('Webflow forms module initialized on first load');
+                    }
+                }
+            } else {
+                console.warn('Webflow object not available on first load');
+            }
+        } catch (wfInitErr) {
+            console.warn('Error initializing Webflow/forms on first load', wfInitErr);
+        }
         // 1. Wait for all dependencies
         const dependenciesLoaded = await loadDependencies();
         console.log('Dependencies loaded:', dependenciesLoaded);
@@ -231,6 +250,25 @@
             initSpecLineReveal();
             wrapFirstWordInSpan();
             initDividerLineReveal();
+            
+            // Ensure Webflow components (including forms) are rebound after transition
+            try {
+                if (typeof Webflow !== 'undefined') {
+                    if (typeof Webflow.destroy === 'function') Webflow.destroy();
+                    if (typeof Webflow.ready === 'function') Webflow.ready();
+                    if (Webflow.require) {
+                        const formsModule = Webflow.require('forms');
+                        if (formsModule && typeof formsModule.ready === 'function') {
+                            formsModule.ready();
+                            console.log('Webflow forms module reinitialized');
+                        }
+                    }
+                } else {
+                    console.warn('Webflow object not available to reinitialize forms');
+                }
+            } catch (wfErr) {
+                console.warn('Error reinitializing Webflow/forms after Barba transition', wfErr);
+            }
             
             // Only run form validation on pages that have forms
             const hasForms = document.querySelectorAll('[data-form-validate]').length > 0;
