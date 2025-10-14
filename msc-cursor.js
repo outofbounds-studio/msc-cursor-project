@@ -215,6 +215,9 @@
         // Initialize dynamic current year
         initDynamicCurrentYear();
         
+        // Initialize footer parallax
+        animations.initFooterParallax();
+        
         // Initialize logo reveal loader (only on homepage)
         const currentNamespace = barba.current?.namespace || 'home';
         if (currentNamespace === 'home') {
@@ -250,6 +253,7 @@
             initSpecLineReveal();
             wrapFirstWordInSpan();
             initDividerLineReveal();
+            animations.initFooterParallax();
             
             // Ensure Webflow components (including forms) are rebound after transition
             try {
@@ -1060,6 +1064,41 @@
                 console.log('Scroll sequence cleanup completed');
             } catch (error) {
                 utils.handleError('cleanupScrollSequence', error);
+            }
+        },
+
+        initFooterParallax() {
+            console.log('initFooterParallax function called');
+            try {
+                document.querySelectorAll('[data-footer-parallax]').forEach(el => {
+                    const tl = gsap.timeline({
+                        scrollTrigger: {
+                            trigger: el,
+                            start: 'clamp(top bottom)',
+                            end: 'clamp(top top)',
+                            scrub: true
+                        }
+                    });
+                
+                    const inner = el.querySelector('[data-footer-parallax-inner]');
+                    const dark = el.querySelector('[data-footer-parallax-dark]');
+                
+                    if (inner) {
+                        tl.from(inner, {
+                            yPercent: -25,
+                            ease: 'linear'
+                        });
+                    }
+                
+                    if (dark) {
+                        tl.from(dark, {
+                            opacity: 0.5,
+                            ease: 'linear'
+                        }, '<');
+                    }
+                });
+            } catch (error) {
+                utils.handleError('initFooterParallax', error);
             }
         }
     };
