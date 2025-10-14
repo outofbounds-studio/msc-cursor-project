@@ -595,6 +595,12 @@
                 sections.forEach((section, index) => {
                     const theme = section.getAttribute('data-theme-section');
 
+                    // Skip footer sections that have parallax animations to avoid conflicts
+                    if (section.querySelector('[data-footer-parallax]')) {
+                        console.log(`[Theme] Skipping footer section with parallax animation (${theme})`);
+                        return;
+                    }
+
                     // Use the section itself as trigger, or footer if it's a footer-contain
                     let triggerElement = section;
                     if (section.classList.contains('footer-contain')) {
@@ -1095,6 +1101,52 @@
                             opacity: 0.5,
                             ease: 'linear'
                         }, '<');
+                    }
+
+                    // Handle theme change for footer sections with parallax
+                    const footerSection = el.closest('[data-theme-section]');
+                    if (footerSection) {
+                        const footerTheme = footerSection.getAttribute('data-theme-section');
+                        console.log(`[Footer Parallax] Found footer section with theme: ${footerTheme}`);
+                        
+                        // Create a separate ScrollTrigger for theme change
+                        ScrollTrigger.create({
+                            trigger: el,
+                            start: 'top top',
+                            end: 'bottom top',
+                            onEnter: () => {
+                                if (!utils.theme.isTransitioning && !utils.theme.locked) {
+                                    console.log(`[Footer Parallax] Footer entered, changing theme to ${footerTheme}`);
+                                    utils.theme.set(footerTheme, true);
+                                }
+                            },
+                            onLeave: () => {
+                                if (!utils.theme.isTransitioning && !utils.theme.locked) {
+                                    console.log(`[Footer Parallax] Footer left, reverting to previous theme`);
+                                    // Find the previous section's theme
+                                    const allSections = document.querySelectorAll('[data-theme-section]');
+                                    const currentIndex = Array.from(allSections).indexOf(footerSection);
+                                    if (currentIndex > 0) {
+                                        const prevSection = allSections[currentIndex - 1];
+                                        const prevTheme = prevSection.getAttribute('data-theme-section');
+                                        utils.theme.set(prevTheme, true);
+                                    }
+                                }
+                            },
+                            onLeaveBack: () => {
+                                if (!utils.theme.isTransitioning && !utils.theme.locked) {
+                                    console.log(`[Footer Parallax] Footer left backwards, reverting to previous theme`);
+                                    // Find the previous section's theme
+                                    const allSections = document.querySelectorAll('[data-theme-section]');
+                                    const currentIndex = Array.from(allSections).indexOf(footerSection);
+                                    if (currentIndex > 0) {
+                                        const prevSection = allSections[currentIndex - 1];
+                                        const prevTheme = prevSection.getAttribute('data-theme-section');
+                                        utils.theme.set(prevTheme, true);
+                                    }
+                                }
+                            }
+                        });
                     }
                 });
             } catch (error) {
