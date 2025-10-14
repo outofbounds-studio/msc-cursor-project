@@ -215,9 +215,6 @@
         // Initialize dynamic current year
         initDynamicCurrentYear();
         
-        // Initialize footer parallax
-        animations.initFooterParallax();
-        
         // Initialize logo reveal loader (only on homepage)
         const currentNamespace = barba.current?.namespace || 'home';
         if (currentNamespace === 'home') {
@@ -233,6 +230,9 @@
         utils.lenis.init();
         console.log('Initializing theme system...');
         utils.theme.init();
+        
+        // Initialize footer parallax AFTER theme system to avoid ScrollTrigger conflicts
+        animations.initFooterParallax();
         console.log('Initializing Barba...');
         barba.init(barbaConfig);
 
