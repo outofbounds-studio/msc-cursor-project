@@ -256,7 +256,10 @@
             animations.initFooterParallax();
             
             // Initialize modals on every page transition (since they're outside Barba container)
-            components.initModalBasic();
+            // Add delay to ensure DOM is fully ready
+            setTimeout(() => {
+                components.initModalBasic();
+            }, 200);
             
             // Ensure Webflow components (including forms) are rebound after transition
             try {
@@ -1520,6 +1523,14 @@
                 const modalGroups = document.querySelectorAll('[data-modal-group-status]');
                 const modals = document.querySelectorAll('[data-modal-name]');
                 const modalTargets = document.querySelectorAll('[data-modal-target]');
+
+                console.log('🔍 Modal Debug:', {
+                    modalGroups: modalGroups.length,
+                    modals: modals.length,
+                    modalTargets: modalTargets.length,
+                    modalNames: Array.from(modals).map(m => m.getAttribute('data-modal-name')),
+                    targetNames: Array.from(modalTargets).map(t => t.getAttribute('data-modal-target'))
+                });
 
                 modalTargets.forEach((modalTarget) => {
                     // Store reference to handler for cleanup
