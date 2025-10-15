@@ -1170,6 +1170,17 @@
                 
                 // Refresh ScrollTriggers to ensure consistent behavior
                 ScrollTrigger.refresh();
+                
+                // Reinitialize Swiper sliders after ScrollTrigger refresh to restore touch functionality
+                setTimeout(() => {
+                    if (typeof Swiper !== 'undefined') {
+                        document.querySelectorAll('.swiper').forEach(swiperEl => {
+                            if (swiperEl.swiper) {
+                                swiperEl.swiper.update();
+                            }
+                        });
+                    }
+                }, 100);
             } catch (error) {
                 utils.handleError('initFooterParallax', error);
             }
