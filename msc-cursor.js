@@ -1083,41 +1083,29 @@
             console.log('initFooterParallax function called');
             try {
                 document.querySelectorAll('[data-footer-parallax]').forEach(el => {
-                    // Set initial state for parallax elements
-                    const inner = el.querySelector('[data-footer-parallax-inner]');
-                    const dark = el.querySelector('[data-footer-parallax-dark]');
-                    
-                    if (inner) {
-                        gsap.set(inner, { yPercent: -25 });
-                    }
-                    
-                    if (dark) {
-                        gsap.set(dark, { opacity: 0.5 });
-                    }
-                    
-                    // Create parallax animation with better scroll range
-                const tl = gsap.timeline({
-                    scrollTrigger: {
+                    const tl = gsap.timeline({
+                        scrollTrigger: {
                             trigger: el,
-                            start: 'top bottom',
-                            end: 'bottom top',
-                        scrub: 1,
-                            invalidateOnRefresh: true,
-                            refreshPriority: -1
+                            start: 'clamp(top bottom)',
+                            end: 'clamp(top top)',
+                            scrub: true
                         }
                     });
                 
+                    const inner = el.querySelector('[data-footer-parallax-inner]');
+                    const dark = el.querySelector('[data-footer-parallax-dark]');
+                
                     if (inner) {
-                        tl.to(inner, {
-                            yPercent: 0,
-                            ease: 'none'
+                        tl.from(inner, {
+                            yPercent: -25,
+                            ease: 'linear'
                         });
                     }
                 
                     if (dark) {
-                        tl.to(dark, {
-                            opacity: 1,
-                            ease: 'none'
+                        tl.from(dark, {
+                            opacity: 0.5,
+                            ease: 'linear'
                         }, '<');
                     }
 
