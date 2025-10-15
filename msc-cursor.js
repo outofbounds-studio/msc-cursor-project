@@ -255,6 +255,9 @@
             initDividerLineReveal();
             animations.initFooterParallax();
             
+            // Initialize modals on every page transition (since they're outside Barba container)
+            components.initModalBasic();
+            
             // Ensure Webflow components (including forms) are rebound after transition
             try {
                 if (typeof Webflow !== 'undefined') {
