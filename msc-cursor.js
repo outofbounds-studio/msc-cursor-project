@@ -1499,12 +1499,28 @@
     
         initModalBasic() {
             try {
+                // Clean up existing event listeners to prevent duplicates
+                document.querySelectorAll('[data-modal-target]').forEach(target => {
+                    if (target._modalClickHandler) {
+                        target.removeEventListener('click', target._modalClickHandler);
+                        target._modalClickHandler = null;
+                    }
+                });
+                
+                document.querySelectorAll('[data-modal-close]').forEach(closeBtn => {
+                    if (closeBtn._modalCloseHandler) {
+                        closeBtn.removeEventListener('click', closeBtn._modalCloseHandler);
+                        closeBtn._modalCloseHandler = null;
+                    }
+                });
+
                 const modalGroups = document.querySelectorAll('[data-modal-group-status]');
                 const modals = document.querySelectorAll('[data-modal-name]');
                 const modalTargets = document.querySelectorAll('[data-modal-target]');
 
                 modalTargets.forEach((modalTarget) => {
-                    modalTarget.addEventListener('click', function () {
+                    // Store reference to handler for cleanup
+                    modalTarget._modalClickHandler = function () {
                         const modalTargetName = this.getAttribute('data-modal-target');
                         const targetModal = document.querySelector(`[data-modal-name="${modalTargetName}"]`);
                         
@@ -1565,11 +1581,15 @@
                         
                         // Stop Lenis if it's running
                         if (window.lenis) window.lenis.stop();
-                    });
+                    };
+                    
+                    // Attach the stored handler
+                    modalTarget.addEventListener('click', modalTarget._modalClickHandler);
                 });
 
                 document.querySelectorAll('[data-modal-close]').forEach((closeBtn) => {
-                    closeBtn.addEventListener('click', () => {
+                    // Store reference to handler for cleanup
+                    closeBtn._modalCloseHandler = () => {
                         // Find which modal group this close button belongs to
                         const modalGroup = closeBtn.closest('[data-modal-group-status]') || 
                                          closeBtn.closest('[data-modal-name]')?.closest('[data-modal-group-status]');
@@ -1591,7 +1611,10 @@
                         
                         // Restart Lenis
                         if (window.lenis) window.lenis.start();
-                    });
+                    };
+                    
+                    // Attach the stored handler
+                    closeBtn.addEventListener('click', closeBtn._modalCloseHandler);
                 });
 
                 // Handle ESC key
