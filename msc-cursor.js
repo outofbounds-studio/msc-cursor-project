@@ -236,11 +236,41 @@
         console.log('Initializing Barba...');
         barba.init(barbaConfig);
 
+        // Handle same-page hash navigation (clicking hash links on current page)
+        document.addEventListener('click', (e) => {
+            const link = e.target.closest('a[href^="#"]');
+            if (!link) return;
+            
+            const href = link.getAttribute('href');
+            if (!href || href === '#') return;
+            
+            // Check if this is a same-page hash link (not a cross-page navigation)
+            const currentPath = window.location.pathname;
+            const linkPath = new URL(link.href, window.location.href).pathname;
+            
+            // If paths match (same page), handle hash scroll without Barba transition
+            if (linkPath === currentPath && href.startsWith('#')) {
+                e.preventDefault();
+                scrollToHash(href, 0);
+                // Update URL without triggering scroll
+                window.history.pushState(null, '', href);
+            }
+        });
+
         // ---- Barba.js Hooks (must be after barba.init) ----
         barba.hooks.leave((data) => {
             console.log('Barba leave hook triggered');
             utils.lenis.destroy();
         });
+
+        // Handle initial page load with hash (e.g., refreshing /about#team)
+        const initialHash = window.location.hash;
+        if (initialHash && initialHash.length > 1) {
+            // Wait for page to be fully loaded and rendered
+            setTimeout(() => {
+                scrollToHash(initialHash, 500);
+            }, 800);
+        }
 
         // Global Barba hook to run on every page transition
         barba.hooks.afterEnter((data) => {
@@ -2748,6 +2778,37 @@
         }
     };
     
+    // Helper function to scroll to hash target
+    function scrollToHash(hash, delay = 100) {
+        if (!hash) return;
+        
+        const targetId = hash.replace('#', '');
+        const targetElement = document.getElementById(targetId) || document.querySelector(`[data-section="${targetId}"]`);
+        
+        if (!targetElement) {
+            console.warn(`Hash target not found: #${targetId}`);
+            return;
+        }
+        
+        setTimeout(() => {
+            const rect = targetElement.getBoundingClientRect();
+            const offset = 100; // Offset for fixed nav, adjust as needed
+            const targetY = window.scrollY + rect.top - offset;
+            
+            if (window.lenis) {
+                window.lenis.scrollTo(targetY, {
+                    duration: 1.2,
+                    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+                });
+            } else {
+                window.scrollTo({
+                    top: targetY,
+                    behavior: 'smooth'
+                });
+            }
+        }, delay);
+    }
+
     // Barba.js Configuration
     const barbaConfig = {
         transitions: [{
@@ -2767,8 +2828,14 @@
                 return tl;
             },
             async enter(data) {
-                // Always scroll to top when entering a new page
-                window.scrollTo(0, 0);
+                // Check for hash in URL
+                const hash = window.location.hash;
+                const shouldScrollToHash = hash && hash.length > 1;
+                
+                // Only scroll to top if there's no hash fragment
+                if (!shouldScrollToHash) {
+                    window.scrollTo(0, 0);
+                }
                 
                 const tl = gsap.timeline();
                 tl.from(data.next.container, { 
@@ -2777,6 +2844,10 @@
                     onComplete: () => {
                         if (window.lenis) {
                             utils.lenis.init();
+                        }
+                        // Scroll to hash target after transition completes
+                        if (shouldScrollToHash) {
+                            scrollToHash(hash, 150);
                         }
                     }
                 });
@@ -2790,8 +2861,11 @@
             ).map(([namespace, handlers]) => ({
                 namespace,
                 beforeEnter() {
-                    // Ensure scroll to top before entering any page
-                    window.scrollTo(0, 0);
+                    // Only scroll to top if there's no hash fragment
+                    const hash = window.location.hash;
+                    if (!hash || hash.length <= 1) {
+                        window.scrollTo(0, 0);
+                    }
                     if (handlers.beforeEnter) handlers.beforeEnter();
                 },
                 afterEnter: handlers.afterEnter,
@@ -2801,7 +2875,10 @@
             {
                 namespace: 'work',
                 beforeEnter() {
-                    window.scrollTo(0, 0);
+                    const hash = window.location.hash;
+                    if (!hash || hash.length <= 1) {
+                        window.scrollTo(0, 0);
+                    }
                     if (pages.work.beforeEnter) pages.work.beforeEnter();
                 },
                 afterEnter: pages.work.afterEnter,
@@ -2810,7 +2887,10 @@
             {
                 namespace: 'styles',
                 beforeEnter() {
-                    window.scrollTo(0, 0);
+                    const hash = window.location.hash;
+                    if (!hash || hash.length <= 1) {
+                        window.scrollTo(0, 0);
+                    }
                     if (pages.styles.beforeEnter) pages.styles.beforeEnter();
                 },
                 afterEnter: pages.styles.afterEnter,
@@ -2819,7 +2899,10 @@
             {
                 namespace: 'news',
                 beforeEnter() {
-                    window.scrollTo(0, 0);
+                    const hash = window.location.hash;
+                    if (!hash || hash.length <= 1) {
+                        window.scrollTo(0, 0);
+                    }
                     if (pages.news.beforeEnter) pages.news.beforeEnter();
                 },
                 afterEnter: pages.news.afterEnter,
@@ -2829,7 +2912,10 @@
             {
                 namespace: 'work-item',
                 beforeEnter() {
-                    window.scrollTo(0, 0);
+                    const hash = window.location.hash;
+                    if (!hash || hash.length <= 1) {
+                        window.scrollTo(0, 0);
+                    }
                     if (pages['work-item'].beforeEnter) pages['work-item'].beforeEnter();
                 },
                 afterEnter: pages['work-item'].afterEnter,
@@ -2838,7 +2924,10 @@
             {
                 namespace: 'style-item',
                 beforeEnter() {
-                    window.scrollTo(0, 0);
+                    const hash = window.location.hash;
+                    if (!hash || hash.length <= 1) {
+                        window.scrollTo(0, 0);
+                    }
                     if (pages['style-item'].beforeEnter) pages['style-item'].beforeEnter();
                 },
                 afterEnter: pages['style-item'].afterEnter,
@@ -2847,7 +2936,10 @@
             {
                 namespace: 'news-item',
                 beforeEnter() {
-                    window.scrollTo(0, 0);
+                    const hash = window.location.hash;
+                    if (!hash || hash.length <= 1) {
+                        window.scrollTo(0, 0);
+                    }
                     if (pages['news-item'].beforeEnter) pages['news-item'].beforeEnter();
                 },
                 afterEnter: pages['news-item'].afterEnter,
@@ -2856,7 +2948,10 @@
             {
                 namespace: 'faqs',
                 beforeEnter() {
-                    window.scrollTo(0, 0);
+                    const hash = window.location.hash;
+                    if (!hash || hash.length <= 1) {
+                        window.scrollTo(0, 0);
+                    }
                     if (pages.faqs.beforeEnter) pages.faqs.beforeEnter();
                 },
                 afterEnter: pages.faqs.afterEnter,
