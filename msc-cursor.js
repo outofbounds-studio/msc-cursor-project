@@ -2540,7 +2540,54 @@
                 components.initCustomCursor();
                 animations.initSplitTextAnimation();
                 initScrambleText();
+                // Guard desktop-only row animation and ensure mobile layout is clean
+                const resetStylesMobile = () => {
+                    // Clear any inline styles applied by desktop animation
+                    document.querySelectorAll('.work_row').forEach(row => {
+                        row.style.paddingTop = '';
+                        row.style.marginTop = '';
+                        row.style.height = '';
+                        row.style.transform = '';
+                    });
+                    document.querySelectorAll('.work_row > *').forEach(child => {
+                        child.style.marginTop = '';
+                        child.style.transform = '';
+                    });
+                    // Kill any ScrollTriggers attached to elements inside .work_row
+                    if (typeof ScrollTrigger !== 'undefined') {
+                        ScrollTrigger.getAll().forEach(t => {
+                            try {
+                                const triggerEl = t.trigger;
+                                if (triggerEl && (triggerEl.closest && triggerEl.closest('.work_row'))) {
+                                    t.kill();
+                                }
+                            } catch (e) {}
+                        });
+                        ScrollTrigger.refresh();
+                    }
+                };
+
+                if (typeof ScrollTrigger !== 'undefined') {
+                    ScrollTrigger.matchMedia({
+                        '(min-width: 992px)': () => {
+                            // Desktop/tablet landscape: run row animation
+                            if (animations && typeof animations.stylesScrub === 'function') {
                 animations.stylesScrub();
+                            }
+                        },
+                        '(max-width: 991px)': () => {
+                            // Mobile: ensure no desktop offsets remain
+                            resetStylesMobile();
+                        }
+                    });
+                } else {
+                    // Fallback: if GSAP/ScrollTrigger isn't available, still reset on mobile
+                    if (window.matchMedia('(max-width: 991px)').matches) {
+                        resetStylesMobile();
+                    } else if (animations && typeof animations.stylesScrub === 'function') {
+                        animations.stylesScrub();
+                    }
+                }
 
             },
             afterLeave() {
@@ -2808,7 +2855,7 @@
             }
         }, delay);
     }
-
+    
     // Barba.js Configuration
     const barbaConfig = {
         transitions: [{
@@ -2834,7 +2881,7 @@
                 
                 // Only scroll to top if there's no hash fragment
                 if (!shouldScrollToHash) {
-                    window.scrollTo(0, 0);
+                window.scrollTo(0, 0);
                 }
                 
                 const tl = gsap.timeline();
@@ -2864,7 +2911,7 @@
                     // Only scroll to top if there's no hash fragment
                     const hash = window.location.hash;
                     if (!hash || hash.length <= 1) {
-                        window.scrollTo(0, 0);
+                    window.scrollTo(0, 0);
                     }
                     if (handlers.beforeEnter) handlers.beforeEnter();
                 },
@@ -2877,7 +2924,7 @@
                 beforeEnter() {
                     const hash = window.location.hash;
                     if (!hash || hash.length <= 1) {
-                        window.scrollTo(0, 0);
+                    window.scrollTo(0, 0);
                     }
                     if (pages.work.beforeEnter) pages.work.beforeEnter();
                 },
@@ -2889,7 +2936,7 @@
                 beforeEnter() {
                     const hash = window.location.hash;
                     if (!hash || hash.length <= 1) {
-                        window.scrollTo(0, 0);
+                    window.scrollTo(0, 0);
                     }
                     if (pages.styles.beforeEnter) pages.styles.beforeEnter();
                 },
@@ -2901,7 +2948,7 @@
                 beforeEnter() {
                     const hash = window.location.hash;
                     if (!hash || hash.length <= 1) {
-                        window.scrollTo(0, 0);
+                    window.scrollTo(0, 0);
                     }
                     if (pages.news.beforeEnter) pages.news.beforeEnter();
                 },
@@ -2914,7 +2961,7 @@
                 beforeEnter() {
                     const hash = window.location.hash;
                     if (!hash || hash.length <= 1) {
-                        window.scrollTo(0, 0);
+                    window.scrollTo(0, 0);
                     }
                     if (pages['work-item'].beforeEnter) pages['work-item'].beforeEnter();
                 },
@@ -2926,7 +2973,7 @@
                 beforeEnter() {
                     const hash = window.location.hash;
                     if (!hash || hash.length <= 1) {
-                        window.scrollTo(0, 0);
+                    window.scrollTo(0, 0);
                     }
                     if (pages['style-item'].beforeEnter) pages['style-item'].beforeEnter();
                 },
@@ -2938,7 +2985,7 @@
                 beforeEnter() {
                     const hash = window.location.hash;
                     if (!hash || hash.length <= 1) {
-                        window.scrollTo(0, 0);
+                    window.scrollTo(0, 0);
                     }
                     if (pages['news-item'].beforeEnter) pages['news-item'].beforeEnter();
                 },
@@ -2950,7 +2997,7 @@
                 beforeEnter() {
                     const hash = window.location.hash;
                     if (!hash || hash.length <= 1) {
-                        window.scrollTo(0, 0);
+                    window.scrollTo(0, 0);
                     }
                     if (pages.faqs.beforeEnter) pages.faqs.beforeEnter();
                 },
