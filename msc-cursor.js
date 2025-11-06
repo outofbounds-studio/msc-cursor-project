@@ -858,6 +858,74 @@
                 const frameNumber = String(0).padStart(4, '0');
                 mainImage.src = `${imagePath}${imagePrefix}_${frameNumber}.${imageExtension}`;
 
+                // Find skip navigation buttons (created in Webflow) - do this BEFORE creating ScrollTrigger
+                const buttonContainer = document.querySelector('.scroll-sequence-skip-buttons');
+                const jumpToBottomBtn = document.querySelector('.scroll-sequence-skip-to-bottom');
+                const jumpToTopBtn = document.querySelector('.scroll-sequence-skip-to-top');
+
+                // Function to update button visibility based on scroll progress
+                const updateSkipButtons = (progress) => {
+                    if (!jumpToBottomBtn || !jumpToTopBtn) return;
+                    
+                    // Show "jump to bottom" after 10% scroll (or ~1 second of scrolling)
+                    // Show "jump to top" when past 80% progress
+                    const showJumpToBottom = progress > 0.1 && progress < 0.8;
+                    const showJumpToTop = progress > 0.8;
+
+                    // Update jump to bottom button
+                    if (showJumpToBottom) {
+                        gsap.to(jumpToBottomBtn, {
+                            opacity: 1,
+                            transform: 'translateY(0) scale(1)',
+                            pointerEvents: 'auto',
+                            duration: 0.3,
+                            ease: 'power2.out'
+                        });
+                    } else {
+                        gsap.to(jumpToBottomBtn, {
+                            opacity: 0,
+                            transform: 'translateY(10px) scale(0.9)',
+                            pointerEvents: 'none',
+                            duration: 0.3,
+                            ease: 'power2.out'
+                        });
+                    }
+
+                    // Update jump to top button
+                    if (showJumpToTop) {
+                        gsap.to(jumpToTopBtn, {
+                            opacity: 1,
+                            transform: 'translateY(0) scale(1)',
+                            pointerEvents: 'auto',
+                            duration: 0.3,
+                            ease: 'power2.out'
+                        });
+                    } else {
+                        gsap.to(jumpToTopBtn, {
+                            opacity: 0,
+                            transform: 'translateY(10px) scale(0.9)',
+                            pointerEvents: 'none',
+                            duration: 0.3,
+                            ease: 'power2.out'
+                        });
+                    }
+                };
+
+                // Initialize buttons if they exist
+                if (buttonContainer && jumpToBottomBtn && jumpToTopBtn) {
+                    // Set initial hidden state
+                    gsap.set([jumpToBottomBtn, jumpToTopBtn], { 
+                        opacity: 0, 
+                        pointerEvents: 'none',
+                        transform: 'translateY(10px) scale(0.9)'
+                    });
+
+                    // Store button references for later click handler setup
+                    // (Click handlers will be set up after ScrollTrigger is created)
+                } else {
+                    console.log('Skip navigation buttons not found - create them in Webflow with the required classes');
+                }
+
                 // === Annotations setup (optional) ===
                 const annotations = Array.from(sequenceContainer.querySelectorAll('.annotation'));
                 annotations.forEach((annotation) => {
@@ -959,6 +1027,10 @@
                     anticipatePin: 1, // Improve pin performance
                     onUpdate: (self) => {
                         const progress = self.progress; // continuous 0..1
+                        
+                        // Update skip buttons visibility
+                        updateSkipButtons(progress);
+                        
                         // Map scroll progress to frame index with optional one or more pause plateaus
                         // Supports suffixless and -2, -3 variants for multiple holds
                         const readHold = (suffix) => {
@@ -1058,9 +1130,18 @@
                             // Entered pinned region: force and lock theme
                             try { utils.theme.set(sectionTheme, true); } catch (e) {}
                             try { utils.theme.locked = true; } catch (e) {}
+                            // Update button visibility when entering sequence
+                            updateSkipButtons(self.progress);
                         } else {
                             // Exited pinned region: unlock to allow next triggers
                             try { utils.theme.locked = false; } catch (e) {}
+                            // Hide buttons when leaving sequence
+                            if (jumpToBottomBtn && jumpToTopBtn) {
+                                gsap.set([jumpToBottomBtn, jumpToTopBtn], {
+                                    opacity: 0,
+                                    pointerEvents: 'none'
+                                });
+                            }
                         }
                     },
                     onLeave: () => {
@@ -1075,139 +1156,48 @@
                     }
                 });
 
-                // Find skip navigation buttons (created in Webflow)
-                const buttonContainer = document.querySelector('.scroll-sequence-skip-buttons');
-                const jumpToBottomBtn = document.querySelector('.scroll-sequence-skip-to-bottom');
-                const jumpToTopBtn = document.querySelector('.scroll-sequence-skip-to-top');
 
-                // Only initialize if buttons exist
+                // Store reference for cleanup
+                sequenceContainer._scrollSequenceTrigger = scrollTrigger;
+                sequenceContainer._scrollSequenceImages = images;
+                
+                // Set up click handlers now that scrollTrigger exists
                 if (buttonContainer && jumpToBottomBtn && jumpToTopBtn) {
-                    // Set initial hidden state
-                    gsap.set([jumpToBottomBtn, jumpToTopBtn], { 
-                        opacity: 0, 
-                        pointerEvents: 'none',
-                        transform: 'translateY(10px) scale(0.9)'
-                    });
-
                     // Jump to bottom functionality
                     jumpToBottomBtn.addEventListener('click', () => {
-                        const trigger = scrollTrigger;
-                        if (trigger) {
-                            // Scroll to the end of the pinned sequence
-                            const targetScroll = trigger.end;
-                            if (window.lenis && utils.lenis && utils.lenis.instance) {
-                                utils.lenis.instance.scrollTo(targetScroll, {
-                                    duration: 1.2,
-                                    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
-                                });
-                            } else {
-                                window.scrollTo({
-                                    top: targetScroll,
-                                    behavior: 'smooth'
-                                });
-                            }
+                        const targetScroll = scrollTrigger.end;
+                        if (window.lenis && utils.lenis && utils.lenis.instance) {
+                            utils.lenis.instance.scrollTo(targetScroll, {
+                                duration: 1.2,
+                                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+                            });
+                        } else {
+                            window.scrollTo({
+                                top: targetScroll,
+                                behavior: 'smooth'
+                            });
                         }
                     });
 
                     // Jump to top functionality
                     jumpToTopBtn.addEventListener('click', () => {
-                        const trigger = scrollTrigger;
-                        if (trigger) {
-                            // Scroll to the start of the pinned sequence
-                            const targetScroll = trigger.start;
-                            if (window.lenis && utils.lenis && utils.lenis.instance) {
-                                utils.lenis.instance.scrollTo(targetScroll, {
-                                    duration: 1.2,
-                                    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
-                                });
-                            } else {
-                                window.scrollTo({
-                                    top: targetScroll,
-                                    behavior: 'smooth'
-                                });
-                            }
+                        const targetScroll = scrollTrigger.start;
+                        if (window.lenis && utils.lenis && utils.lenis.instance) {
+                            utils.lenis.instance.scrollTo(targetScroll, {
+                                duration: 1.2,
+                                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+                            });
+                        } else {
+                            window.scrollTo({
+                                top: targetScroll,
+                                behavior: 'smooth'
+                            });
                         }
                     });
-
-                    const skipButtons = { jumpToBottomBtn, jumpToTopBtn, buttonContainer };
-
-                    // Update button visibility based on scroll progress
-                    const updateSkipButtons = (progress) => {
-                        // Show "jump to bottom" after 10% scroll (or ~1 second of scrolling)
-                        // Show "jump to top" when past 80% progress
-                        const showJumpToBottom = progress > 0.1 && progress < 0.8;
-                        const showJumpToTop = progress > 0.8;
-
-                        // Update jump to bottom button
-                        if (showJumpToBottom) {
-                            gsap.to(jumpToBottomBtn, {
-                                opacity: 1,
-                                transform: 'translateY(0) scale(1)',
-                                pointerEvents: 'auto',
-                                duration: 0.3,
-                                ease: 'power2.out'
-                            });
-                        } else {
-                            gsap.to(jumpToBottomBtn, {
-                                opacity: 0,
-                                transform: 'translateY(10px) scale(0.9)',
-                                pointerEvents: 'none',
-                                duration: 0.3,
-                                ease: 'power2.out'
-                            });
-                        }
-
-                        // Update jump to top button
-                        if (showJumpToTop) {
-                            gsap.to(jumpToTopBtn, {
-                                opacity: 1,
-                                transform: 'translateY(0) scale(1)',
-                                pointerEvents: 'auto',
-                                duration: 0.3,
-                                ease: 'power2.out'
-                            });
-                        } else {
-                            gsap.to(jumpToTopBtn, {
-                                opacity: 0,
-                                transform: 'translateY(10px) scale(0.9)',
-                                pointerEvents: 'none',
-                                duration: 0.3,
-                                ease: 'power2.out'
-                            });
-                        }
-                    };
-
-                    // Hook into scroll trigger's onUpdate to control button visibility
-                    const originalOnUpdate = scrollTrigger.vars.onUpdate;
-                    scrollTrigger.vars.onUpdate = (self) => {
-                        if (originalOnUpdate) originalOnUpdate(self);
-                        updateSkipButtons(self.progress);
-                    };
-
-                    // Also update on toggle to handle initial state
-                    const originalOnToggle = scrollTrigger.vars.onToggle;
-                    scrollTrigger.vars.onToggle = (self) => {
-                        if (originalOnToggle) originalOnToggle(self);
-                        if (self.isActive) {
-                            updateSkipButtons(self.progress);
-                        } else {
-                            // Hide buttons when not in sequence
-                            gsap.set([jumpToBottomBtn, jumpToTopBtn], {
-                                opacity: 0,
-                                pointerEvents: 'none'
-                            });
-                        }
-                    };
-
-                    // Store reference for cleanup
-                    sequenceContainer._scrollSequenceSkipButtons = skipButtons;
-                } else {
-                    console.log('Skip navigation buttons not found - create them in Webflow with the required classes');
+                    
+                    // Store button references for cleanup
+                    sequenceContainer._scrollSequenceSkipButtons = { jumpToBottomBtn, jumpToTopBtn, buttonContainer };
                 }
-
-                // Store reference for cleanup
-                sequenceContainer._scrollSequenceTrigger = scrollTrigger;
-                sequenceContainer._scrollSequenceImages = images;
 
                 console.log('Scroll sequence animation initialized successfully');
 
