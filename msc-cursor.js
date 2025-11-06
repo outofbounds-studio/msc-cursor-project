@@ -863,14 +863,24 @@
                 const jumpToBottomBtn = document.querySelector('.scroll-sequence-skip-to-bottom');
                 const jumpToTopBtn = document.querySelector('.scroll-sequence-skip-to-top');
 
-                // Function to update button visibility based on scroll progress
+                // Track previous progress to determine scroll direction
+                let previousProgress = 0;
+
+                // Function to update button visibility based on scroll progress and direction
                 const updateSkipButtons = (progress) => {
                     if (!jumpToBottomBtn || !jumpToTopBtn) return;
                     
-                    // Show "jump to bottom" after 10% scroll (or ~1 second of scrolling)
-                    // Show "jump to top" when past 80% progress
-                    const showJumpToBottom = progress > 0.1 && progress < 0.8;
-                    const showJumpToTop = progress > 0.8;
+                    // Determine scroll direction
+                    const isScrollingDown = progress > previousProgress;
+                    const isScrollingUp = progress < previousProgress;
+                    
+                    // Update previous progress for next comparison
+                    previousProgress = progress;
+                    
+                    // Show "jump to bottom" when scrolling down and between 10% and 80% progress
+                    // Show "jump to top" when scrolling up and past 10% progress
+                    const showJumpToBottom = isScrollingDown && progress > 0.1 && progress < 0.8;
+                    const showJumpToTop = isScrollingUp && progress > 0.1;
 
                     // Update jump to bottom button
                     if (showJumpToBottom) {
@@ -1130,11 +1140,15 @@
                             // Entered pinned region: force and lock theme
                             try { utils.theme.set(sectionTheme, true); } catch (e) {}
                             try { utils.theme.locked = true; } catch (e) {}
+                            // Reset scroll direction tracking when entering sequence
+                            previousProgress = self.progress;
                             // Update button visibility when entering sequence
                             updateSkipButtons(self.progress);
                         } else {
                             // Exited pinned region: unlock to allow next triggers
                             try { utils.theme.locked = false; } catch (e) {}
+                            // Reset scroll direction tracking when leaving sequence
+                            previousProgress = 0;
                             // Hide buttons when leaving sequence
                             if (jumpToBottomBtn && jumpToTopBtn) {
                                 gsap.set([jumpToBottomBtn, jumpToTopBtn], {
