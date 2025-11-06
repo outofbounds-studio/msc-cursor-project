@@ -1075,9 +1075,196 @@
                     }
                 });
 
+                // Create skip navigation buttons
+                const createSkipButtons = () => {
+                    // Create button container
+                    const buttonContainer = document.createElement('div');
+                    buttonContainer.className = 'scroll-sequence-skip-buttons';
+                    buttonContainer.setAttribute('aria-label', 'Skip navigation');
+                    Object.assign(buttonContainer.style, {
+                        position: 'fixed',
+                        bottom: '24px',
+                        right: '24px',
+                        zIndex: 9999,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '12px',
+                        pointerEvents: 'none'
+                    });
+
+                    // Jump to bottom button
+                    const jumpToBottomBtn = document.createElement('button');
+                    jumpToBottomBtn.className = 'scroll-sequence-skip-btn scroll-sequence-skip-to-bottom';
+                    jumpToBottomBtn.setAttribute('aria-label', 'Jump to end of animation');
+                    jumpToBottomBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 4L10 16M10 16L4 10M10 16L16 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+                    Object.assign(jumpToBottomBtn.style, {
+                        width: '48px',
+                        height: '48px',
+                        borderRadius: '50%',
+                        border: 'none',
+                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                        color: '#000',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        opacity: 0,
+                        transform: 'translateY(10px) scale(0.9)',
+                        pointerEvents: 'none',
+                        transition: 'opacity 0.3s ease, transform 0.3s ease',
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                        backdropFilter: 'blur(10px)'
+                    });
+
+                    // Jump to top button
+                    const jumpToTopBtn = document.createElement('button');
+                    jumpToTopBtn.className = 'scroll-sequence-skip-btn scroll-sequence-skip-to-top';
+                    jumpToTopBtn.setAttribute('aria-label', 'Jump to start of animation');
+                    jumpToTopBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 16L10 4M10 4L4 10M10 4L16 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+                    Object.assign(jumpToTopBtn.style, {
+                        width: '48px',
+                        height: '48px',
+                        borderRadius: '50%',
+                        border: 'none',
+                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                        color: '#000',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        opacity: 0,
+                        transform: 'translateY(10px) scale(0.9)',
+                        pointerEvents: 'none',
+                        transition: 'opacity 0.3s ease, transform 0.3s ease',
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                        backdropFilter: 'blur(10px)'
+                    });
+
+                    // Hover effects
+                    [jumpToBottomBtn, jumpToTopBtn].forEach(btn => {
+                        btn.addEventListener('mouseenter', () => {
+                            gsap.to(btn, { scale: 1.1, duration: 0.2, ease: 'power2.out' });
+                        });
+                        btn.addEventListener('mouseleave', () => {
+                            gsap.to(btn, { scale: 1, duration: 0.2, ease: 'power2.out' });
+                        });
+                    });
+
+                    // Jump to bottom functionality
+                    jumpToBottomBtn.addEventListener('click', () => {
+                        const trigger = scrollTrigger;
+                        if (trigger) {
+                            // Scroll to the end of the pinned sequence
+                            // For pinned ScrollTriggers, end represents where pinning ends
+                            const targetScroll = trigger.end;
+                            if (window.lenis && utils.lenis && utils.lenis.instance) {
+                                utils.lenis.instance.scrollTo(targetScroll, {
+                                    duration: 1.2,
+                                    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+                                });
+                            } else {
+                                window.scrollTo({
+                                    top: targetScroll,
+                                    behavior: 'smooth'
+                                });
+                            }
+                        }
+                    });
+
+                    // Jump to top functionality
+                    jumpToTopBtn.addEventListener('click', () => {
+                        const trigger = scrollTrigger;
+                        if (trigger) {
+                            // Scroll to the start of the pinned sequence
+                            // For pinned ScrollTriggers, start represents where pinning begins
+                            const targetScroll = trigger.start;
+                            if (window.lenis && utils.lenis && utils.lenis.instance) {
+                                utils.lenis.instance.scrollTo(targetScroll, {
+                                    duration: 1.2,
+                                    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+                                });
+                            } else {
+                                window.scrollTo({
+                                    top: targetScroll,
+                                    behavior: 'smooth'
+                                });
+                            }
+                        }
+                    });
+
+                    buttonContainer.appendChild(jumpToBottomBtn);
+                    buttonContainer.appendChild(jumpToTopBtn);
+                    document.body.appendChild(buttonContainer);
+
+                    return { jumpToBottomBtn, jumpToTopBtn, buttonContainer };
+                };
+
+                const skipButtons = createSkipButtons();
+
+                // Update button visibility based on scroll progress
+                const updateSkipButtons = (progress) => {
+                    const { jumpToBottomBtn, jumpToTopBtn } = skipButtons;
+                    
+                    // Show "jump to bottom" after 10% scroll (or ~1 second of scrolling)
+                    // Show "jump to top" when past 80% progress
+                    const showJumpToBottom = progress > 0.1 && progress < 0.8;
+                    const showJumpToTop = progress > 0.8;
+
+                    // Update jump to bottom button
+                    if (showJumpToBottom) {
+                        jumpToBottomBtn.style.opacity = '1';
+                        jumpToBottomBtn.style.transform = 'translateY(0) scale(1)';
+                        jumpToBottomBtn.style.pointerEvents = 'auto';
+                        skipButtons.buttonContainer.style.pointerEvents = 'auto';
+                    } else {
+                        jumpToBottomBtn.style.opacity = '0';
+                        jumpToBottomBtn.style.transform = 'translateY(10px) scale(0.9)';
+                        jumpToBottomBtn.style.pointerEvents = 'none';
+                    }
+
+                    // Update jump to top button
+                    if (showJumpToTop) {
+                        jumpToTopBtn.style.opacity = '1';
+                        jumpToTopBtn.style.transform = 'translateY(0) scale(1)';
+                        jumpToTopBtn.style.pointerEvents = 'auto';
+                        skipButtons.buttonContainer.style.pointerEvents = 'auto';
+                    } else {
+                        jumpToTopBtn.style.opacity = '0';
+                        jumpToTopBtn.style.transform = 'translateY(10px) scale(0.9)';
+                        jumpToTopBtn.style.pointerEvents = 'none';
+                    }
+
+                    // Hide container if no buttons are visible
+                    if (!showJumpToBottom && !showJumpToTop) {
+                        skipButtons.buttonContainer.style.pointerEvents = 'none';
+                    }
+                };
+
+                // Hook into scroll trigger's onUpdate to control button visibility
+                const originalOnUpdate = scrollTrigger.vars.onUpdate;
+                scrollTrigger.vars.onUpdate = (self) => {
+                    if (originalOnUpdate) originalOnUpdate(self);
+                    updateSkipButtons(self.progress);
+                };
+
+                // Also update on toggle to handle initial state
+                const originalOnToggle = scrollTrigger.vars.onToggle;
+                scrollTrigger.vars.onToggle = (self) => {
+                    if (originalOnToggle) originalOnToggle(self);
+                    if (self.isActive) {
+                        updateSkipButtons(self.progress);
+                    } else {
+                        // Hide buttons when not in sequence
+                        skipButtons.jumpToBottomBtn.style.opacity = '0';
+                        skipButtons.jumpToTopBtn.style.opacity = '0';
+                        skipButtons.buttonContainer.style.pointerEvents = 'none';
+                    }
+                };
+
                 // Store reference for cleanup
                 sequenceContainer._scrollSequenceTrigger = scrollTrigger;
                 sequenceContainer._scrollSequenceImages = images;
+                sequenceContainer._scrollSequenceSkipButtons = skipButtons;
 
                 console.log('Scroll sequence animation initialized successfully');
 
@@ -1096,6 +1283,14 @@
                     }
                     if (container._scrollSequenceImages) {
                         container._scrollSequenceImages = null;
+                    }
+                    // Remove skip buttons
+                    if (container._scrollSequenceSkipButtons) {
+                        const { buttonContainer } = container._scrollSequenceSkipButtons;
+                        if (buttonContainer && buttonContainer.parentNode) {
+                            buttonContainer.parentNode.removeChild(buttonContainer);
+                        }
+                        container._scrollSequenceSkipButtons = null;
                     }
                     // Remove the dynamically created image
                     const imageContainer = container.querySelector('[data-sequence-images]');
