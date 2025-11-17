@@ -435,12 +435,28 @@
         lenis: {
             instance: null,
             init() {
+                // Don't initialize Lenis in Webflow editor (prevents scrolling issues)
+                if (this.isWebflowEditor()) {
+                    console.log('Webflow editor detected - skipping Lenis initialization');
+                    return;
+                }
+                
                 this.instance = new Lenis({
                     lerp: 0.1,
                     smooth: true
                 });
                 window.lenis = this.instance;
                 this.raf();
+            },
+            isWebflowEditor() {
+                // Check for Webflow editor indicators
+                return (
+                    document.body.classList.contains('w-editor') ||
+                    document.body.classList.contains('w-editor-body') ||
+                    document.documentElement.classList.contains('w-editor') ||
+                    window.location.search.includes('wf-editor') ||
+                    window.parent !== window // In iframe (editor context)
+                );
             },
             raf(time) {
                 this.instance?.raf(time);
