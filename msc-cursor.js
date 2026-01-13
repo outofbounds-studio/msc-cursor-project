@@ -1994,14 +1994,16 @@
                                 tokens.push(v);
                             }
                         });
-                        if (tokens.length) item.setAttribute('data-filter-name', tokens.join(' '));
+                        // Use pipe delimiter to separate multiple categories (supports multi-word category names)
+                        if (tokens.length) item.setAttribute('data-filter-name', tokens.join('|'));
                     });
                     
                     // Cache item tokens
                     const itemTokens = new Map();
                     items.forEach(el => {
                         const raw = (el.getAttribute('data-filter-name') || '').trim().toLowerCase();
-                        const tokens = raw ? raw.split(/\s+/).filter(Boolean) : [];
+                        // Split by pipe delimiter to support both multi-word category names and multiple categories
+                        const tokens = raw ? raw.split('|').map(t => t.trim()).filter(Boolean) : [];
                         itemTokens.set(el, new Set(tokens));
                     });
                     
