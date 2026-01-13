@@ -1,5 +1,5 @@
 // msc.js - Metal Staircase Co. Website Scripts
-// Version: 1.0.2 updated 07/10/2025 21.31
+// Version: 1.0.3 updated 13/01/2026 - Fixed multi-word filter categories
 
 (function() {
     console.log('msc-cursor.js script loaded and executing!');
@@ -1995,7 +1995,11 @@
                             }
                         });
                         // Use pipe delimiter to separate multiple categories (supports multi-word category names)
-                        if (tokens.length) item.setAttribute('data-filter-name', tokens.join('|'));
+                        if (tokens.length) {
+                            const filterName = tokens.join('|');
+                            item.setAttribute('data-filter-name', filterName);
+                            console.log('Set filter name:', filterName);
+                        }
                     });
                     
                     // Cache item tokens
