@@ -365,6 +365,7 @@
                 components.initTestimonial();
                 components.initModalBasic();
                 components.initAccordionCSS();
+                components.initExpandingFeaturePills();
                 initNumberTickerAnimation();
                 initScrambleText();
             } else if (currentNamespace === 'work-item') {
@@ -397,7 +398,6 @@
                 console.log('Initializing styles page specific functions');
                 components.initCustomCursor();
                 animations.initSplitTextAnimation();
-                components.initExpandingFeaturePills();
                 initScrambleText();
             }
         }
@@ -2984,7 +2984,6 @@
                 console.log('[Barba] styles.afterEnter');
                 components.initCustomCursor();
                 animations.initSplitTextAnimation();
-                components.initExpandingFeaturePills();
                 initScrambleText();
                 // Guard desktop-only row animation and ensure mobile layout is clean
                 const resetStylesMobile = () => {
@@ -3147,6 +3146,7 @@
                 components.initSliders();
                 components.initModalBasic();
                 components.initAccordionCSS();
+                components.initExpandingFeaturePills();
                 initNumberTickerAnimation();
                 initScrambleText();
             },
