@@ -343,7 +343,14 @@
 
         // Initialize page-specific functions for direct page loads (not through Barba)
         function initPageSpecificFunctions() {
-            const currentNamespace = barba.current?.namespace;
+            // Try to get namespace from Barba first, fallback to data attribute
+            let currentNamespace = barba.current?.namespace;
+            if (!currentNamespace) {
+                const pageWrap = document.querySelector('[data-barba-namespace]');
+                if (pageWrap) {
+                    currentNamespace = pageWrap.getAttribute('data-barba-namespace');
+                }
+            }
             console.log('Initializing page-specific functions for namespace:', currentNamespace);
             
             // Initialize Multi Filter System on all pages
@@ -386,6 +393,12 @@
                 animations.initSplitTextAnimation();
                 components.initAccordionCSS();
                 initFilterBasic();
+            } else if (currentNamespace === 'styles') {
+                console.log('Initializing styles page specific functions');
+                components.initCustomCursor();
+                animations.initSplitTextAnimation();
+                components.initExpandingFeaturePills();
+                initScrambleText();
             }
         }
 
@@ -2447,8 +2460,13 @@
 
         initExpandingFeaturePills() {
             try {
+                console.log('[ExpandingFeaturePills] Initializing...');
                 const wraps = document.querySelectorAll("[data-feature-pills-init]");
-                if (!wraps.length) return;
+                console.log('[ExpandingFeaturePills] Found', wraps.length, 'feature pill containers');
+                if (!wraps.length) {
+                    console.log('[ExpandingFeaturePills] No containers found, exiting');
+                    return;
+                }
 
                 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
