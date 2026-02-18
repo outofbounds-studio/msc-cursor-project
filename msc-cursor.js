@@ -365,6 +365,7 @@
                 components.initTestimonial();
                 components.initModalBasic();
                 components.initAccordionCSS();
+                components.initCollectionListStyleFilter();
                 components.initExpandingFeaturePills();
                 initNumberTickerAnimation();
                 initScrambleText();
@@ -2458,6 +2459,120 @@
             }
         },
 
+        initCollectionListStyleFilter() {
+            try {
+                // Small delay to ensure collection lists are fully rendered
+                const filterFn = () => {
+                    try {
+                        console.log('[CollectionListFilter] Initializing style-based filtering...');
+                        
+                        // Get current design style name from page
+                        let currentStyle = null;
+                        
+                        // Method 1: Get from URL slug (most reliable)
+                        const urlPath = window.location.pathname;
+                        const match = urlPath.match(/\/design-styles\/([^\/]+)/);
+                        if (match) {
+                            // Capitalize first letter (carbon -> Carbon, flux-central-spine -> Flux - Central Spine)
+                            const slug = match[1];
+                            if (slug.includes('-')) {
+                                // Handle multi-word styles like "flux-central-spine"
+                                if (slug === 'flux-central-spine') {
+                                    currentStyle = 'Flux - Central Spine';
+                                } else {
+                                    currentStyle = slug.split('-').map(word => 
+                                        word.charAt(0).toUpperCase() + word.slice(1)
+                                    ).join(' ');
+                                }
+                            } else {
+                                currentStyle = slug.charAt(0).toUpperCase() + slug.slice(1);
+                            }
+                        }
+                        
+                        // Method 2: Fallback to page title
+                        if (!currentStyle) {
+                            const pageTitle = document.querySelector('h1');
+                            if (pageTitle) {
+                                currentStyle = pageTitle.textContent.trim();
+                            }
+                        }
+                        
+                        if (!currentStyle) {
+                            console.warn('[CollectionListFilter] Could not determine current design style');
+                            return;
+                        }
+                        
+                        console.log('[CollectionListFilter] Current style:', currentStyle);
+                        
+                        // Find collection list items - Webflow uses [role="listitem"] for collection items
+                        // We need to check items that have a Style reference field
+                        const allListItems = document.querySelectorAll('[role="listitem"]');
+                        
+                        if (!allListItems.length) {
+                            console.log('[CollectionListFilter] No collection list items found');
+                            return;
+                        }
+                        
+                        let filteredCount = 0;
+                        let shownCount = 0;
+                        
+                        allListItems.forEach((item) => {
+                            // In Webflow, when you have a reference field, it's typically rendered as a link
+                            // The Style reference field should link to a Design Style page
+                            // We can check the href of style links within the item
+                            const styleLinks = item.querySelectorAll('a[href*="/design-styles/"]');
+                            
+                            let itemStyle = null;
+                            
+                            if (styleLinks.length > 0) {
+                                // Extract style name from the link href
+                                styleLinks.forEach(link => {
+                                    const hrefMatch = link.href.match(/\/design-styles\/([^\/\?#]+)/);
+                                    if (hrefMatch) {
+                                        const slug = hrefMatch[1];
+                                        // Convert slug to style name (same logic as above)
+                                        if (slug.includes('-')) {
+                                            if (slug === 'flux-central-spine') {
+                                                itemStyle = 'Flux - Central Spine';
+                                            } else {
+                                                itemStyle = slug.split('-').map(word => 
+                                                    word.charAt(0).toUpperCase() + word.slice(1)
+                                                ).join(' ');
+                                            }
+                                        } else {
+                                            itemStyle = slug.charAt(0).toUpperCase() + slug.slice(1);
+                                        }
+                                    }
+                                });
+                            }
+                            
+                            // If we found a style and it doesn't match current style, hide the item
+                            if (itemStyle) {
+                                if (itemStyle !== currentStyle) {
+                                    item.style.display = 'none';
+                                    item.setAttribute('aria-hidden', 'true');
+                                    filteredCount++;
+                                } else {
+                                    item.style.display = '';
+                                    item.setAttribute('aria-hidden', 'false');
+                                    shownCount++;
+                                }
+                            }
+                        });
+                        
+                        console.log(`[CollectionListFilter] Filtered ${filteredCount} items, showing ${shownCount} items`);
+                        console.log('[CollectionListFilter] Filtering complete');
+                    } catch (error) {
+                        utils.handleError('initCollectionListStyleFilter', error);
+                    }
+                };
+                
+                setTimeout(filterFn, 100);
+            } catch (error) {
+                utils.handleError('initCollectionListStyleFilter', error);
+            }
+        },
+
         initExpandingFeaturePills() {
             try {
                 console.log('[ExpandingFeaturePills] Initializing...');
@@ -3146,6 +3261,7 @@
                 components.initSliders();
                 components.initModalBasic();
                 components.initAccordionCSS();
+                components.initCollectionListStyleFilter();
                 components.initExpandingFeaturePills();
                 initNumberTickerAnimation();
                 initScrambleText();
