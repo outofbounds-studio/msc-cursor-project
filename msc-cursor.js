@@ -2951,8 +2951,32 @@
                     }, 0.2);
                 };
 
-                // Close button handler
+                // Close button handler with hover animation
                 if (popupClose) {
+                    // Set initial state for hover animation
+                    gsap.set(popupClose, {
+                        transformOrigin: 'center center'
+                    });
+
+                    // Hover animation (similar to feature pills close button)
+                    popupClose.addEventListener('mouseenter', () => {
+                        gsap.to(popupClose, {
+                            scale: 1.1,
+                            rotation: 90,
+                            duration: 0.3,
+                            ease: "power2.out"
+                        });
+                    });
+
+                    popupClose.addEventListener('mouseleave', () => {
+                        gsap.to(popupClose, {
+                            scale: 1,
+                            rotation: 0,
+                            duration: 0.3,
+                            ease: "power2.out"
+                        });
+                    });
+
                     popupClose.addEventListener('click', (e) => {
                         e.preventDefault();
                         e.stopPropagation();
