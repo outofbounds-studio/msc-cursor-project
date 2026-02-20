@@ -2971,12 +2971,15 @@
                     });
 
                     // Hover animation (similar to feature pills close button)
+                    // Use force3D and overwrite to ensure GSAP overrides CSS transitions
                     popupClose.addEventListener('mouseenter', () => {
                         gsap.to(popupClose, {
                             scale: 1.1,
                             rotation: 90,
                             duration: 0.3,
-                            ease: "power2.out"
+                            ease: "power2.out",
+                            force3D: true,
+                            overwrite: true
                         });
                     });
 
@@ -2985,7 +2988,9 @@
                             scale: 1,
                             rotation: 0,
                             duration: 0.3,
-                            ease: "power2.out"
+                            ease: "power2.out",
+                            force3D: true,
+                            overwrite: true
                         });
                     });
 
