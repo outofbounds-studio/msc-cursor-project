@@ -2864,6 +2864,10 @@
                 console.log('[HomePopup] Initializing...');
 
                 // Set initial state - hidden, positioned off-screen bottom-right
+                // Set initial active state to false (for CSS transitions)
+                popupWrap.setAttribute('data-home-popup-active', 'false');
+                popupWrap.classList.remove('is-active');
+                
                 gsap.set(popupWrap, {
                     display: 'block',
                     opacity: 0,
@@ -2885,6 +2889,10 @@
                 // Function to show popup
                 const showPopup = () => {
                     console.log('[HomePopup] Showing popup after 7 seconds');
+                    
+                    // Add active class for CSS transitions (like feature pills)
+                    popupWrap.setAttribute('data-home-popup-active', 'true');
+                    popupWrap.classList.add('is-active');
                     
                     const tl = gsap.timeline({
                         defaults: { ease: "power2.out", duration: 0.6 }
@@ -2917,6 +2925,10 @@
                 // Function to hide popup
                 const hidePopup = () => {
                     console.log('[HomePopup] Hiding popup');
+                    
+                    // Remove active class for CSS transitions
+                    popupWrap.setAttribute('data-home-popup-active', 'false');
+                    popupWrap.classList.remove('is-active');
                     
                     const tl = gsap.timeline({
                         defaults: { ease: "power2.in", duration: 0.4 },
