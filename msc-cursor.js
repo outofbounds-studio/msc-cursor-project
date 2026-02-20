@@ -2835,6 +2835,156 @@
             } catch (error) {
                 utils.handleError('initExpandingFeaturePills', error);
             }
+        },
+
+        initHomePopup() {
+            try {
+                // Check if popup has already been shown (using localStorage like the loader)
+                const popupShown = localStorage.getItem('msc-home-popup-shown');
+                if (popupShown === 'true') {
+                    console.log('[HomePopup] Already shown, skipping');
+                    return;
+                }
+
+                const popupWrap = document.querySelector('[data-home-popup="wrap"]');
+                if (!popupWrap) {
+                    console.log('[HomePopup] Popup element not found');
+                    return;
+                }
+
+                const popupContent = popupWrap.querySelector('.home-popup-content');
+                const popupClose = popupWrap.querySelector('[data-home-popup="close"]');
+                const popupOverlay = popupWrap.querySelector('.home-popup-overlay');
+
+                if (!popupContent) {
+                    console.warn('[HomePopup] Popup content not found');
+                    return;
+                }
+
+                console.log('[HomePopup] Initializing...');
+
+                // Set initial state - hidden, positioned off-screen bottom-right
+                gsap.set(popupWrap, {
+                    display: 'block',
+                    opacity: 0,
+                    pointerEvents: 'none'
+                });
+
+                gsap.set(popupContent, {
+                    x: '100%',
+                    y: '100%',
+                    transformOrigin: 'bottom right'
+                });
+
+                if (popupOverlay) {
+                    gsap.set(popupOverlay, {
+                        opacity: 0
+                    });
+                }
+
+                // Function to show popup
+                const showPopup = () => {
+                    console.log('[HomePopup] Showing popup after 7 seconds');
+                    
+                    const tl = gsap.timeline({
+                        defaults: { ease: "power2.out", duration: 0.6 }
+                    });
+
+                    // Show overlay
+                    if (popupOverlay) {
+                        tl.to(popupOverlay, {
+                            opacity: 1,
+                            duration: 0.4
+                        }, 0);
+                    }
+
+                    // Show wrapper
+                    tl.to(popupWrap, {
+                        opacity: 1,
+                        pointerEvents: 'auto',
+                        duration: 0.3
+                    }, 0.1);
+
+                    // Animate content in from bottom-right
+                    tl.to(popupContent, {
+                        x: 0,
+                        y: 0,
+                        duration: 0.7,
+                        ease: "back.out(1.2)"
+                    }, 0.2);
+                };
+
+                // Function to hide popup
+                const hidePopup = () => {
+                    console.log('[HomePopup] Hiding popup');
+                    
+                    const tl = gsap.timeline({
+                        defaults: { ease: "power2.in", duration: 0.4 },
+                        onComplete: () => {
+                            popupWrap.style.display = 'none';
+                            // Mark as shown in localStorage
+                            localStorage.setItem('msc-home-popup-shown', 'true');
+                        }
+                    });
+
+                    // Animate content out to bottom-right
+                    tl.to(popupContent, {
+                        x: '100%',
+                        y: '100%',
+                        duration: 0.5,
+                        ease: "power2.in"
+                    }, 0);
+
+                    // Hide overlay
+                    if (popupOverlay) {
+                        tl.to(popupOverlay, {
+                            opacity: 0,
+                            duration: 0.3
+                        }, 0.1);
+                    }
+
+                    // Hide wrapper
+                    tl.to(popupWrap, {
+                        opacity: 0,
+                        pointerEvents: 'none',
+                        duration: 0.3
+                    }, 0.2);
+                };
+
+                // Close button handler
+                if (popupClose) {
+                    popupClose.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        hidePopup();
+                    });
+                }
+
+                // Close on overlay click (if overlay exists)
+                if (popupOverlay) {
+                    popupOverlay.addEventListener('click', (e) => {
+                        if (e.target === popupOverlay) {
+                            hidePopup();
+                        }
+                    });
+                }
+
+                // Close on Escape key
+                const handleEscape = (e) => {
+                    if (e.key === 'Escape' && popupWrap.style.opacity !== '0') {
+                        hidePopup();
+                        document.removeEventListener('keydown', handleEscape);
+                    }
+                };
+                document.addEventListener('keydown', handleEscape);
+
+                // Show popup after 7 seconds
+                setTimeout(showPopup, 1000);
+
+                console.log('[HomePopup] Popup will show in 7 seconds');
+            } catch (error) {
+                utils.handleError('initHomePopup', error);
+            }
         }
     };
     
@@ -2860,6 +3010,7 @@
                 animations.initScrollSequenceAnimation();
                 initScrambleText();
                 initHeroParallax();
+                components.initHomePopup();
             },
             afterLeave() {
                 console.log('[Barba] home.afterLeave');
