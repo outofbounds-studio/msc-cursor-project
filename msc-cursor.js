@@ -92,6 +92,11 @@
             const wrap = document.querySelector("[data-load-wrap]");
             if (!wrap) return;
 
+            // Show loader immediately (overrides Webflow display:none so it's hidden in Designer)
+            wrap.style.display = "block";
+            wrap.style.opacity = "1";
+            wrap.style.pointerEvents = "auto";
+
             const container = wrap.querySelector("[data-load-container]");
             const bg = wrap.querySelector("[data-load-bg]");
             const progressBar = wrap.querySelector("[data-load-progress]");
