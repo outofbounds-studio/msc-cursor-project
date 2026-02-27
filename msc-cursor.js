@@ -3035,7 +3035,7 @@
                 document.addEventListener('keydown', handleEscape);
 
                 // Show popup after 7 seconds
-                setTimeout(showPopup, 7000);
+                setTimeout(showPopup, 12000);
 
                 console.log('[HomePopup] Popup will show in 7 seconds');
             } catch (error) {
