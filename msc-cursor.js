@@ -92,11 +92,6 @@
             const wrap = document.querySelector("[data-load-wrap]");
             if (!wrap) return;
 
-            // Show loader immediately (overrides Webflow display:none so it's hidden in Designer)
-            wrap.style.display = "block";
-            wrap.style.opacity = "1";
-            wrap.style.pointerEvents = "auto";
-
             const container = wrap.querySelector("[data-load-container]");
             const bg = wrap.querySelector("[data-load-bg]");
             const progressBar = wrap.querySelector("[data-load-progress]");
@@ -903,7 +898,7 @@
 
                 // Function to update button visibility based on scroll progress and direction
                 const updateSkipButtons = (progress) => {
-                    if (!jumpToBottomBtn || !jumpToTopBtn) return;
+                    if (!buttonContainer || !jumpToBottomBtn || !jumpToTopBtn) return;
                     
                     // Determine scroll direction
                     const isScrollingDown = progress > previousProgress;
@@ -916,6 +911,16 @@
                     // Show "jump to top" when scrolling up and past 10% progress
                     const showJumpToBottom = isScrollingDown && progress > 0.1 && progress < 0.8;
                     const showJumpToTop = isScrollingUp && progress > 0.1;
+
+                    const anyVisible = showJumpToBottom || showJumpToTop;
+
+                    // Toggle container visibility so skip buttons are hidden until user reaches the sequence
+                    gsap.to(buttonContainer, {
+                        opacity: anyVisible ? 1 : 0,
+                        pointerEvents: anyVisible ? 'auto' : 'none',
+                        duration: 0.3,
+                        ease: 'power2.out'
+                    });
 
                     // Update jump to bottom button
                     if (showJumpToBottom) {
@@ -958,7 +963,12 @@
 
                 // Initialize buttons if they exist
                 if (buttonContainer && jumpToBottomBtn && jumpToTopBtn) {
-                    // Set initial hidden state
+                    // Set initial hidden state for container and buttons
+                    gsap.set(buttonContainer, {
+                        opacity: 0,
+                        pointerEvents: 'none'
+                    });
+
                     gsap.set([jumpToBottomBtn, jumpToTopBtn], { 
                         opacity: 0, 
                         pointerEvents: 'none',
