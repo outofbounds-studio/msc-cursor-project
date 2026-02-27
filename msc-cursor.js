@@ -823,6 +823,11 @@
 
         initScrollSequenceAnimation() {
             try {
+                // Skip heavy scroll sequence logic inside Webflow Editor to avoid scroll issues
+                if (utils.lenis.isWebflowEditor()) {
+                    console.log('Webflow Editor detected – skipping scroll sequence animation');
+                    return;
+                }
                 const sequenceContainer = document.querySelector('[data-scroll-sequence]');
                 if (!sequenceContainer) {
                     console.log('No scroll sequence container found');
@@ -4506,6 +4511,12 @@
         // === Aker Companies Style Menu System ===
     function initAkerMenuBasic() {
         console.log('🔍 Initializing basic Aker-style menu system...');
+
+        // Skip menu initialization in Webflow Editor to avoid interfering with Editor scrolling
+        if (utils.lenis && typeof utils.lenis.isWebflowEditor === 'function' && utils.lenis.isWebflowEditor()) {
+            console.log('Webflow Editor detected – skipping menu initialization');
+            return;
+        }
 
         const burgerBtn = document.querySelector('.burger_wrap');
         const menuOverlay = document.querySelector('.menu-overlay');
