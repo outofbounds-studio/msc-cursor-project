@@ -4,6 +4,15 @@
 (function() {
     console.log('msc-cursor.js script loaded and executing!');
     
+    // === Google Tag Manager (GTM-KR6WVTRC) ===
+    // Loads GTM once for the whole site. Additional pageview events are
+    // pushed via Barba hooks further down in this file.
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-KR6WVTRC');
+    
     // === Menu system is now handled by initAkerMenu() ===
     
 
@@ -339,6 +348,36 @@
             console.log('REMINDER: Check that Jetboost markup is present in the DOM after transition.');
         });
 
+        // --- Google Tag Manager: virtual pageviews for Barba.js SPA navigation ---
+        function pushGTMPageView(data) {
+            try {
+                if (!window.dataLayer) return;
+                const namespace = data?.next?.namespace || barba?.current?.namespace || null;
+                const pagePath = window.location.pathname + window.location.search;
+                const pageTitle = document.title;
+                
+                window.dataLayer.push({
+                    event: 'virtualPageview',
+                    page_path: pagePath,
+                    page_title: pageTitle,
+                    page_namespace: namespace
+                });
+                
+                console.log('[GTM] virtualPageview pushed', { pagePath, pageTitle, namespace });
+            } catch (e) {
+                console.warn('[GTM] Failed to push virtualPageview', e);
+            }
+        }
+
+        // Fire a GTM pageview on the very first load
+        barba.hooks.once((data) => {
+            pushGTMPageView(data);
+        });
+
+        // Fire a GTM pageview after every Barba transition
+        barba.hooks.afterEnter((data) => {
+            pushGTMPageView(data);
+        });
         
 
         // Initialize page-specific functions for direct page loads (not through Barba)
