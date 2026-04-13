@@ -2531,46 +2531,68 @@
                         }
                     }
 
-                    dataSubmit.addEventListener('click', async function () {
+                    let isSubmitting = false;
+
+                    dataSubmit.addEventListener('click', async function (event) {
+                        // realSubmitInput.click() bubbles to dataSubmit; skip to avoid duplicate verification
+                        if (event.target === realSubmitInput) return;
+                        if (isSubmitting) return;
+                        isSubmitting = true;
+
                         console.log(`Form ${index + 1}: Submit button clicked`);
                         if (validateAndStartLiveValidationForAll()) {
                             console.log(`Form ${index + 1}: Validation passed, checking spam protection`);
                             if (isSpam()) {
                                 console.log(`Form ${index + 1}: Spam protection triggered`);
                                 alert('Form submitted too quickly. Please try again.');
+                                isSubmitting = false;
                                 return;
                             }
                             const turnstileOk = await verifyTurnstile(form);
                             if (!turnstileOk) {
                                 console.log(`Form ${index + 1}: Turnstile verification failed`);
+                                isSubmitting = false;
                                 return;
                             }
                             console.log(`Form ${index + 1}: Triggering form submission`);
                             realSubmitInput.click();
+                            // Allow future manual submissions after this cycle completes.
+                            setTimeout(() => {
+                                isSubmitting = false;
+                            }, 1200);
                         } else {
                             console.log(`Form ${index + 1}: Validation failed`);
+                            isSubmitting = false;
                         }
                     });
 
                     form.addEventListener('keydown', async function (event) {
                         if (event.key === 'Enter' && event.target.tagName !== 'TEXTAREA') {
                             event.preventDefault();
+                            if (isSubmitting) return;
+                            isSubmitting = true;
                             console.log(`Form ${index + 1}: Enter key pressed`);
                             if (validateAndStartLiveValidationForAll()) {
                                 if (isSpam()) {
                                     console.log(`Form ${index + 1}: Spam protection triggered (Enter key)`);
                                     alert('Form submitted too quickly. Please try again.');
+                                    isSubmitting = false;
                                     return;
                                 }
                                 const turnstileOk = await verifyTurnstile(form);
                                 if (!turnstileOk) {
                                     console.log(`Form ${index + 1}: Turnstile verification failed (Enter key)`);
+                                    isSubmitting = false;
                                     return;
                                 }
                                 console.log(`Form ${index + 1}: Triggering form submission (Enter key)`);
                                 realSubmitInput.click();
+                                setTimeout(() => {
+                                    isSubmitting = false;
+                                }, 1200);
                             } else {
                                 console.log(`Form ${index + 1}: Validation failed (Enter key)`);
+                                isSubmitting = false;
                             }
                         }
                     });
