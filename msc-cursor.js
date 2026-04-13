@@ -2479,13 +2479,42 @@
                         }
                     });
 
-                    dataSubmit.addEventListener('click', function () {
+                    async function verifyTurnstile(formEl) {
+                        const tokenInput = formEl.querySelector('input[name="cf-turnstile-response"]');
+                        const token = tokenInput ? tokenInput.value : '';
+
+                        if (!token) {
+                            alert('Please complete verification and try again.');
+                            return false;
+                        }
+
+                        try {
+                            const response = await fetch('https://metalstairs-turnstile-verify.ben-89f.workers.dev', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ token })
+                            });
+                            const result = await response.json();
+                            return result.ok === true;
+                        } catch (error) {
+                            console.error(`Form ${index + 1}: Turnstile verification request failed`, error);
+                            alert('Verification failed. Please try again.');
+                            return false;
+                        }
+                    }
+
+                    dataSubmit.addEventListener('click', async function () {
                         console.log(`Form ${index + 1}: Submit button clicked`);
                         if (validateAndStartLiveValidationForAll()) {
                             console.log(`Form ${index + 1}: Validation passed, checking spam protection`);
                             if (isSpam()) {
                                 console.log(`Form ${index + 1}: Spam protection triggered`);
                                 alert('Form submitted too quickly. Please try again.');
+                                return;
+                            }
+                            const turnstileOk = await verifyTurnstile(form);
+                            if (!turnstileOk) {
+                                console.log(`Form ${index + 1}: Turnstile verification failed`);
                                 return;
                             }
                             console.log(`Form ${index + 1}: Triggering form submission`);
@@ -2495,7 +2524,7 @@
                         }
                     });
 
-                    form.addEventListener('keydown', function (event) {
+                    form.addEventListener('keydown', async function (event) {
                         if (event.key === 'Enter' && event.target.tagName !== 'TEXTAREA') {
                             event.preventDefault();
                             console.log(`Form ${index + 1}: Enter key pressed`);
@@ -2503,6 +2532,11 @@
                                 if (isSpam()) {
                                     console.log(`Form ${index + 1}: Spam protection triggered (Enter key)`);
                                     alert('Form submitted too quickly. Please try again.');
+                                    return;
+                                }
+                                const turnstileOk = await verifyTurnstile(form);
+                                if (!turnstileOk) {
+                                    console.log(`Form ${index + 1}: Turnstile verification failed (Enter key)`);
                                     return;
                                 }
                                 console.log(`Form ${index + 1}: Triggering form submission (Enter key)`);
