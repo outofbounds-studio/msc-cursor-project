@@ -2480,8 +2480,28 @@
                     });
 
                     async function verifyTurnstile(formEl) {
-                        const tokenInput = formEl.querySelector('input[name="cf-turnstile-response"]');
-                        const token = tokenInput ? tokenInput.value : '';
+                        const getToken = () => {
+                            const tokenInput = formEl.querySelector('input[name="cf-turnstile-response"]');
+                            return tokenInput ? tokenInput.value : '';
+                        };
+                        let token = getToken();
+
+                        if (!token) {
+                            const turnstileContainer = formEl.querySelector('.cf-turnstile');
+                            if (turnstileContainer && window.turnstile && typeof window.turnstile.execute === 'function') {
+                                try {
+                                    window.turnstile.execute(turnstileContainer);
+                                    // Wait briefly for the hidden token input to populate.
+                                    for (let i = 0; i < 10; i += 1) {
+                                        await new Promise(resolve => setTimeout(resolve, 250));
+                                        token = getToken();
+                                        if (token) break;
+                                    }
+                                } catch (executeError) {
+                                    console.error(`Form ${index + 1}: Turnstile execute failed`, executeError);
+                                }
+                            }
+                        }
 
                         if (!token) {
                             alert('Please complete verification and try again.');
