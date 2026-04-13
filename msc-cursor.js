@@ -2217,6 +2217,14 @@
                     }
                     console.log(`Form ${index + 1}: Form element found:`, form);
 
+                    // Prevent duplicate listener binding when form init runs multiple times
+                    // (e.g. initial load + Barba reinitialization on the same DOM).
+                    if (form.__advancedValidationBound) {
+                        console.log(`Form ${index + 1}: Validation already bound, skipping duplicate setup`);
+                        return;
+                    }
+                    form.__advancedValidationBound = true;
+
                     const validateFields = form.querySelectorAll('[data-validate]');
                     console.log(`Form ${index + 1}: Fields with data-validate:`, validateFields.length);
 
