@@ -2498,7 +2498,8 @@
                             const turnstileContainer = formEl.querySelector('.cf-turnstile');
                             if (turnstileContainer && window.turnstile && typeof window.turnstile.execute === 'function') {
                                 try {
-                                    window.turnstile.execute(turnstileContainer);
+                                    // Turnstile execute now expects both container and params.
+                                    window.turnstile.execute(turnstileContainer, {});
                                     // Wait briefly for the hidden token input to populate.
                                     for (let i = 0; i < 10; i += 1) {
                                         await new Promise(resolve => setTimeout(resolve, 250));
