@@ -2500,8 +2500,8 @@
                                 try {
                                     // Turnstile execute now expects both container and params.
                                     window.turnstile.execute(turnstileContainer, {});
-                                    // Wait briefly for the hidden token input to populate.
-                                    for (let i = 0; i < 10; i += 1) {
+                                    // Mobile can take longer to generate the token after execute().
+                                    for (let i = 0; i < 20; i += 1) {
                                         await new Promise(resolve => setTimeout(resolve, 250));
                                         token = getToken();
                                         if (token) break;
