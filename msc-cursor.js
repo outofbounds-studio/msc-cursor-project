@@ -2983,10 +2983,10 @@
 
         initHomePopup() {
             try {
-                // Check if popup has already been shown (using localStorage like the loader)
-                const popupShown = localStorage.getItem('msc-home-popup-shown');
-                if (popupShown === 'true') {
-                    console.log('[HomePopup] Already shown, skipping');
+                const popupCooldownMs = 3 * 24 * 60 * 60 * 1000;
+                const popupLastShown = parseInt(localStorage.getItem('msc-home-popup-last-shown') || '0', 10);
+                if (popupLastShown && Date.now() - popupLastShown < popupCooldownMs) {
+                    console.log('[HomePopup] Recently shown, skipping');
                     return;
                 }
 
@@ -3078,8 +3078,8 @@
                         defaults: { ease: "power2.in", duration: 0.4 },
                         onComplete: () => {
                             popupWrap.style.display = 'none';
-                            // Mark as shown in localStorage
-                            localStorage.setItem('msc-home-popup-shown', 'true');
+                            // Store a timestamp so the popup can reappear after a cooldown.
+                            localStorage.setItem('msc-home-popup-last-shown', String(Date.now()));
                         }
                     });
 
@@ -3163,10 +3163,10 @@
                 };
                 document.addEventListener('keydown', handleEscape);
 
-                // Show popup after 7 seconds
-                setTimeout(showPopup, 12000);
+                // Show popup after 8 seconds
+                setTimeout(showPopup, 8000);
 
-                console.log('[HomePopup] Popup will show in 7 seconds');
+                console.log('[HomePopup] Popup will show in 8 seconds');
             } catch (error) {
                 utils.handleError('initHomePopup', error);
             }
