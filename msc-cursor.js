@@ -328,6 +328,9 @@
             } else {
                 console.log('No forms detected, skipping form validation');
             }
+
+            // Reinitialize attribute-driven sticky pin behavior on each page transition
+            components.initStickyPins();
             
             // Initialize Multi Filter System on all pages
             components.initMultiFilterSetupMultiMatch();
@@ -470,6 +473,9 @@
         } else {
             console.log('No forms detected in main init, skipping form validation');
         }
+
+        // Initialize attribute-driven sticky pin behavior for first page load
+        components.initStickyPins();
         
         console.log('Initialization complete');
     }
@@ -1454,6 +1460,66 @@
     
     // Component Initializers
     const components = {
+        stickyPinTriggers: [],
+
+        cleanupStickyPins() {
+            this.stickyPinTriggers.forEach(trigger => trigger.kill());
+            this.stickyPinTriggers = [];
+        },
+
+        initStickyPins() {
+            try {
+                if (typeof ScrollTrigger === 'undefined') {
+                    console.log('[StickyPin] ScrollTrigger not available, skipping');
+                    return;
+                }
+
+                this.cleanupStickyPins();
+
+                const pinElements = document.querySelectorAll('[data-sticky-pin="true"], [data-pin="true"]');
+                if (!pinElements.length) {
+                    console.log('[StickyPin] No sticky pin elements found');
+                    return;
+                }
+
+                pinElements.forEach((pinEl, index) => {
+                    const triggerSelector = pinEl.getAttribute('data-sticky-trigger') || pinEl.getAttribute('data-pin-trigger');
+                    const endTriggerSelector = pinEl.getAttribute('data-sticky-end-trigger') || pinEl.getAttribute('data-pin-end-trigger');
+                    const start = pinEl.getAttribute('data-sticky-start') || pinEl.getAttribute('data-pin-start') || 'top top';
+                    const end = pinEl.getAttribute('data-sticky-end') || pinEl.getAttribute('data-pin-end') || 'bottom bottom';
+                    const pinSpacingAttr = pinEl.getAttribute('data-sticky-pin-spacing') || pinEl.getAttribute('data-pin-spacing');
+                    const pinSpacing = pinSpacingAttr === null ? true : pinSpacingAttr === 'true';
+
+                    const defaultTrigger = pinEl.closest('[data-sticky-section]') || pinEl.parentElement || pinEl;
+                    const triggerEl = triggerSelector ? document.querySelector(triggerSelector) : defaultTrigger;
+                    const endTriggerEl = endTriggerSelector ? document.querySelector(endTriggerSelector) : triggerEl;
+
+                    if (!triggerEl || !endTriggerEl) {
+                        console.warn('[StickyPin] Trigger or end trigger not found, skipping element', pinEl);
+                        return;
+                    }
+
+                    const trigger = ScrollTrigger.create({
+                        trigger: triggerEl,
+                        start,
+                        end,
+                        endTrigger: endTriggerEl,
+                        pin: pinEl,
+                        pinSpacing,
+                        invalidateOnRefresh: true,
+                        anticipatePin: 1
+                    });
+
+                    this.stickyPinTriggers.push(trigger);
+                    console.log(`[StickyPin] Created trigger ${index + 1}`, { start, end, pinSpacing, pinEl });
+                });
+
+                ScrollTrigger.refresh();
+            } catch (error) {
+                utils.handleError('initStickyPins', error);
+            }
+        },
+
         initSliders() {
             try {
                 const sliders = $(".slider-main_component");
