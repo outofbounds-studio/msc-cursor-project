@@ -481,6 +481,29 @@
 
         // Initialize attribute-driven sticky pin behavior for first page load
         components.initStickyPins();
+
+        // CMS quote collection pages (/quote/...) often omit the Barba wrapper, so afterEnter
+        // never runs. Mirror the same heading/text animation setup used on Barba transitions.
+        if (!hasBarbaWrapper && /\/quote\//.test(window.location.pathname)) {
+            console.log('[Quote page] Non-Barba load — initializing mask/scramble/divider animations');
+            initMaskTextScrollReveal();
+            initScrambleText();
+            initSpecLineReveal();
+            wrapFirstWordInSpan();
+            initDividerLineReveal();
+            if (typeof ScrollTrigger !== 'undefined') {
+                try {
+                    ScrollTrigger.refresh();
+                } catch (e) {
+                    /* ignore */
+                }
+            }
+            setTimeout(() => {
+                if (window.Jetboost && typeof Jetboost.ReInit === 'function') {
+                    Jetboost.ReInit();
+                }
+            }, 200);
+        }
         
         console.log('Initialization complete');
     }
