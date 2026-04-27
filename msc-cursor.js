@@ -242,8 +242,13 @@
         
         // Initialize footer parallax AFTER theme system to avoid ScrollTrigger conflicts
         animations.initFooterParallax();
-        console.log('Initializing Barba...');
-        barba.init(barbaConfig);
+        const hasBarbaWrapper = !!document.querySelector('[data-barba="wrapper"]');
+        if (hasBarbaWrapper) {
+            console.log('Initializing Barba...');
+            barba.init(barbaConfig);
+        } else {
+            console.log('No Barba wrapper found, skipping Barba init');
+        }
 
         // Handle same-page hash navigation (clicking hash links on current page)
         document.addEventListener('click', (e) => {
