@@ -3178,10 +3178,10 @@
                             ease: "back.out(1.2)"
                         }, 0.2);
 
-                        // Reveal image from under content (horizontal on desktop, vertical on phone)
+                        // Reveal image from under content (horizontal on desktop; on phone, move up by content height)
                         tl.to(popupImage, isMobilePopupImageReveal
                             ? {
-                                y: "-100%",
+                                y: () => -popupContent.offsetHeight,
                                 duration: 0.65,
                                 ease: "power2.inOut"
                             }
