@@ -3077,7 +3077,7 @@
 
         initHomePopup() {
             try {
-                const popupCooldownMs = 3 * 24 * 60 * 60 * 1000;
+                const popupCooldownMs = 12 * 60 * 60 * 1000;
                 const popupLastShown = parseInt(localStorage.getItem('msc-home-popup-last-shown') || '0', 10);
                 if (popupLastShown && Date.now() - popupLastShown < popupCooldownMs) {
                     console.log('[HomePopup] Recently shown, skipping');
