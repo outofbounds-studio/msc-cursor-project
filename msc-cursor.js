@@ -3178,10 +3178,12 @@
                             ease: "back.out(1.2)"
                         }, 0.2);
 
-                        // Reveal image from under content (horizontal on desktop; on phone, move up by content height)
+                        // On phone, peel by one stacked layer height. .home-popup-content often
+                        // wraps the form too, so its offsetHeight can dwarf the image — use the
+                        // smaller of content vs image box height to avoid overshooting.
                         tl.to(popupImage, isMobilePopupImageReveal
                             ? {
-                                y: () => -popupContent.offsetHeight,
+                                y: () => -Math.min(popupContent.offsetHeight, popupImage.offsetHeight),
                                 duration: 0.65,
                                 ease: "power2.inOut"
                             }
