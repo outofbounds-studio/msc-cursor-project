@@ -3091,6 +3091,7 @@
                 }
 
                 const popupContent = popupWrap.querySelector('.home-popup-content');
+                const popupImage = popupWrap.querySelector('.home-popup-image');
                 const popupClose = popupWrap.querySelector('[data-home-popup="close"]');
                 const popupOverlay = popupWrap.querySelector('.home-popup-overlay');
 
@@ -3117,6 +3118,14 @@
                     y: '100%',
                     transformOrigin: 'bottom right'
                 });
+
+                if (popupImage) {
+                    gsap.set(popupImage, {
+                        x: '100%',
+                        y: '100%',
+                        transformOrigin: 'bottom right'
+                    });
+                }
 
                 if (popupOverlay) {
                     gsap.set(popupOverlay, {
@@ -3151,13 +3160,29 @@
                         duration: 0.3
                     }, 0.1);
 
-                    // Animate content in from bottom-right
+                    // Animate content (and image under it) in from bottom-right
                     tl.to(popupContent, {
                         x: 0,
                         y: 0,
                         duration: 0.7,
                         ease: "back.out(1.2)"
                     }, 0.2);
+
+                    if (popupImage) {
+                        tl.to(popupImage, {
+                            x: 0,
+                            y: 0,
+                            duration: 0.7,
+                            ease: "back.out(1.2)"
+                        }, 0.2);
+
+                        // Reveal image from under content: slide image left by one width
+                        tl.to(popupImage, {
+                            x: '-100%',
+                            duration: 0.65,
+                            ease: 'power2.inOut'
+                        });
+                    }
                 };
 
                 // Function to hide popup
@@ -3177,13 +3202,32 @@
                         }
                     });
 
-                    // Animate content out to bottom-right
+                    // Tuck image back under content (if it was revealed), then fly both out together
+                    if (popupImage) {
+                        tl.to(popupImage, {
+                            x: 0,
+                            y: 0,
+                            duration: 0.35,
+                            ease: "power2.inOut"
+                        });
+                    }
+
+                    const flyOutStart = popupImage ? ">" : 0;
                     tl.to(popupContent, {
-                        x: '100%',
-                        y: '100%',
+                        x: "100%",
+                        y: "100%",
                         duration: 0.5,
                         ease: "power2.in"
-                    }, 0);
+                    }, flyOutStart);
+
+                    if (popupImage) {
+                        tl.to(popupImage, {
+                            x: "100%",
+                            y: "100%",
+                            duration: 0.5,
+                            ease: "power2.in"
+                        }, "<");
+                    }
 
                     // Hide overlay
                     if (popupOverlay) {
