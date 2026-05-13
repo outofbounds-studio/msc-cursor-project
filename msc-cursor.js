@@ -3100,6 +3100,8 @@
                     return;
                 }
 
+                const isMobilePopupImageReveal = window.matchMedia("(max-width: 767px)").matches;
+
                 console.log('[HomePopup] Initializing...');
 
                 // Set initial state - hidden, positioned off-screen bottom-right
@@ -3176,12 +3178,18 @@
                             ease: "back.out(1.2)"
                         }, 0.2);
 
-                        // Reveal image from under content: slide image left by one width
-                        tl.to(popupImage, {
-                            x: '-100%',
-                            duration: 0.65,
-                            ease: 'power2.inOut'
-                        });
+                        // Reveal image from under content (horizontal on desktop, vertical on phone)
+                        tl.to(popupImage, isMobilePopupImageReveal
+                            ? {
+                                y: "-100%",
+                                duration: 0.65,
+                                ease: "power2.inOut"
+                            }
+                            : {
+                                x: "-100%",
+                                duration: 0.65,
+                                ease: "power2.inOut"
+                            });
                     }
                 };
 
