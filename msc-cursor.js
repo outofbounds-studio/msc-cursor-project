@@ -3135,6 +3135,48 @@
                     });
                 }
 
+                /** Pixels to translate .home-popup-image up on mobile (negative y). */
+                const getMobileImageRevealTravelPx = () => {
+                    if (!popupImage) {
+                        return 1;
+                    }
+                    const attr = popupWrap.getAttribute("data-home-popup-reveal-travel-px");
+                    if (attr != null && attr !== "") {
+                        const n = parseInt(attr, 10);
+                        if (!Number.isNaN(n) && n > 0) {
+                            return n;
+                        }
+                    }
+
+                    const contentH = popupContent.offsetHeight;
+                    const imageH = popupImage.offsetHeight;
+                    const cRect = popupContent.getBoundingClientRect();
+                    const iRect = popupImage.getBoundingClientRect();
+                    const overlapPx = Math.max(
+                        0,
+                        Math.min(cRect.bottom, iRect.bottom) - Math.max(cRect.top, iRect.top)
+                    );
+
+                    let peel =
+                        overlapPx > 2 ? Math.round(overlapPx) : Math.min(contentH, imageH);
+                    const imageRectH = Math.round(iRect.height);
+                    peel = Math.max(peel, imageRectH);
+
+                    const last = popupContent.lastElementChild;
+                    const lastH = last ? last.offsetHeight : 0;
+                    const remainder = contentH - lastH;
+                    if (
+                        last &&
+                        lastH > contentH * 0.12 &&
+                        remainder > peel &&
+                        remainder < contentH
+                    ) {
+                        peel = Math.round(remainder);
+                    }
+
+                    return Math.min(Math.max(1, peel), contentH);
+                };
+
                 // Function to show popup
                 const showPopup = () => {
                     console.log('[HomePopup] Showing popup after 7 seconds');
@@ -3178,12 +3220,12 @@
                             ease: "back.out(1.2)"
                         }, 0.2);
 
-                        // On phone, peel by one stacked layer height. .home-popup-content often
-                        // wraps the form too, so its offsetHeight can dwarf the image — use the
-                        // smaller of content vs image box height to avoid overshooting.
+                        // On phone: travel = overlap of content/image in the viewport, at least the
+                        // image’s rendered height, and optionally content minus last block (e.g. form).
+                        // Optional override: data-home-popup-reveal-travel-px="420" on the wrap.
                         tl.to(popupImage, isMobilePopupImageReveal
                             ? {
-                                y: () => -Math.min(popupContent.offsetHeight, popupImage.offsetHeight),
+                                y: () => -getMobileImageRevealTravelPx(),
                                 duration: 0.65,
                                 ease: "power2.inOut"
                             }
