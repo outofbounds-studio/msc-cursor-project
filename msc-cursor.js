@@ -13,7 +13,7 @@
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-KR6WVTRC');
     
-    // === Menu system is now handled by initAkerMenu() ===
+    // === Menu: Osmo scaling hamburger (data-navigation-*) ===
     
 
     
@@ -230,9 +230,7 @@
             initLogoRevealLoader();
         }
         
-        // Initialize Aker-style menu system now that GSAP is available
-        initAkerMenuBasic(); // Basic menu without GSAP animations
-        // Initialize scaling hamburger navigation (data-attribute driven)
+        // Osmo scaling hamburger navigation (data-navigation-*)
         utils.initScalingHamburgerNavigation();
         
         console.log('Initializing Lenis...');
@@ -339,9 +337,6 @@
             
             // Initialize Multi Filter System on all pages
             components.initMultiFilterSetupMultiMatch();
-            
-            // Reset menu state on page transitions
-            resetMenuForPageTransitionBasic(); // Basic reset without GSAP page transforms
             
             console.log('All animations initialized');
             setTimeout(() => {
@@ -576,6 +571,7 @@
                     const navStatusEl = document.querySelector('[data-navigation-status]');
                     if (!navStatusEl) return;
                     navStatusEl.setAttribute('data-navigation-status', 'not-active');
+                    document.body.style.overflow = '';
                     if (window.lenis) window.lenis.start();
                 };
 
@@ -589,6 +585,7 @@
                         if (window.lenis) {
                             isActive ? window.lenis.start() : window.lenis.stop();
                         }
+                        if (isActive) document.body.style.overflow = '';
                     });
                 });
 
@@ -4405,18 +4402,6 @@
       onCloseComplete
     } = {}) {
       console.log('createLightbox called with container:', container);
-      
-      // Clear any menu transforms that might interfere with lightbox
-      const pageWrap = document.querySelector('.page_wrap');
-      if (pageWrap && (pageWrap.classList.contains('menu-open') || pageWrap.hasAttribute('data-menu-fallback'))) {
-        console.log('🔄 Clearing menu transforms for lightbox compatibility...');
-        pageWrap.classList.remove('menu-open');
-        if (pageWrap.hasAttribute('data-menu-fallback')) {
-          pageWrap.style.transform = '';
-          pageWrap.style.transition = '';
-          pageWrap.removeAttribute('data-menu-fallback');
-        }
-      }
       const elements = {
         wrapper: container.querySelector('[data-lightbox="wrapper"]'),
         triggers: container.querySelectorAll('[data-lightbox="trigger"]'),
@@ -4548,19 +4533,7 @@
             updateActiveItem(0);
             container.addEventListener('click', handleOutsideClick);
             elements.wrapper.classList.add('is-active');
-            
-            // Clear any menu transforms immediately when lightbox opens
-            const pageWrap = document.querySelector('.page_wrap');
-            if (pageWrap && (pageWrap.classList.contains('menu-open') || pageWrap.hasAttribute('data-menu-fallback'))) {
-              console.log('🔄 Clearing menu transforms for lightbox...');
-              pageWrap.classList.remove('menu-open');
-              if (pageWrap.hasAttribute('data-menu-fallback')) {
-                pageWrap.style.transform = '';
-                pageWrap.style.transition = '';
-                pageWrap.removeAttribute('data-menu-fallback');
-              }
-            }
-            
+
             // Force centering after lightbox opens
             setTimeout(() => {
               forceLightboxCentering();
@@ -4600,24 +4573,12 @@
             }
           });
           elements.wrapper.classList.add('is-active');
-          
-          // Clear any menu transforms immediately when lightbox opens
-          const pageWrap = document.querySelector('.page_wrap');
-          if (pageWrap && (pageWrap.classList.contains('menu-open') || pageWrap.hasAttribute('data-menu-fallback'))) {
-            console.log('🔄 Clearing menu transforms for lightbox...');
-            pageWrap.classList.remove('menu-open');
-            if (pageWrap.hasAttribute('data-menu-fallback')) {
-              pageWrap.style.transform = '';
-              pageWrap.style.transition = '';
-              pageWrap.removeAttribute('data-menu-fallback');
-            }
-          }
-          
+
           // Force centering after lightbox opens
           setTimeout(() => {
             forceLightboxCentering();
           }, 100);
-          
+
           const targetItem = elements.items[index];
           const lightboxImage = targetItem ? targetItem.querySelector('img') : null;
           if (lightboxImage) {
@@ -4819,350 +4780,6 @@
             }
         });
     }
-    
-
-
-        // === Aker Companies Style Menu System ===
-    function initAkerMenuBasic() {
-        console.log('🔍 Initializing basic Aker-style menu system...');
-
-        // Skip menu initialization in Webflow Editor to avoid interfering with Editor scrolling
-        if (utils.lenis && typeof utils.lenis.isWebflowEditor === 'function' && utils.lenis.isWebflowEditor()) {
-            console.log('Webflow Editor detected – skipping menu initialization');
-            return;
-        }
-
-        const burgerBtn = document.querySelector('.burger_wrap');
-        const menuOverlay = document.querySelector('.menu-overlay');
-        const pageWrap = document.querySelector('.page_wrap');
-        const navBar = document.querySelector('.nav_bar');
-        const closeMenuBtn = document.querySelector('.close-menu');
-        
-        // Check if menu system is already initialized to prevent duplicate initialization
-        if (pageWrap && pageWrap.hasAttribute('data-menu-initialized')) {
-            console.log('✅ Menu system already initialized, skipping...');
-            return;
-        }
-
-        if (!burgerBtn || !menuOverlay || !pageWrap || !navBar) {
-            console.warn('⚠️ Menu elements not found, skipping menu initialization');
-            return;
-        }
-
-        console.log('✅ Setting up basic menu system...');
-
-        // Set initial state: menu completely hidden
-        gsap.set(menuOverlay, {
-            y: -100,        // Menu starts hidden above viewport
-            opacity: 0,     // Menu starts invisible
-            pointerEvents: 'none'  // Not clickable
-        });
-
-        // Don't set any transforms initially - let CSS handle it
-        // pageWrap.style.transform = 'translateY(0px) scale(1)';
-        // pageWrap.style.transition = 'transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-        
-        // Remove any existing menu classes
-        pageWrap.classList.remove('menu-open');
-
-        function openMenu() {
-            console.log('🔍 Opening menu...');
-
-            // Hide nav bar and lock body scroll
-            navBar.classList.add('hide');
-            document.body.style.overflow = 'hidden';
-
-            // Animate both menu overlay and page content using CSS transforms
-            gsap.to(menuOverlay, {
-                y: 0,               // Menu slides down from top
-                opacity: 1,         // Menu becomes visible
-                pointerEvents: 'auto', // Enable interactions
-                duration: 0.7,
-                ease: "power2.inOut"
-            });
-            
-            // Use CSS class only - let CSS handle the transforms
-            pageWrap.classList.add('menu-open');
-            console.log('✅ Added menu-open class to pageWrap');
-            console.log('🔍 pageWrap classes:', pageWrap.className);
-            console.log('🔍 pageWrap transform:', getComputedStyle(pageWrap).transform);
-            
-            // Fallback: Apply transform directly if CSS isn't working
-            setTimeout(() => {
-                // Check if we're still on the same page and menu should be open
-                if (pageWrap.classList.contains('menu-open')) {
-                    const computedTransform = getComputedStyle(pageWrap).transform;
-                    if (computedTransform === 'none' || computedTransform === 'matrix(1, 0, 0, 1, 0, 0)') {
-                        console.log('⚠️ CSS transform not working, applying fallback');
-                        pageWrap.style.transform = 'translateY(350px) scale(0.98)';
-                        pageWrap.style.transition = 'transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                        pageWrap.setAttribute('data-menu-fallback', 'true');
-                    } else {
-                        console.log('✅ CSS transform is working:', computedTransform);
-                    }
-                } else {
-                    console.log('✅ Menu closed before fallback could apply, skipping transform');
-                }
-            }, 100);
-        }
-
-        function closeMenu() {
-            console.log('🔍 Closing menu...');
-
-            // Show nav bar and restore body scroll
-            navBar.classList.remove('hide');
-            document.body.style.overflow = '';
-
-            // Animate menu overlay back and reset page content
-            gsap.to(menuOverlay, {
-                y: -100,            // Menu slides back up
-                opacity: 0,         // Menu becomes invisible
-                pointerEvents: 'none', // Disable interactions
-                duration: 0.7,
-                ease: "power2.inOut"
-            });
-            
-            // Remove CSS class to reset page content
-            pageWrap.classList.remove('menu-open');
-            console.log('✅ Removed menu-open class from pageWrap');
-            console.log('🔍 pageWrap classes:', pageWrap.className);
-            console.log('🔍 pageWrap transform:', getComputedStyle(pageWrap).transform);
-            
-            // Always reset any fallback transforms to ensure clean state
-            if (pageWrap.hasAttribute('data-menu-fallback')) {
-                console.log('🔄 Resetting fallback transforms...');
-                pageWrap.style.transform = 'translateY(0) scale(1)';
-                pageWrap.style.transition = 'transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                pageWrap.removeAttribute('data-menu-fallback');
-                console.log('✅ Fallback transforms reset');
-            }
-            
-            // Additional safety: force reset after a delay
-            setTimeout(() => {
-                const computedTransform = getComputedStyle(pageWrap).transform;
-                if (computedTransform !== 'none' && computedTransform !== 'matrix(1, 0, 0, 1, 0, 0)') {
-                    console.log('⚠️ Transform still not reset, forcing cleanup...');
-                    pageWrap.style.transform = '';
-                    pageWrap.style.transition = '';
-                    console.log('✅ Forced transform cleanup complete');
-                }
-            }, 200);
-        }
-
-        // Event listeners
-        burgerBtn.addEventListener('click', openMenu);
-
-        if (closeMenuBtn) {
-            closeMenuBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                closeMenu();
-            });
-        }
-
-        // Click outside to close
-        pageWrap.addEventListener('click', function() {
-            if (menuOverlay.style.pointerEvents === 'auto') {
-                closeMenu();
-            }
-        });
-
-        // Prevent closing when clicking inside menu
-        menuOverlay.addEventListener('click', function(e) {
-            e.stopPropagation();
-        });
-
-        // Mark menu system as initialized to prevent duplicate initialization
-        if (pageWrap) {
-            pageWrap.setAttribute('data-menu-initialized', 'true');
-        }
-        
-        console.log('✅ Basic Aker-style menu system initialized successfully');
-    }
-
-    // function initAkerMenu() {
-    //     console.log('🔍 Initializing Aker-style menu system...');
-
-    //     const burgerBtn = document.querySelector('.burger_wrap');
-    //     const menuOverlay = document.querySelector('.menu-overlay');
-    //     const pageWrap = document.querySelector('.page_wrap');
-    //     const navBar = document.querySelector('.nav_bar');
-    //     const closeMenuBtn = document.querySelector('.close-menu');
-
-    //     if (!burgerBtn || !menuOverlay || !pageWrap || !navBar) {
-    //         console.warn('⚠️ Menu elements not found, skipping menu initialization');
-    //         return;
-    //     }
-
-    //     // Ensure GSAP is available
-    //     if (typeof gsap === 'undefined') {
-    //         console.error('GSAP is not loaded. Menu animations will not work.');
-    //         return;
-    //     }
-
-    //     console.log('✅ GSAP available, setting up Aker-style menu...');
-
-    //     // Set initial state: menu completely hidden, page in normal position
-    //     gsap.set(menuOverlay, {
-    //         y: -100,        // Menu starts hidden above viewport
-    //         opacity: 0,     // Menu starts invisible
-    //         pointerEvents: 'none'  // Not clickable
-    //     });
-
-    //     gsap.set(pageWrap, {
-    //         y: 0,           // Page starts in normal position
-    //         scale: 1        // Page starts at normal scale
-    //     });
-
-    //     function openMenu() {
-    //         console.log('🔍 Opening menu...');
-
-    //         // Hide nav bar and lock body scroll
-    //         navBar.classList.add('hide');
-    //         document.body.style.overflow = 'hidden';
-
-    //         // Create timeline for simultaneous animations
-    //         gsap.timeline()
-    //             .to(menuOverlay, {
-    //                 y: 0,               // Menu slides down from top
-    //                 opacity: 1,         // Menu becomes visible
-    //                 pointerEvents: 'auto', // Enable interactions
-    //                 duration: 0.7,
-    // ease: "power2.inOut"
-    //             }, 0) // Start at same time
-    //             .to(pageWrap, {
-    //                 y: 350,             // Page moves down more to reveal full menu
-    //                 scale: 0.98,        // Page scales down slightly
-    //                 duration: 0.7,
-    //                 ease: "power2.inOut"
-    //             }, 0); // Start at same time
-    //     }
-
-    //     function closeMenu() {
-    //         console.log('🔍 Closing menu...');
-
-    //         // Show nav bar and restore body scroll
-    //         navBar.classList.remove('hide');
-    //         document.body.style.overflow = '';
-
-    //         // Create timeline for simultaneous closing animations
-    //         gsap.timeline()
-    //             .to(menuOverlay, {
-    //                 y: -100,            // Menu slides back up
-    //                 opacity: 0,         // Menu becomes invisible
-    //                 pointerEvents: 'none', // Disable interactions
-    //                 duration: 0.7,
-    //                 ease: "power2.inOut"
-    //             }, 0) // Start at same time
-    //             .to(pageWrap, {
-    //                 y: 0,               // Page moves back up to original position
-    //                 scale: 1,           // Page scales back to normal
-    //                 duration: 0.7,
-    //                 ease: "power2.inOut"
-    //             }, 0); // Start at same time
-    //     }
-
-    //     // Event listeners
-    //     burgerBtn.addEventListener('click', openMenu);
-
-    //     if (closeMenuBtn) {
-    //         closeMenuBtn.addEventListener('click', function(e) {
-    //                 e.preventDefault();
-    //                 e.stopPropagation();
-    //                 closeMenu();
-    //             });
-    //     }
-
-    //     // Click outside to close
-    //         pageWrap.addEventListener('click', function() {
-    //             if (menuOverlay.style.pointerEvents === 'auto') {
-    //                 closeMenu();
-    //             }
-    //         });
-
-    //     // Prevent closing when clicking inside menu
-    //         menuOverlay.addEventListener('click', function(e) {
-    //                 e.stopPropagation();
-    //             });
-
-    //         console.log('✅ Aker-style menu system initialized successfully');
-    // }
-    
-    // Function to reset menu state on page transitions
-    function resetMenuForPageTransitionBasic() {
-        const menuOverlay = document.querySelector('.menu-overlay');
-        const navBar = document.querySelector('.nav_bar');
-        
-        if (menuOverlay && navBar) {
-            console.log('🔄 Resetting basic menu for page transition...');
-            
-            // Reset menu overlay to hidden state (only the menu, not the page)
-            gsap.set(menuOverlay, { 
-                y: -100,        // Menu hidden above viewport
-                opacity: 0,     // Menu invisible
-                pointerEvents: 'none'  // Not clickable
-            });
-            
-            // Reset page content by removing CSS class and any fallback transforms
-            const pageWrap = document.querySelector('.page_wrap');
-            if (pageWrap) {
-                pageWrap.classList.remove('menu-open');
-                
-                // If fallback was used, reset it completely
-                if (pageWrap.hasAttribute('data-menu-fallback')) {
-                    console.log('🔄 Resetting fallback menu transforms...');
-                    pageWrap.style.transform = '';
-                    pageWrap.style.transition = '';
-                    pageWrap.removeAttribute('data-menu-fallback');
-                }
-                
-                // Force cleanup of any remaining transforms
-                const computedTransform = getComputedStyle(pageWrap).transform;
-                if (computedTransform !== 'none' && computedTransform !== 'matrix(1, 0, 0, 1, 0, 0)') {
-                    console.log('🔄 Forcing cleanup of remaining transforms...');
-                    pageWrap.style.transform = '';
-                    pageWrap.style.transition = '';
-                }
-            }
-            
-            // Remove any menu-related classes
-            navBar.classList.remove('hide');
-            document.body.style.overflow = '';
-            
-            console.log('✅ Basic menu reset complete for page transition');
-        }
-    }
-
-    // function resetMenuForPageTransition() {
-    //     const menuOverlay = document.querySelector('.menu-overlay');
-    //     const pageWrap = document.querySelector('.page_wrap');
-    //     const navBar = document.querySelector('.nav_bar');
-    //     
-    //     if (menuOverlay && pageWrap && navBar) {
-    //         console.log('🔄 Resetting menu for page transition...');
-    //         
-    //         // Reset menu overlay to hidden state
-    //         gsap.set(menuOverlay, { 
-    //             y: -100,        // Menu hidden above viewport
-    //             opacity: 0,     // Menu invisible
-    //             pointerEvents: 'none'  // Not clickable
-    //         });
-    //         
-    //         // Reset pageWrap to normal position
-    //         gsap.set(pageWrap, { 
-    //             y: 0,           // Page in normal position
-    //             scale: 1        // Page at normal scale
-    //         });
-    //         
-    //         // Remove any menu-related classes
-    //     navBar.classList.remove('hide');
-    //         document.body.style.overflow = '';
-    //         
-    //         console.log('✅ Menu reset complete for page transition');
-    //     }
-    // }
-
-
 
 
 })();
