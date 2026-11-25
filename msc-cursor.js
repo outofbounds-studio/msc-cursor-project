@@ -505,57 +505,36 @@
         console.log('Initialization complete');
     }
 
-    // Call and WhatsApp buttons, fixed to the corner on every page.
+    // Call and WhatsApp, using the same Let's talk button. Fixed to the corner on every page.
     function initFloatButtons() {
         if (document.querySelector('.float-pair')) return;
 
         var style = document.createElement('style');
         style.textContent = [
-            '.float-pair { z-index: 40; position: fixed; right: 1rem; bottom: 4rem; display: flex; flex-direction: column; align-items: flex-end; gap: 0.75rem; font-family: inherit; }',
-            '.float-circle { color: #EFEEEC; background: #FF4C24; border-radius: 100%; display: none; flex: 0 0 auto; justify-content: center; align-items: center; width: 3.5rem; height: 3.5rem; padding: 0; line-height: 0; text-decoration: none; }',
-            '.float-circle.is-whatsapp { background: #21211F; }',
-            '.float-halo, .float-pill-halo { background: rgba(255, 76, 36, 0.35); justify-content: center; align-items: center; }',
-            '.float-halo { display: none; border-radius: 100%; margin-right: -0.3rem; padding: 0.3rem; }',
-            '.float-pill-halo { display: flex; border-radius: 100vw; margin-right: -0.35rem; padding: 0.35rem; transform: scale(1); transform-origin: center; transition: transform 0.3s ease-in-out; }',
-            '.float-pill-halo:hover { transform: scale(1.06); }',
-            '.float-icon { position: relative; z-index: 2; display: flex; flex: 0 0 auto; justify-content: center; align-items: center; width: 1.5rem; height: 1.5rem; line-height: 0; }',
-            '.float-icon svg { display: block; width: 100%; height: 100%; position: absolute; left: 0; top: 0; }',
-            '.float-icon.is-small { width: 1.15rem; height: 1.15rem; }',
-            '.float-pill { position: relative; display: flex; flex: 0 0 auto; justify-content: center; align-items: center; column-gap: 0.5rem; padding: 0.75rem 1.15rem; border-radius: 100vw; color: #EFEEEC; background: #FF4C24; letter-spacing: -0.03em; white-space: nowrap; font-size: 1rem; line-height: 1; text-decoration: none; overflow: hidden; }',
-            '.float-pill.is-whatsapp { background: #21211F; }',
-            '.float-pair a:focus-visible { outline: 2px solid #FF4C24; outline-offset: 3px; }',
+            '.float-pair { z-index: 40; position: fixed; right: 1rem; bottom: 4rem; display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem; }',
             'body:has([data-navigation-status="active"]) .float-pair { opacity: 0; pointer-events: none; }',
             '@media screen and (max-width: 767px) {',
-            '  .float-pair { bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px)); row-gap: 0.5rem; }',
-            '  .float-circle { width: 2.75rem; height: 2.75rem; display: flex; }',
-            '  .float-halo { display: flex; }',
-            '  .float-icon { width: 1.15rem; height: 1.15rem; }',
-            '  .float-pill, .float-pill-halo { display: none; }',
-            '}',
-            '@media screen and (max-width: 479px) { .float-pair { row-gap: 0.4rem; } }',
-            '@media (prefers-reduced-motion: reduce) { .float-pill-halo { transition: none; } }'
+            '  .float-pair { bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px)); }',
+            '}'
         ].join('\n');
         document.head.appendChild(style);
+
+        var arrow = '<svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 11 6" fill="none" class="main-btn-arrow" aria-hidden="true"><path d="M7.5 5.45V3.32H0V2.12H7.5V0L10.86 2.71L7.5 5.44V5.45Z" fill="currentColor"></path></svg>';
+
+        function button(label, href, extra) {
+            return '<a class="button btn-main w-inline-block" href="' + href + '"' + (extra || '') + '>' +
+                '<p class="button-text">' + label + '</p>' +
+                arrow +
+                '<div class="button-bg"></div>' +
+                '</a>';
+        }
 
         var pair = document.createElement('div');
         pair.className = 'float-pair';
         pair.setAttribute('aria-label', 'Call or WhatsApp');
         pair.innerHTML = [
-            '<a class="float-circle is-phone" aria-label="Call Metal Staircase Co." href="tel:+441782987786">',
-            '<span class="float-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path fill="currentColor" d="M17 14L14.1 15.9C11.5872 14.4886 9.51136 12.4128 8.09998 9.9L9.99998 7L7.99998 2H3.99998L2.09998 3.9C2.54327 8.52372 4.5821 12.849 7.86655 16.1334C11.151 19.4179 15.4763 21.4567 20.1 21.9L22 20V16L17 14Z"></path></svg></span>',
-            '</a>',
-            '<div class="float-halo">',
-            '<a class="float-circle is-whatsapp" aria-label="WhatsApp Metal Staircase Co." href="https://wa.me/441782987786" target="_blank" rel="noopener">',
-            '<span class="float-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12.04 2.2A9.74 9.74 0 0 0 2.3 11.9c0 1.72.45 3.4 1.3 4.87L2.2 21.8l5.2-1.36a9.72 9.72 0 0 0 4.64 1.18h.01c5.38 0 9.75-4.36 9.75-9.72A9.7 9.7 0 0 0 12.04 2.2zm5.66 13.7c-.24.69-1.42 1.27-1.97 1.35-.5.08-1.14.11-1.84-.11-.42-.13-.96-.31-1.66-.59-2.94-1.27-4.86-4.22-5.01-4.42-.15-.2-1.23-1.63-1.23-3.1 0-1.48.78-2.2 1.05-2.5.27-.24.6-.3.8-.3h.57c.18 0 .42.01.64.49.24.68.82 2.35.89 2.52.07.18.11.38.02.6l-.4.59c-.13.18-.26.4-.12.62.15.24.68 1.12 1.47 1.82 1.01.9 1.86 1.18 2.13 1.32.26.13.42.11.57-.07l.53-.61c.15-.18.33-.2.55-.11.22.07 1.4.66 1.65.78.24.12.4.18.46.28.06.11.06.64-.18 1.33z"></path></svg></span>',
-            '</a>',
-            '</div>',
-            '<a class="float-pill is-phone" aria-label="Call 01782 987786" href="tel:+441782987786">01782 987786</a>',
-            '<div class="float-pill-halo">',
-            '<a class="float-pill is-whatsapp" aria-label="WhatsApp" href="https://wa.me/441782987786" target="_blank" rel="noopener">',
-            '<span class="float-icon is-small"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12.04 2.2A9.74 9.74 0 0 0 2.3 11.9c0 1.72.45 3.4 1.3 4.87L2.2 21.8l5.2-1.36a9.72 9.72 0 0 0 4.64 1.18h.01c5.38 0 9.75-4.36 9.75-9.72A9.7 9.7 0 0 0 12.04 2.2zm5.66 13.7c-.24.69-1.42 1.27-1.97 1.35-.5.08-1.14.11-1.84-.11-.42-.13-.96-.31-1.66-.59-2.94-1.27-4.86-4.22-5.01-4.42-.15-.2-1.23-1.63-1.23-3.1 0-1.48.78-2.2 1.05-2.5.27-.24.6-.3.8-.3h.57c.18 0 .42.01.64.49.24.68.82 2.35.89 2.52.07.18.11.38.02.6l-.4.59c-.13.18-.26.4-.12.62.15.24.68 1.12 1.47 1.82 1.01.9 1.86 1.18 2.13 1.32.26.13.42.11.57-.07l.53-.61c.15-.18.33-.2.55-.11.22.07 1.4.66 1.65.78.24.12.4.18.46.28.06.11.06.64-.18 1.33z"></path></svg></span>',
-            '<span>WhatsApp</span>',
-            '</a>',
-            '</div>'
+            button('01782 987786', 'tel:+441782987786', ' aria-label="Call Metal Staircase Co."'),
+            button('WhatsApp', 'https://wa.me/441782987786', ' aria-label="WhatsApp Metal Staircase Co." target="_blank" rel="noopener"')
         ].join('');
         document.body.appendChild(pair);
     }
