@@ -511,7 +511,7 @@
 
         var style = document.createElement('style');
         style.textContent = [
-            '.float-pair { z-index: 40; position: fixed; right: 1rem; bottom: 4rem; display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem; }',
+            '.float-pair { z-index: 40; position: fixed; right: 1rem; bottom: 4rem; display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem; --color--button-text: #f6f4f1; }',
             'body:has([data-navigation-status="active"]) .float-pair { opacity: 0; pointer-events: none; }',
             '@media screen and (max-width: 767px) {',
             '  .float-pair { bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px)); }',
