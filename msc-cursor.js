@@ -512,8 +512,8 @@
         var style = document.createElement('style');
         style.textContent = [
             '.float-pair { z-index: 40; position: fixed; right: 1rem; bottom: 4rem; display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem; --color--button-text: #f6f4f1; }',
-            '.float-pair .button.pale { box-shadow: 0 0 14px 3px rgba(22, 20, 19, 0.4); }',
-            '.float-pair .button:not(.pale) { box-shadow: 0 0 16px 4px rgba(246, 244, 241, 0.55); }',
+            '.float-pair .button.pale { box-shadow: 0 0 14px 3px rgba(22, 20, 19, 0.28); }',
+            '.float-pair .button:not(.pale) { box-shadow: 0 0 16px 4px rgba(246, 244, 241, 0.385); }',
             '.float-pair .float-icon { position: relative; z-index: 1; display: flex; flex: 0 0 auto; width: 0.95rem; height: 0.95rem; color: var(--color--button-text); }',
             '.float-pair .float-icon svg { display: block; width: 100%; height: 100%; }',
             'body:has([data-navigation-status="active"]) .float-pair { opacity: 0; pointer-events: none; }',
