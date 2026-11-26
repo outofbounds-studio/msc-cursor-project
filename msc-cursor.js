@@ -3172,6 +3172,37 @@
                     });
                 }
 
+                // The image is a fixed 260px. Match the content height and scale the
+                // width with the photo so it stays in proportion. Keep the same tuck
+                // under the card (content is 400px, the image frame was 360px).
+                const popupImageTuck = 40;
+                const fitPopupImage = () => {
+                    if (!popupImage) return;
+                    const photo = popupImage.querySelector('img');
+                    const contentH = popupContent.offsetHeight;
+                    if (!contentH) return;
+
+                    popupImage.style.height = contentH + 'px';
+
+                    const desktop = window.matchMedia('(min-width: 768px)').matches;
+                    if (desktop && photo && photo.naturalWidth && photo.naturalHeight) {
+                        const ratio = photo.naturalWidth / photo.naturalHeight;
+                        popupImage.style.maxWidth = 'none';
+                        popupImage.style.width = Math.round(contentH * ratio) + 'px';
+                    } else {
+                        popupImage.style.maxWidth = '';
+                        popupImage.style.width = '';
+                    }
+
+                    if (photo) {
+                        photo.style.width = '100%';
+                        photo.style.height = '100%';
+                        photo.style.objectFit = 'cover';
+                        photo.style.display = 'block';
+                    }
+                };
+                const desktopImageShift = () => -(popupContent.offsetWidth - popupImageTuck);
+
                 /** Pixels to translate .home-popup-image up on mobile (negative y). */
                 const getMobileImageRevealTravelPx = () => {
                     if (!popupImage) {
@@ -3217,6 +3248,7 @@
                 // Function to show popup
                 const showPopup = () => {
                     console.log('[HomePopup] Showing popup after 7 seconds');
+                    fitPopupImage();
                     
                     // Add active class for CSS transitions (like feature pills)
                     popupWrap.setAttribute('data-home-popup-active', 'true');
@@ -3267,7 +3299,7 @@
                                 ease: "power2.inOut"
                             }
                             : {
-                                x: "-100%",
+                                x: () => desktopImageShift(),
                                 duration: 0.65,
                                 ease: "power2.inOut"
                             });
@@ -3389,6 +3421,14 @@
                     }
                 };
                 document.addEventListener('keydown', handleEscape);
+
+                window.addEventListener('resize', () => {
+                    if (!popupWrap.classList.contains('is-active')) return;
+                    fitPopupImage();
+                    if (popupImage && !window.matchMedia('(max-width: 767px)').matches) {
+                        gsap.set(popupImage, { x: desktopImageShift() });
+                    }
+                });
 
                 // Show popup after 8 seconds
                 setTimeout(showPopup, 8000);
