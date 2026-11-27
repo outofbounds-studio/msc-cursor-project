@@ -2378,10 +2378,11 @@
                         return currentTime - startTime < 5000;
                     }
 
-                    // Disable select options with invalid values on page load
+                    // Disable placeholder options only on required selects.
+                    // An optional select, such as Category, must keep "Select a reason".
                     validateFields.forEach(function (fieldGroup) {
                         const select = fieldGroup.querySelector('select');
-                        if (select) {
+                        if (select && select.required) {
                             const options = select.querySelectorAll('option');
                             options.forEach(function (option) {
                                 if (
@@ -2472,12 +2473,11 @@
                             const length = value.length;
 
                             if (input.tagName.toLowerCase() === 'select') {
-                                if (
-                                    value === '' ||
+                                const emptyChoice = value === '' ||
                                     value === 'disabled' ||
                                     value === 'null' ||
-                                    value === 'false'
-                                ) {
+                                    value === 'false';
+                                if (input.required && emptyChoice) {
                                     valid = false;
                                 }
                             } else if (input.type === 'email') {
